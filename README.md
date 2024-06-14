@@ -7,13 +7,15 @@ NanoKVM WEB 项目。
 ```bash
 .
 ├── backend                         # 后端项目
-│         ├── auth                  # 鉴权 api
 │         ├── codes                 # 键盘代码定义
-│         ├── events                # 键盘和鼠标 api
+│         ├── protocol              # 请求和响应定义
+│         ├── service               # api 服务
+│         │   ├── auth              # 鉴权 api
+│         │   ├── events            # 键盘和鼠标 api
+│         │   ├── storage           # 虚拟U盘 api
+│         │   └── vm                # NanoKVM 相关 api
 │         ├── log.go                # 日志
-│         ├── protocol              # req 和 rsp 定义
-│         ├── router.go             # 路由
-│         └── vm                    # NanoKVM 相关 api
+│         └── router.go             # 路由
 ├── frontend                        # 前端项目
 │         └── src
 │             ├── app               # 前端页面

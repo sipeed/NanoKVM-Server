@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Affix, Divider } from 'antd';
-import clsx from 'clsx';
-import { ListCollapseIcon, MenuIcon } from 'lucide-react';
+import { Divider, Popover } from 'antd';
+import { MenuIcon, MonitorIcon, XIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { ScreenSize } from '@/types';
 import { api } from '@/lib/api.ts';
+import { getFps, getQuality } from '@/lib/cookie.ts';
 
 import { Fps } from './fps.tsx';
 import { Fullscreen } from './fullscreen.tsx';
-import { Keyboard as KeyboardMenu } from './keyboard.tsx';
+import { Keyboard } from './keyboard.tsx';
 import { Power } from './power.tsx';
 import { Quality } from './quality.tsx';
 import { Resolution } from './resolution.tsx';
 import { Settings } from './settings.tsx';
 import { Storage } from './storage.tsx';
+import { Terminal } from './terminal';
 
 type MenuProps = {
   baseURL: string;
@@ -24,57 +26,87 @@ type MenuProps = {
 };
 
 export const Menu = ({ baseURL, size, setSize, isKeyboardOpen, setIsKeyboardOpen }: MenuProps) => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [fps, setFps] = useState(30);
   const [quality, setQuality] = useState(80);
 
   // 初始化屏幕参数
   useEffect(() => {
+    let currentFps = fps;
+    let currentQuality = quality;
+
+    const cookieFps = getFps();
+    if (cookieFps) {
+      currentFps = cookieFps;
+      setFps(cookieFps);
+    }
+
+    const cookieQuality = getQuality();
+    if (cookieQuality) {
+      currentQuality = cookieQuality;
+      setQuality(cookieQuality);
+    }
+
     const screen = `${baseURL}/api/vm/screen`;
     api.post(screen, { type: 'resolution', value: size.height }).then();
-    api.post(screen, { type: 'fps', value: fps }).then();
-    api.post(screen, { type: 'quality', value: quality }).then();
+    api.post(screen, { type: 'fps', value: currentFps }).then();
+    api.post(screen, { type: 'quality', value: currentQuality }).then();
   }, []);
 
   return (
-    <Affix
-      offsetTop={10}
-      className={clsx(
-        'absolute left-0 right-0 top-[10px] z-[999] mx-auto flex h-[40px] items-center justify-center',
-        isMenuOpen ? 'w-[800px]' : 'w-[50px]'
-      )}
-    >
-      {isMenuOpen && baseURL ? (
-        <div className="flex h-[40px] w-full items-center justify-center rounded bg-neutral-800">
-          <div className="flex h-[30px] select-none items-center px-3">
-            <img src="/sipeed.ico" width={18} height={18} alt="sipeed" />
+    <div className="fixed left-1/2 top-[10px] z-[1000] -translate-x-1/2">
+      <div className="sticky top-[10px]">
+        {isMenuOpen && baseURL ? (
+          <div className="flex h-[40px] w-[620px] items-center justify-between rounded bg-neutral-800/90">
+            <div className="flex h-[30px] select-none items-center px-3">
+              <img src="/sipeed.ico" width={18} height={18} alt="sipeed" />
+            </div>
+
+            {/* screen menu */}
+            <Popover
+              content={
+                <div className="flex flex-col space-y-1">
+                  <Resolution baseURL={baseURL} resolution={size.height} setSize={setSize} />
+                  <Fps baseURL={baseURL} fps={fps} setFps={setFps} />
+                  <Quality baseURL={baseURL} quality={quality} setQuality={setQuality} />
+                </div>
+              }
+              placement="bottomLeft"
+              trigger="click"
+            >
+              <div className="flex h-[32px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-neutral-300 hover:bg-neutral-700/80">
+                <MonitorIcon size={18} />
+                <span className="select-none text-sm">{t('screen')}</span>
+              </div>
+            </Popover>
+
+            <Keyboard isOpen={isKeyboardOpen} setIsOpen={setIsKeyboardOpen} />
+            <Storage baseURL={baseURL} />
+            <Terminal />
+            <Divider type="vertical" />
+
+            <Power baseURL={baseURL} />
+            <Divider type="vertical" />
+
+            <Settings />
+            <Fullscreen />
+            <div
+              className="mr-2 flex h-[30px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-white hover:bg-neutral-700"
+              onClick={() => setIsMenuOpen((o) => !o)}
+            >
+              <XIcon size={20} />
+            </div>
           </div>
-
-          <Resolution baseURL={baseURL} resolution={size.height} setSize={setSize} />
-          <Fps baseURL={baseURL} fps={fps} setFps={setFps} />
-          <Quality baseURL={baseURL} quality={quality} setQuality={setQuality} />
-          <Storage />
-          <KeyboardMenu isOpen={isKeyboardOpen} setIsOpen={setIsKeyboardOpen} />
-
-          <Divider type="vertical" />
-          <Power baseURL={baseURL} />
-
-          <Divider type="vertical" />
-          <Settings />
-          <Fullscreen />
-          <ListCollapseIcon
-            className="cursor-pointer px-3 text-[16px] text-white hover:text-white/80"
+        ) : (
+          <div
+            className="flex h-[30px] w-[50px] items-center justify-center rounded bg-neutral-800/80 text-white hover:bg-neutral-800"
             onClick={() => setIsMenuOpen((o) => !o)}
-          />
-        </div>
-      ) : (
-        <div
-          className="flex h-[30px] w-[50px] items-center justify-center rounded bg-neutral-800/80 text-white hover:bg-neutral-800"
-          onClick={() => setIsMenuOpen((o) => !o)}
-        >
-          <MenuIcon />
-        </div>
-      )}
-    </Affix>
+          >
+            <MenuIcon />
+          </div>
+        )}
+      </div>
+    </div>
   );
 };

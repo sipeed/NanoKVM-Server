@@ -50,6 +50,11 @@ export const Power = ({ baseURL }: PowerProps) => {
     setIsPowering(true);
     setIsPopoverOpen(false);
 
+    // setTimeout(() => {
+    //   setIsPowering(false);
+    //   setIsPowerOn((value) => !value);
+    // }, 3000);
+
     const url = `${baseURL}/api/vm/power`;
     const data = { type: isPowerOn ? 'off' : 'on' };
 
@@ -60,7 +65,7 @@ export const Power = ({ baseURL }: PowerProps) => {
           console.log(rsp.msg);
           return;
         }
-        setIsPowerOn(!isPowerOn);
+        setIsPowerOn((value) => !value);
       })
       .finally(() => {
         setIsPowering(false);
@@ -68,37 +73,39 @@ export const Power = ({ baseURL }: PowerProps) => {
   }
 
   const content = (
-    <div className="flex flex-col space-y-1">
+    <>
       <div
         className={clsx(
-          'flex select-none items-center space-x-2 rounded px-3 py-1.5',
+          'flex select-none items-center space-x-1 rounded-sm p-2 text-sm',
           isPowerOn ? 'cursor-pointer hover:bg-neutral-600' : 'cursor-not-allowed text-neutral-500'
         )}
         onClick={() => setIsPopoverOpen(false)}
       >
-        <RotateCcwIcon size={16} />
+        <RotateCcwIcon size={18} />
         <span>{t('restart')}</span>
       </div>
 
+      <div className="my-[2px]"></div>
+
       <div
-        className="flex h-[30px] cursor-pointer select-none items-center space-x-2 rounded px-3 hover:bg-neutral-600"
+        className="flex cursor-pointer select-none items-center space-x-1 rounded-sm p-2 text-sm hover:bg-neutral-600"
         onClick={powerOnOff}
       >
-        {isPowerOn ? <PowerOffIcon size={16} /> : <PowerIcon size={16} />}
+        {isPowerOn ? <PowerOffIcon size={18} /> : <PowerIcon size={18} />}
         <span>{isPowerOn ? t('powerOff') : t('powerOn')}</span>
       </div>
-    </div>
+    </>
   );
 
   return (
     <Popover
       content={content}
-      placement="bottomLeft"
+      placement="right"
       trigger="click"
       open={isPopoverOpen}
       onOpenChange={setIsPopoverOpen}
     >
-      <div className="flex h-[30px] cursor-pointer items-center justify-center space-x-3 rounded px-3 hover:bg-neutral-700/80">
+      <div className="flex h-[32px] cursor-pointer items-center space-x-3 rounded-sm pl-2 text-neutral-300 hover:bg-neutral-700">
         <div
           className={clsx('h-[18px] w-[18px]', isPowerOn ? 'text-green-600' : 'text-neutral-500')}
         >

@@ -1,5 +1,6 @@
 import { Popover } from 'antd';
-import { CheckIcon, RatioIcon } from 'lucide-react';
+import clsx from 'clsx';
+import { MonitorIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ScreenSize } from '@/types';
@@ -44,24 +45,24 @@ export const Resolution = ({ baseURL, resolution, setSize }: ResolutionProps) =>
       {resolutions.map((item) => (
         <div
           key={item.key}
-          className="flex cursor-pointer select-none items-center space-x-1 rounded py-1.5 pl-1 pr-5 hover:bg-neutral-600"
+          className={clsx(
+            'my-1 flex h-[30px] cursor-pointer select-none items-center space-x-1 rounded-sm px-3 text-sm',
+            item.key === resolution ? 'bg-blue-700' : 'hover:bg-neutral-700'
+          )}
           onClick={() => update(item)}
         >
-          <div className="flex h-[14px] w-[20px] items-end">
-            {item.key === resolution && <CheckIcon size={14} />}
-          </div>
           <span className="flex w-[32px]">{item.width}</span>
           <span>x</span>
-          <span className="w-[36px]">{item.height}</span>
+          <span className="w-[32px]">{item.height}</span>
         </div>
       ))}
     </>
   );
 
   return (
-    <Popover content={content} placement="rightTop">
-      <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded px-3 text-neutral-300 hover:bg-neutral-700">
-        <RatioIcon size={18} />
+    <Popover content={content} placement="right" trigger="click">
+      <div className="flex h-[32px] cursor-pointer items-center space-x-1 rounded-sm pl-2 text-neutral-300 hover:bg-neutral-700">
+        <MonitorIcon size={18} />
         <span className="select-none text-sm">{t('resolution')}</span>
       </div>
     </Popover>

@@ -5,15 +5,19 @@ export const resources = {
       about: 'About NanoKVM',
       changePassword: 'Change Password',
       logout: 'Logout',
+      screen: 'Screen',
       resolution: 'Resolution',
       fps: 'FPS',
       customize: 'Customize',
       quality: 'Quality',
       keyboard: 'Keyboard',
       storage: 'Storage',
-      exit: 'Exit',
+      loading: 'Loading',
+      empty: 'Nothing Found',
+      settings: 'Settings',
       power: 'Power',
       terminal: 'Terminal',
+      kvmTerminal: 'NanoKVM Terminal',
       restart: 'Restart',
       powerOn: 'Power On',
       powerOff: 'Power Off',
@@ -42,7 +46,8 @@ export const resources = {
         reset2: '1. Log into the NanoKVM device via SSH;',
         reset3: '2. Delete the file in the device: ',
         reset4: '3. Use the default account to login: ',
-        ok: 'Ok'
+        ok: 'Ok',
+        cancel: 'Cancel'
       }
     }
   },
@@ -52,15 +57,19 @@ export const resources = {
       about: '关于 NanoKVM',
       changePassword: '修改密码',
       logout: '登出',
+      screen: '屏幕',
       resolution: '分辨率',
       fps: '帧率',
       customize: '自定义',
       quality: '图像质量',
       keyboard: '键盘',
       storage: '镜像',
-      exit: '退出',
+      loading: '加载中',
+      empty: '无镜像文件',
+      settings: '设置',
       power: '电源',
       terminal: '终端',
+      kvmTerminal: 'NanoKVM 终端',
       restart: '重启',
       powerOn: '开机',
       powerOff: '关机',
@@ -89,7 +98,8 @@ export const resources = {
         reset2: '1. 通过 SSH 登录到您的 NanoKVM 设备',
         reset3: '2. 删除设备中的文件：',
         reset4: '3. 使用默认的账号登录： ',
-        ok: '确定'
+        ok: '确定',
+        cancel: '取消'
       }
     }
   }

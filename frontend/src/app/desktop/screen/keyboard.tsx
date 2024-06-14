@@ -42,10 +42,10 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
     function sendKeyboardData(data: KeyboardEvent) {
       const url = `${baseURL}/api/events/keyboard`;
 
-      api.post(url, data).then((rsp: any) => {
-        if (rsp.code !== 0) {
-          console.log(rsp.msg);
-        }
+      api.post(url, data, { timeout: 500 }).then(() => {
+        // if (rsp.code !== 0) {
+        //   console.log(rsp.msg);
+        // }
       });
     }
 

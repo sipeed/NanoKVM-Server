@@ -26,7 +26,9 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
 
   // 监听鼠标事件
   useEffect(() => {
-    const canvas = document.getElementById('screen') as HTMLCanvasElement;
+    const canvas = document.getElementById('screen');
+    if (!canvas) return;
+
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mousemove', handleMouseMove);
@@ -60,7 +62,7 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
     function handleMouseMove(event: any) {
       disableEvent(event);
 
-      const rect = canvas.getBoundingClientRect();
+      const rect = canvas!.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       positionRef.current = { x: x < 0 ? 0 : x, y: y < 0 ? 0 : y };
@@ -105,10 +107,10 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
     // 发送鼠标操作数据
     function sendMouseData(data: MouseData) {
       const url = `${baseURL}/api/events/mouse`;
-      api.post(url, data).then((rsp: any) => {
-        if (rsp.code !== 0) {
-          console.log(rsp.msg);
-        }
+      api.post(url, data, { timeout: 300 }).then(() => {
+        // if (rsp.code !== 0) {
+        //   console.log(rsp.msg);
+        // }
       });
     }
 
@@ -130,12 +132,5 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
     event.stopPropagation();
   }
 
-  return (
-    <canvas
-      id="screen"
-      className="absolute z-20 cursor-none"
-      width={width}
-      height={height}
-    ></canvas>
-  );
+  return <></>;
 };

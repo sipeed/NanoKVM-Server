@@ -21,6 +21,7 @@ func Led(c *gin.Context) {
 		rsp.ErrRsp(c, -2, "read led failed")
 		return
 	}
+
 	hdd, err := getState(GPIO_LED_HDD)
 	if err != nil {
 		rsp.ErrRsp(c, -3, "read led failed")

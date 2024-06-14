@@ -19,12 +19,13 @@ import {
 
 type WrapperProps = {
   baseURL: string;
+  isBigScreen: boolean;
   setIsOpen: (open: boolean) => void;
 };
 
 type KeyEvent = 'keydown' | 'keyup';
 
-export const Wrapper = ({ baseURL, setIsOpen }: WrapperProps) => {
+export const Wrapper = ({ baseURL, isBigScreen, setIsOpen }: WrapperProps) => {
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const keyboardRef = useRef<any>(null);
 
@@ -111,7 +112,7 @@ export const Wrapper = ({ baseURL, setIsOpen }: WrapperProps) => {
       </div>
       <div className="h-px flex-shrink-0 border-b bg-neutral-300" />
 
-      <div className="keyboardContainer">
+      <div className="keyboardContainer w-full">
         {/* 主键盘 */}
         <Keyboard
           buttonTheme={
@@ -129,19 +130,21 @@ export const Wrapper = ({ baseURL, setIsOpen }: WrapperProps) => {
         />
 
         {/* 控制键 */}
-        <div className="controlArrows">
-          <Keyboard
-            onKeyPress={onKeyPress}
-            onKeyReleased={onKeyReleased}
-            {...keyboardControlPadOptions}
-          />
+        {isBigScreen && (
+          <div className="controlArrows">
+            <Keyboard
+              onKeyPress={onKeyPress}
+              onKeyReleased={onKeyReleased}
+              {...keyboardControlPadOptions}
+            />
 
-          <Keyboard
-            onKeyPress={onKeyPress}
-            onKeyReleased={onKeyReleased}
-            {...keyboardArrowsOptions}
-          />
-        </div>
+            <Keyboard
+              onKeyPress={onKeyPress}
+              onKeyReleased={onKeyReleased}
+              {...keyboardArrowsOptions}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

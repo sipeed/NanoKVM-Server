@@ -5,6 +5,7 @@ import { CheckIcon, ScanBarcodeIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { api } from '@/lib/api.ts';
+import { setFps as setFpsCookie } from '@/lib/cookie.ts';
 
 type FpsProps = {
   baseURL: string;
@@ -55,12 +56,13 @@ export const Fps = ({ baseURL, fps, setFps }: FpsProps) => {
       }
 
       setFps(value);
+      setFpsCookie(value);
       setIsCustomize(false);
     });
   };
 
   const content = (
-    <div>
+    <>
       {/* 默认 fps 选择列表 */}
       {fpsList.map((item) => (
         <div
@@ -107,12 +109,12 @@ export const Fps = ({ baseURL, fps, setFps }: FpsProps) => {
           <Button size="small" icon={<CloseOutlined />} onClick={() => setIsCustomize(false)} />
         </div>
       )}
-    </div>
+    </>
   );
 
   return (
-    <Popover content={content} placement="bottomLeft" trigger="click" style={{ padding: 0 }}>
-      <div className="flex h-[30px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-neutral-300 hover:bg-neutral-700">
+    <Popover content={content} placement="rightTop">
+      <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded px-3 text-neutral-300 hover:bg-neutral-700">
         <ScanBarcodeIcon size={18} />
         <span className="select-none text-sm">{t('fps')}</span>
       </div>

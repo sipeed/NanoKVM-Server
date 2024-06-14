@@ -24,9 +24,9 @@ export const Storage = ({ baseURL }: StorageProps) => {
   const [mountedFile, setMountedFile] = useState('');
 
   useEffect(() => {
-    // 获取镜像列表
     setLoading(true);
 
+    // 获取镜像列表
     api
       .get(`${baseURL}/api/storage/iso`)
       .then((rsp: any) => {
@@ -37,6 +37,7 @@ export const Storage = ({ baseURL }: StorageProps) => {
 
         if (rsp.data.files?.length > 0) {
           const isoList = rsp.data.files;
+
           setFiles(isoList);
 
           // 获取已挂载的镜像
@@ -111,8 +112,8 @@ export const Storage = ({ baseURL }: StorageProps) => {
   );
 
   return (
-    <Popover content={content} placement="bottomLeft" trigger="click">
-      <div className="flex h-[30px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-neutral-300 hover:bg-neutral-700">
+    <Popover content={content} placement="right" trigger="click">
+      <div className="flex h-[32px] cursor-pointer items-center space-x-1 rounded-sm pl-2 text-neutral-300 hover:bg-neutral-700">
         <div
           className={clsx('h-[18px] w-[18px]', !mountedFile ? 'text-neutral-300' : 'text-blue-500')}
         >

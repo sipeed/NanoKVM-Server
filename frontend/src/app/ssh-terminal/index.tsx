@@ -50,7 +50,10 @@ export const SshTerminal = () => {
   return (
     <>
       <Head title={t('terminal')} />
-      <div id="terminal" className="h-full"></div>;
+
+      <div className="h-full w-full overflow-hidden">
+        <div id="terminal" className="h-full"></div>;
+      </div>
     </>
   );
 };

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 type KeyboardReq struct {
@@ -62,7 +63,14 @@ func writeKeyboard(req *KeyboardReq) error {
 		data = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	}
 
-	if _, err := hidg0.Write(data); err != nil {
+	hidg0, err := os.OpenFile(Hidg0, os.O_WRONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer hidg0.Close()
+
+	_, err = hidg0.Write(data)
+	if err != nil {
 		log.Errorf("write to hidg0 failed: %s", err)
 		return err
 	}

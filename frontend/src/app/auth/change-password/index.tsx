@@ -99,9 +99,14 @@ export const ChangePassword = () => {
           <span className="text-red-500">{msg}</span>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="w-full">
-              {t('auth.ok')}
-            </Button>
+            <div className="flex w-full space-x-2">
+              <Button type="primary" htmlType="submit" className="w-1/2">
+                {t('auth.ok')}
+              </Button>
+              <Button className="w-1/2" onClick={() => navigate(-1)}>
+                {t('auth.cancel')}
+              </Button>
+            </div>
           </Form.Item>
         </Form>
       </div>

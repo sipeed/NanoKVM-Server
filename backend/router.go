@@ -1,9 +1,10 @@
 package backend
 
 import (
-	"NanoKVM-Server/backend/auth"
-	"NanoKVM-Server/backend/events"
-	"NanoKVM-Server/backend/vm"
+	"NanoKVM-Server/backend/service/auth"
+	"NanoKVM-Server/backend/service/events"
+	"NanoKVM-Server/backend/service/storage"
+	"NanoKVM-Server/backend/service/vm"
 	"fmt"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,10 @@ func InitRouter(r *gin.Engine) {
 
 	api.POST("/events/mouse", events.Mouse)       // 鼠标事件
 	api.POST("/events/keyboard", events.Keyboard) // 键盘事件
+
+	api.GET("/storage/iso", storage.GetIso)                // 获取 iso 文件列表
+	api.POST("/storage/iso", storage.MountIso)             // 挂载 iso 镜像
+	api.GET("/storage/iso/mounted", storage.GetMountedIso) // 获取已挂载的 iso
 }
 
 func initFrontend(r *gin.Engine) {

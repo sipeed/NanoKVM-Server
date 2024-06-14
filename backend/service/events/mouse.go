@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 type MouseReq struct {
@@ -41,7 +42,7 @@ func Mouse(c *gin.Context) {
 	rsp.OkRsp(c)
 }
 
-func click(req *MouseReq) (err error) {
+func click(req *MouseReq) error {
 	button := 0x00
 	if req.Type == "mousedown" {
 		if req.Button == "left" {
@@ -53,11 +54,17 @@ func click(req *MouseReq) (err error) {
 
 	data := []byte{byte(button), 0x00, 0x00, 0x00}
 
+	hidg1, err := os.OpenFile(Hidg1, os.O_WRONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer hidg1.Close()
+
 	_, err = hidg1.Write(data)
-	return
+	return err
 }
 
-func scroll(req *MouseReq) (err error) {
+func scroll(req *MouseReq) error {
 	direction := 0x01
 	if req.Y > 0 {
 		direction = -0x1
@@ -65,11 +72,17 @@ func scroll(req *MouseReq) (err error) {
 
 	data := []byte{0x00, 0x00, 0x00, byte(direction)}
 
+	hidg1, err := os.OpenFile(Hidg1, os.O_WRONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer hidg1.Close()
+
 	_, err = hidg1.Write(data)
-	return
+	return err
 }
 
-func move(req *MouseReq) (err error) {
+func move(req *MouseReq) error {
 	button := 0x00
 	if req.Button == "left" {
 		button = 0x01
@@ -84,6 +97,12 @@ func move(req *MouseReq) (err error) {
 
 	data := []byte{byte(button), x[0], x[1], y[0], y[1], 0x00}
 
+	hidg2, err := os.OpenFile(Hidg2, os.O_WRONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer hidg2.Close()
+
 	_, err = hidg2.Write(data)
-	return
+	return err
 }
