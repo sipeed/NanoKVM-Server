@@ -1,51 +1,23 @@
-import { useEffect, useState } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
-import { api } from '@/lib/api.ts';
-import { setToken } from '@/lib/cookie.ts';
 import { encrypt } from '@/lib/encrypt.ts';
 import { Head } from '@/components/head.tsx';
 
-import { ForgetPassword } from './forget-password.tsx';
+type LoginProps = {
+  setToken: (token: string) => void;
+};
 
-export const Login = () => {
-  const navigate = useNavigate();
+export const Login = ({ setToken }: LoginProps) => {
   const { t } = useTranslation();
-  const [msg, setMsg] = useState('');
-
-  useEffect(() => {
-    if (msg) {
-      setTimeout(() => setMsg(''), 3000);
-    }
-  }, [msg]);
 
   function login(values: any) {
-    const base = `${window.location.protocol}//${window.location.hostname}:80`;
-    const url = `${base}/api/auth/login`;
+    const username = values.username;
+    const password = encrypt(values.password);
 
-    const data = {
-      username: values.username,
-      password: encrypt(values.password)
-    };
-
-    api.post(url, data).then((rsp: any) => {
-      if (rsp.code !== 0) {
-        const err = rsp.code === -3 ? t('auth.invalidUser') : t('auth.error');
-        setMsg(err);
-        return;
-      }
-
-      setMsg('');
-      setToken({
-        username: values.username,
-        password: values.password
-      });
-
-      navigate('/', { replace: true });
-    });
+    const token = username === 'root' ? `?t=${password}` : `?u=${values.username}&t=${password}`;
+    setToken(token);
   }
 
   return (
@@ -53,11 +25,11 @@ export const Login = () => {
       <Head title={t('head.login')} />
 
       <div className="flex h-screen w-screen flex-col items-center justify-center">
-        <h2 className="text-xl font-semibold text-neutral-100">{t('auth.login')}</h2>
+        <h2 className="text-xl font-semibold text-neutral-100">SSH to NanoKVM</h2>
 
         <Form
           style={{ minWidth: 300, maxWidth: 500 }}
-          initialValues={{ remember: true }}
+          initialValues={{ username: 'root' }}
           onFinish={login}
         >
           <Form.Item
@@ -78,17 +50,11 @@ export const Login = () => {
             />
           </Form.Item>
 
-          <div className="text-red-500">{msg}</div>
-
           <Form.Item>
             <Button type="primary" htmlType="submit" className="w-full">
               {t('auth.ok')}
             </Button>
           </Form.Item>
-
-          <div className="flex justify-end pb-4 text-sm">
-            <ForgetPassword />
-          </div>
         </Form>
       </div>
     </>

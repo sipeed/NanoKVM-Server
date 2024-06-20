@@ -1,5 +1,4 @@
 import { KeyboardIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 type KeyboardProps = {
   isOpen: boolean;
@@ -7,16 +6,13 @@ type KeyboardProps = {
 };
 
 export const Keyboard = ({ isOpen, setIsOpen }: KeyboardProps) => {
-  const { t } = useTranslation();
-
   return (
     <>
       <div
-        className="flex h-[30px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-neutral-300 hover:bg-neutral-700"
+        className="flex h-[30px] cursor-pointer items-center justify-center rounded px-3 text-neutral-300 hover:bg-neutral-700"
         onClick={() => setIsOpen(!isOpen)}
       >
         <KeyboardIcon size={18} />
-        <span className="select-none text-sm">{t('keyboard')}</span>
       </div>
     </>
   );

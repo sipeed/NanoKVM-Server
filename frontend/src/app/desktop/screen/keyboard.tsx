@@ -41,12 +41,14 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
     // 发送键盘数据
     function sendKeyboardData(data: KeyboardEvent) {
       const url = `${baseURL}/api/events/keyboard`;
+      const config = { timeout: 500 };
 
-      api.post(url, data, { timeout: 500 }).then(() => {
-        // if (rsp.code !== 0) {
-        //   console.log(rsp.msg);
-        // }
-      });
+      api.post(url, data, config);
+      // .then((rsp: any) => {
+      //   if (rsp.code !== 0) {
+      //     console.log(rsp.msg);
+      //   }
+      // });
     }
 
     return () => {

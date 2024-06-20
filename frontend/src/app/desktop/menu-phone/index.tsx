@@ -4,7 +4,7 @@ import { MenuIcon } from 'lucide-react';
 
 import { ScreenSize } from '@/types';
 import { api } from '@/lib/api.ts';
-import { getFps, getQuality } from '@/lib/cookie.ts';
+import { getFps, getQuality } from '@/lib/localstorage.ts';
 
 import { Fps } from './fps';
 import { Keyboard } from './keyboard';

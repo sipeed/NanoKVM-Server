@@ -4,7 +4,8 @@ import { LanguagesIcon, SettingsIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { removeToken, setLanguage } from '@/lib/cookie.ts';
+import { removeToken } from '@/lib/cookie.ts';
+import { setLanguage } from '@/lib/localstorage.ts';
 
 export const Settings = () => {
   const navigate = useNavigate();

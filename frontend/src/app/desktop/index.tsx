@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Image } from 'antd';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
 import NoConnection from '@/assets/images/monitor-x.svg';
 import { ScreenSize } from '@/types';
-import { getBaseUrl } from '@/lib/api.ts';
-import { getResolution } from '@/lib/cookie.ts';
+import { getResolution } from '@/lib/localstorage.ts';
 import { Head } from '@/components/head.tsx';
 import { Menu } from '@/app/desktop/menu';
 import { MenuPhone } from '@/app/desktop/menu-phone';
@@ -19,20 +19,18 @@ export const Desktop = () => {
   const { t } = useTranslation();
   const isBigScreen = useMediaQuery({ minWidth: 800 });
   const [baseURL, setBaseURL] = useState('');
-  const [streamURL, setStreamURL] = useState('');
   const [size, setSize] = useState<ScreenSize>({ width: 1280, height: 720 });
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [mouseStyle, setMouseStyle] = useState('cursor-default');
 
   useEffect(() => {
+    const base = `${window.location.protocol}//${window.location.hostname}:80`;
+    setBaseURL(base);
+
     const resolution = getResolution();
     if (resolution?.width && resolution?.height) {
       setSize({ width: resolution.width, height: resolution.height });
     }
-
-    const base = getBaseUrl();
-
-    setBaseURL(`${base}:80`);
-    setStreamURL(`${base}:8000/stream`);
   }, []);
 
   return (
@@ -47,6 +45,8 @@ export const Desktop = () => {
           setSize={setSize}
           isKeyboardOpen={isKeyboardOpen}
           setIsKeyboardOpen={setIsKeyboardOpen}
+          mouseStyle={mouseStyle}
+          setMouseStyle={setMouseStyle}
         />
       ) : (
         <MenuPhone
@@ -66,10 +66,10 @@ export const Desktop = () => {
           <>
             <Image
               id="screen"
-              className="block bg-neutral-950"
+              className={clsx('block select-none bg-neutral-950', mouseStyle)}
               width={size.width}
               height={size.height}
-              src={`${streamURL}/stream`}
+              src={`${baseURL}/api/mjpeg`}
               fallback={NoConnection}
               preview={false}
             />
@@ -78,13 +78,6 @@ export const Desktop = () => {
             <Mouse baseURL={baseURL} width={size.width} height={size.height} />
             <Keyboard baseURL={baseURL} />
           </>
-          {/*<img*/}
-          {/*  className="block bg-neutral-950"*/}
-          {/*  src="/src/assets/images/monitor-x.svg"*/}
-          {/*  width={size.width}*/}
-          {/*  height={size.height}*/}
-          {/*  alt="power off"*/}
-          {/*/>*/}
         </div>
       )}
 

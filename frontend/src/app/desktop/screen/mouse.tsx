@@ -107,11 +107,14 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
     // 发送鼠标操作数据
     function sendMouseData(data: MouseData) {
       const url = `${baseURL}/api/events/mouse`;
-      api.post(url, data, { timeout: 300 }).then(() => {
-        // if (rsp.code !== 0) {
-        //   console.log(rsp.msg);
-        // }
-      });
+      const config = { timeout: 300 };
+
+      api.post(url, data, config);
+      // .then((rsp: any) => {
+      //   if (rsp.code !== 0) {
+      //     console.log(rsp.msg);
+      //   }
+      // });
     }
 
     // 注销事件

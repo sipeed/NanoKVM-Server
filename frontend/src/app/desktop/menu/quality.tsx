@@ -3,7 +3,7 @@ import { CheckIcon, SquareActivityIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { api } from '@/lib/api.ts';
-import { setQuality as setQualityCookie } from '@/lib/cookie.ts';
+import { setQuality as setQualityCookie } from '@/lib/localstorage.ts';
 
 type QualityProps = {
   baseURL: string;

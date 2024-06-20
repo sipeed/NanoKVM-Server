@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Divider, Popover } from 'antd';
 import { MenuIcon, MonitorIcon, XIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 import { ScreenSize } from '@/types';
 import { api } from '@/lib/api.ts';
-import { getFps, getQuality } from '@/lib/cookie.ts';
+import { getFps, getQuality } from '@/lib/localstorage.ts';
+import { Extensions } from '@/app/desktop/menu/extensions.tsx';
 
 import { Fps } from './fps.tsx';
 import { Fullscreen } from './fullscreen.tsx';
 import { Keyboard } from './keyboard.tsx';
+import { Mouse } from './mouse.tsx';
 import { Power } from './power.tsx';
 import { Quality } from './quality.tsx';
 import { Resolution } from './resolution.tsx';
@@ -23,10 +24,19 @@ type MenuProps = {
   setSize: (size: ScreenSize) => void;
   isKeyboardOpen: boolean;
   setIsKeyboardOpen: (open: boolean) => void;
+  mouseStyle: string;
+  setMouseStyle: (style: string) => void;
 };
 
-export const Menu = ({ baseURL, size, setSize, isKeyboardOpen, setIsKeyboardOpen }: MenuProps) => {
-  const { t } = useTranslation();
+export const Menu = ({
+  baseURL,
+  size,
+  setSize,
+  isKeyboardOpen,
+  setIsKeyboardOpen,
+  mouseStyle,
+  setMouseStyle
+}: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [fps, setFps] = useState(30);
   const [quality, setQuality] = useState(80);
@@ -58,7 +68,7 @@ export const Menu = ({ baseURL, size, setSize, isKeyboardOpen, setIsKeyboardOpen
     <div className="fixed left-1/2 top-[10px] z-[1000] -translate-x-1/2">
       <div className="sticky top-[10px]">
         {isMenuOpen && baseURL ? (
-          <div className="flex h-[40px] w-[620px] items-center justify-between rounded bg-neutral-800/90">
+          <div className="flex h-[40px] items-center justify-between rounded bg-neutral-800/90">
             <div className="flex h-[30px] select-none items-center px-3">
               <img src="/sipeed.ico" width={18} height={18} alt="sipeed" />
             </div>
@@ -75,13 +85,15 @@ export const Menu = ({ baseURL, size, setSize, isKeyboardOpen, setIsKeyboardOpen
               placement="bottomLeft"
               trigger="click"
             >
-              <div className="flex h-[32px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-neutral-300 hover:bg-neutral-700/80">
+              <div className="flex h-[32px] cursor-pointer items-center justify-center rounded px-3 text-neutral-300 hover:bg-neutral-700/80">
                 <MonitorIcon size={18} />
-                <span className="select-none text-sm">{t('screen')}</span>
               </div>
             </Popover>
 
             <Keyboard isOpen={isKeyboardOpen} setIsOpen={setIsKeyboardOpen} />
+            <Mouse mouseStyle={mouseStyle} setMouseStyle={setMouseStyle} />
+            <Divider type="vertical" />
+
             <Storage baseURL={baseURL} />
             <Terminal />
             <Divider type="vertical" />
@@ -89,6 +101,7 @@ export const Menu = ({ baseURL, size, setSize, isKeyboardOpen, setIsKeyboardOpen
             <Power baseURL={baseURL} />
             <Divider type="vertical" />
 
+            <Extensions baseURL={baseURL} />
             <Settings />
             <Fullscreen />
             <div

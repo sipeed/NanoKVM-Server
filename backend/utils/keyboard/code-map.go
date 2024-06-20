@@ -1,6 +1,6 @@
-package codes
+package keyboard
 
-var KeyboardMap = map[string]uint16{
+var CodeMap = map[string]uint16{
 	"KeyA": KeyA,
 	"KeyB": KeyB,
 	"KeyC": KeyC,

@@ -4,8 +4,9 @@ import { Button, Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { api, getUrl } from '@/lib/api.ts';
+import { api } from '@/lib/api.ts';
 import { setToken } from '@/lib/cookie.ts';
+import { encrypt } from '@/lib/encrypt.ts';
 import { Head } from '@/components/head.tsx';
 
 export const ChangePassword = () => {
@@ -33,11 +34,12 @@ export const ChangePassword = () => {
       return;
     }
 
-    const url = getUrl('/api/auth/password');
+    const base = `${window.location.protocol}//${window.location.hostname}:80`;
+    const url = `${base}/api/auth/password`;
 
     const data = {
       username: values.username,
-      password: values.password
+      password: encrypt(values.password)
     };
 
     const rsp: any = await api.post(url, data);
@@ -46,7 +48,10 @@ export const ChangePassword = () => {
       return;
     }
 
-    setToken(data);
+    setToken({
+      username: values.username,
+      password: values.password
+    });
     navigate('/', { replace: true });
   }
 
@@ -69,14 +74,14 @@ export const ChangePassword = () => {
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: t('noEmptyUsername'), min: 1 }]}
+            rules={[{ required: true, message: t('auth.noEmptyUsername'), min: 1 }]}
           >
             <Input prefix={<UserOutlined />} placeholder={t('auth.placeholderUsername')} />
           </Form.Item>
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: t('noEmptyPassword'), min: 1 }]}
+            rules={[{ required: true, message: t('auth.noEmptyPassword'), min: 1 }]}
           >
             <Input
               prefix={<LockOutlined />}
@@ -87,17 +92,16 @@ export const ChangePassword = () => {
 
           <Form.Item
             name="password2"
-            rules={[{ required: true, message: t('noEmptyPassword'), min: 1 }]}
+            rules={[{ required: true, message: t('auth.noEmptyPassword'), min: 1 }]}
           >
             <Input
               prefix={<LockOutlined />}
               type="password"
-              placeholder={t('auth.placeholderPassword')}
+              placeholder={t('auth.placeholderPassword2')}
             />
           </Form.Item>
 
           <span className="text-red-500">{msg}</span>
-
           <Form.Item>
             <div className="flex w-full space-x-2">
               <Button type="primary" htmlType="submit" className="w-1/2">

@@ -1,5 +1,7 @@
 import Axios from 'axios';
 
+import { removeToken } from '@/lib/cookie.ts';
+
 export const api = Axios.create();
 
 api.interceptors.request.use((config) => {
@@ -15,15 +17,10 @@ api.interceptors.response.use(
   },
   (error) => {
     console.log(error);
+    const code = error.response?.status;
+    if (code === 401) {
+      removeToken();
+    }
     return Promise.reject(error);
   }
 );
-
-export function getBaseUrl() {
-  return `${window.location.protocol}//${window.location.hostname}`;
-}
-
-export function getUrl(path: string) {
-  const base = getBaseUrl();
-  return `${base}:80${path}`;
-}

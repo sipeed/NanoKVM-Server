@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Popover } from 'antd';
+import { Divider, Popover } from 'antd';
 import clsx from 'clsx';
 import {
   BoxIcon,
   FileBoxIcon,
   LoaderCircleIcon,
   PackageIcon,
-  PackageSearchIcon
+  PackageSearchIcon,
+  SquareXIcon
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -76,13 +77,16 @@ export const Storage = ({ baseURL }: StorageProps) => {
 
   const content = (
     <>
+      <div className="pl-2 font-bold text-neutral-400">{t('isoList')}</div>
+      <Divider style={{ margin: '10px 0' }} />
+
       {loading ? (
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-2 py-2 pl-2 pr-4 text-neutral-400">
           <LoaderCircleIcon className="animate-spin" size={18} />
           <span className="text-sm">{t('loading')}</span>
         </div>
       ) : files.length === 0 ? (
-        <div className="flex items-center space-x-2 py-3 pr-3 text-neutral-500">
+        <div className="flex items-center space-x-2 pl-2 pr-4 text-neutral-400">
           <PackageSearchIcon size={18} />
           <span className="text-sm">{t('empty')}</span>
         </div>
@@ -91,13 +95,18 @@ export const Storage = ({ baseURL }: StorageProps) => {
           <div
             key={file}
             className={clsx(
-              'my-1 flex h-[32px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
-              { 'text-green-500': mountedFile === file }
+              'group my-1 flex h-[32px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
+              { 'text-blue-500': mountedFile === file }
             )}
             onClick={() => mountFile(file)}
           >
             {mountedFile === file ? (
-              <PackageIcon size={18} />
+              <>
+                <div className="h-[18px] w-[18px] group-hover:text-red-500">
+                  <PackageIcon size={18} className="block group-hover:hidden" />
+                  <SquareXIcon size={18} className="hidden group-hover:block" />
+                </div>
+              </>
             ) : mountingFile === file ? (
               <LoaderCircleIcon className="animate-spin" size={18} />
             ) : (
@@ -112,13 +121,12 @@ export const Storage = ({ baseURL }: StorageProps) => {
 
   return (
     <Popover content={content} placement="bottomLeft" trigger="click">
-      <div className="flex h-[30px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-neutral-300 hover:bg-neutral-700">
+      <div className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700">
         <div
           className={clsx('h-[18px] w-[18px]', !mountedFile ? 'text-neutral-300' : 'text-blue-500')}
         >
           <BoxIcon size={18} />
         </div>
-        <span className="select-none text-sm">{t('storage')}</span>
       </div>
     </Popover>
   );

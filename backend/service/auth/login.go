@@ -2,10 +2,8 @@ package auth
 
 import (
 	"NanoKVM-Server/backend/protocol"
-	"encoding/json"
+	"NanoKVM-Server/backend/utils"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
-	"os"
 )
 
 type LoginReq struct {
@@ -22,51 +20,18 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	exists, err := isFileExists(PasswordFile)
+	passwordDecrypt, err := utils.DecodeDecrypt(req.Password)
 	if err != nil {
-		rsp.ErrRsp(c, -2, "get password failed")
+		rsp.ErrRsp(c, -2, "decrypt password failed")
 		return
 	}
 
-	if exists {
-		var content []byte
-		var user User
+	account := utils.GetAccount()
 
-		if content, err = os.ReadFile(PasswordFile); err != nil {
-			log.Errorf("read password failed: %s", err)
-			rsp.ErrRsp(c, -3, "read password failed")
-			return
-		}
-
-		if err = json.Unmarshal(content, &user); err != nil {
-			rsp.ErrRsp(c, -4, "parse password failed")
-			return
-		}
-
-		if req.Username != user.Username || req.Password != user.Password {
-			rsp.ErrRsp(c, -5, "invalid username or password")
-			return
-		}
-	} else {
-		if req.Username != "admin" || req.Password != "admin" {
-			rsp.ErrRsp(c, -5, "invalid username or password")
-			return
-		}
+	if req.Username != account.Username || passwordDecrypt != account.Password {
+		rsp.ErrRsp(c, -3, "invalid username or password")
+		return
 	}
 
 	rsp.OkRsp(c)
-}
-
-func isFileExists(file string) (bool, error) {
-	_, err := os.Stat(file)
-	if err == nil {
-		return true, nil
-	}
-
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-
-	log.Errorf("check %s exits failed: %s", file, err)
-	return false, err
 }

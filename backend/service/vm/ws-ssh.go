@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"NanoKVM-Server/backend/utils"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -146,7 +147,7 @@ func (s *SshClient) bridgeWSAnsSSH() {
 		return
 	}
 
-	auth := ssh.Password("root")
+	auth := ssh.Password(s.password)
 	config := &ssh.ClientConfig{
 		User:            s.user,
 		Auth:            []ssh.AuthMethod{auth},
@@ -155,7 +156,7 @@ func (s *SshClient) bridgeWSAnsSSH() {
 
 	s.client, err = ssh.Dial("tcp", s.addr, config)
 	if err != nil {
-		log.Errorf("init ssh failed: %s", err)
+		//log.Errorf("init ssh failed: %s", err)
 		return
 	}
 	defer s.client.Close()
@@ -190,9 +191,6 @@ func (s *SshClient) bridgeWSAnsSSH() {
 		return
 	}
 
-	log.Debugf("started a shell...")
-	defer log.Debugf("closed a shell.")
-
 	go func() {
 		_ = s.wsRead()
 	}()
@@ -204,6 +202,16 @@ func (s *SshClient) bridgeWSAnsSSH() {
 }
 
 func WsSsh(c *gin.Context) {
+	user := c.Query("u")
+	if user == "" {
+		user = "root"
+	}
+
+	password, _ := utils.Decrypt(c.Query("t"))
+	if password == "" {
+		password = "root"
+	}
+
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return true
 	}
@@ -217,8 +225,8 @@ func WsSsh(c *gin.Context) {
 	sshClient := &SshClient{
 		conn:     conn,
 		addr:     "127.0.0.1:22",
-		user:     "root",
-		password: "root",
+		user:     user,
+		password: password,
 		closeSig: make(chan struct{}, 1),
 	}
 

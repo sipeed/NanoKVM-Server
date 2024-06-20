@@ -1,12 +1,12 @@
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { getToken } from '@/lib/cookie.ts';
+import { existToken } from '@/lib/cookie.ts';
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const token = getToken();
+  const hasToken = existToken();
 
-  if (!token) {
+  if (!hasToken) {
     return <Navigate to={'/auth/login'} replace />;
   }
 

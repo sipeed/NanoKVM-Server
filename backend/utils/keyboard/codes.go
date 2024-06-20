@@ -1,7 +1,7 @@
+package keyboard
+
 // The contents of this file is free and unencumbered software released into
 // the public domain. Refer to <http://unlicense.org/> for more information.
-
-package codes
 
 // note: similar keys have different key codes, like Enter and
 //       Keypad Enter

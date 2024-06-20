@@ -9,7 +9,7 @@ import (
 )
 
 type PowerReq struct {
-	Type string `validate:"required"` // on / off / restart
+	Type string `validate:"required"` // restart:重启键 power-short：短按开机键 power-long：长按开机键
 }
 
 func Power(c *gin.Context) {
@@ -21,8 +21,8 @@ func Power(c *gin.Context) {
 		return
 	}
 
-	device := ""
-	if req.Type == "on" || req.Type == "off" {
+	var device string
+	if req.Type == "power-short" || req.Type == "power-long" {
 		device = GPIO_PWR
 	} else if req.Type == "restart" {
 		device = GPIO_RST
@@ -31,7 +31,14 @@ func Power(c *gin.Context) {
 		return
 	}
 
-	if err := writeGpio(device); err != nil {
+	var duration time.Duration
+	if req.Type == "power-long" {
+		duration = 5 * time.Second
+	} else {
+		duration = 800 * time.Millisecond
+	}
+
+	if err := writeGpio(device, duration); err != nil {
 		rsp.ErrRsp(c, -3, "operation failed")
 		return
 	}
@@ -40,23 +47,15 @@ func Power(c *gin.Context) {
 	rsp.OkRsp(c)
 }
 
-func writeGpio(device string) error {
-	gpio, err := os.OpenFile(device, os.O_WRONLY, 0666)
-	defer gpio.Close()
-
-	if err != nil {
-		log.Errorf("open gpio %s failed: %s", device, err)
-		return err
-	}
-
-	if _, err = gpio.Write([]byte{1}); err != nil {
+func writeGpio(device string, duration time.Duration) error {
+	if err := os.WriteFile(device, []byte("1"), 0666); err != nil {
 		log.Errorf("write gpio %s failed: %s", device, err)
 		return err
 	}
 
-	time.Sleep(800 * time.Millisecond)
+	time.Sleep(duration)
 
-	if _, err = gpio.Write([]byte{0}); err != nil {
+	if err := os.WriteFile(device, []byte("0"), 0666); err != nil {
 		log.Errorf("write gpio %s failed: %s", device, err)
 		return err
 	}

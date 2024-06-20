@@ -2,10 +2,9 @@ package auth
 
 import (
 	"NanoKVM-Server/backend/protocol"
-	"encoding/json"
+	"NanoKVM-Server/backend/utils"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"os"
 )
 
 type ChangePasswordReq struct {
@@ -22,25 +21,11 @@ func ChangePassword(c *gin.Context) {
 		return
 	}
 
-	content, err := json.Marshal(&req)
-	if err != nil {
-		rsp.ErrRsp(c, -2, "parse password failed")
+	if err := utils.SetAccount(req.Username, req.Password); err != nil {
+		rsp.ErrRsp(c, -2, "change password failed")
 		return
 	}
 
-	file, err := os.OpenFile(PasswordFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	defer file.Close()
-	if err != nil {
-		log.Errorf("open password failed: %s", err)
-		rsp.ErrRsp(c, -3, "open password failed")
-		return
-	}
-
-	if _, err = file.Write(content); err != nil {
-		log.Errorf("write password failed: %s", err)
-		rsp.ErrRsp(c, -4, "write password failed")
-		return
-	}
-
+	log.Debugf("change password success, username: %s", req.Username)
 	rsp.OkRsp(c)
 }

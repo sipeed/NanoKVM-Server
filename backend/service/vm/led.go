@@ -42,15 +42,15 @@ func getState(device string) (bool, error) {
 		return false, err
 	}
 
-	log.Debugf("read gpio %s: %+v", device, data)
-
 	content := string(data)
-	content = content[:len(content)-1]
+	if len(content) > 1 {
+		content = content[:len(content)-1]
+	}
 	value, err := strconv.Atoi(content)
 	if err != nil {
 		log.Errorf("invalid gpio content: %s", content)
 		return false, nil
 	}
 
-	return value == 1, nil
+	return value == 0, nil
 }

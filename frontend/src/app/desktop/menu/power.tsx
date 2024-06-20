@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Popover } from 'antd';
+import { Popover, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
+  CirclePowerIcon,
   HardDriveIcon,
   LoaderCircleIcon,
   PowerIcon,
-  PowerOffIcon,
   RotateCcwIcon
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ export const Power = ({ baseURL }: PowerProps) => {
           return;
         }
 
-        setIsPowerOn(rsp.data.power);
+        setIsPowerOn(rsp.data.pwr);
         setIsHddOn(rsp.data.hdd);
       });
     }
@@ -44,23 +44,21 @@ export const Power = ({ baseURL }: PowerProps) => {
     };
   }, [baseURL]);
 
-  function powerOnOff() {
+  function clickButton(button: 'restart' | 'power-short' | 'power-long') {
     if (isPowering) return;
 
     setIsPowering(true);
     setIsPopoverOpen(false);
 
     const url = `${baseURL}/api/vm/power`;
-    const data = { type: isPowerOn ? 'off' : 'on' };
 
     api
-      .post(url, data)
+      .post(url, { type: button })
       .then((rsp: any) => {
         if (rsp.code !== 0) {
           console.log(rsp.msg);
           return;
         }
-        setIsPowerOn(!isPowerOn);
       })
       .finally(() => {
         setIsPowering(false);
@@ -70,49 +68,63 @@ export const Power = ({ baseURL }: PowerProps) => {
   const content = (
     <div className="flex flex-col space-y-1">
       <div
-        className={clsx(
-          'flex select-none items-center space-x-2 rounded px-3 py-1.5',
-          isPowerOn ? 'cursor-pointer hover:bg-neutral-600' : 'cursor-not-allowed text-neutral-500'
-        )}
-        onClick={() => setIsPopoverOpen(false)}
+        className="flex h-[32px] cursor-pointer select-none items-center space-x-2 rounded px-3 hover:bg-neutral-600"
+        onClick={() => clickButton('restart')}
       >
         <RotateCcwIcon size={16} />
         <span>{t('restart')}</span>
       </div>
 
       <div
-        className="flex h-[30px] cursor-pointer select-none items-center space-x-2 rounded px-3 hover:bg-neutral-600"
-        onClick={powerOnOff}
+        className="flex h-[32px] cursor-pointer select-none items-center space-x-2 rounded px-3 hover:bg-neutral-600"
+        onClick={() => clickButton('power-short')}
       >
-        {isPowerOn ? <PowerOffIcon size={16} /> : <PowerIcon size={16} />}
-        <span>{isPowerOn ? t('powerOff') : t('powerOn')}</span>
+        <PowerIcon size={16} />
+        <span>{t('powerShort')}</span>
+      </div>
+
+      <div
+        className="flex h-[32px] cursor-pointer select-none items-center space-x-2 rounded px-3 hover:bg-neutral-600"
+        onClick={() => clickButton('power-long')}
+      >
+        <CirclePowerIcon size={16} />
+        <span>{t('powerLong')}</span>
       </div>
     </div>
   );
 
   return (
-    <Popover
-      content={content}
-      placement="bottomLeft"
-      trigger="click"
-      open={isPopoverOpen}
-      onOpenChange={setIsPopoverOpen}
-    >
-      <div className="flex h-[30px] cursor-pointer items-center justify-center space-x-3 rounded px-3 hover:bg-neutral-700/80">
-        <div
-          className={clsx('h-[18px] w-[18px]', isPowerOn ? 'text-green-600' : 'text-neutral-500')}
-        >
-          {isPowering ? (
-            <LoaderCircleIcon className="animate-spin" size={18} />
-          ) : (
-            <PowerIcon size={18} />
-          )}
+    <>
+      <Popover
+        content={content}
+        placement="bottomLeft"
+        trigger="click"
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
+      >
+        <div className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 hover:bg-neutral-700/80">
+          <div
+            className={clsx('h-[18px] w-[18px]', isPowerOn ? 'text-green-600' : 'text-neutral-500')}
+          >
+            {isPowering ? (
+              <LoaderCircleIcon className="animate-spin" size={18} />
+            ) : (
+              <PowerIcon size={18} />
+            )}
+          </div>
         </div>
+      </Popover>
 
-        <div className={clsx('h-[18px] w-[18px]', isHddOn ? 'text-green-600' : 'text-neutral-500')}>
+      <Tooltip placement="bottom" title={t('hddLed')}>
+        <div
+          className={clsx(
+            'flex h-[30px] w-[18px] items-center justify-center px-2',
+            isHddOn ? 'text-green-600' : 'text-neutral-500'
+          )}
+        >
           <HardDriveIcon size={18} />
         </div>
-      </div>
-    </Popover>
+      </Tooltip>
+    </>
   );
 };

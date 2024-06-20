@@ -42,7 +42,6 @@ func GetIso(c *gin.Context) {
 	})
 
 	if err != nil {
-		log.Errorf("get iso list failed: %s", err)
 		rsp.ErrRsp(c, -2, "get iso failed")
 		return
 	}
@@ -108,7 +107,6 @@ func GetMountedIso(c *gin.Context) {
 	data := &GetMountedIsoRsp{
 		File: iso,
 	}
-	log.Debugf("data: %+v", data)
 
 	rsp.OkRspWithData(c, data)
 }

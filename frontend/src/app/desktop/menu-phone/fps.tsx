@@ -4,7 +4,7 @@ import { ScanBarcodeIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { api } from '@/lib/api.ts';
-import { setFps as setFpsCookie } from '@/lib/cookie.ts';
+import { setFps as setFpsCookie } from '@/lib/localstorage.ts';
 
 type FpsProps = {
   baseURL: string;

@@ -1,8 +1,8 @@
 package events
 
 import (
-	"NanoKVM-Server/backend/codes"
 	"NanoKVM-Server/backend/protocol"
+	"NanoKVM-Server/backend/utils/keyboard"
 	"errors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -40,19 +40,19 @@ func writeKeyboard(req *KeyboardReq) error {
 	if req.Type == "keydown" {
 		var modifier uint16 = 0x00
 		if req.Ctrl {
-			modifier = modifier | codes.ModifierLCtrl
+			modifier = modifier | keyboard.ModifierLCtrl
 		}
 		if req.Shift {
-			modifier = modifier | codes.ModifierLShift
+			modifier = modifier | keyboard.ModifierLShift
 		}
 		if req.Alt {
-			modifier = modifier | codes.ModifierLAlt
+			modifier = modifier | keyboard.ModifierLAlt
 		}
 		if req.Meta {
-			modifier = modifier | codes.ModifierLGUI
+			modifier = modifier | keyboard.ModifierLGUI
 		}
 
-		key, ok := codes.KeyboardMap[req.Key]
+		key, ok := keyboard.CodeMap[req.Key]
 		if !ok {
 			log.Errorf("invalid key: %s", req.Key)
 			return errors.New("invalid key")

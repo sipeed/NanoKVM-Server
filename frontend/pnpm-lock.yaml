@@ -26,6 +26,9 @@ dependencies:
   clsx:
     specifier: ^2.1.1
     version: 2.1.1
+  crypto-js:
+    specifier: ^4.2.0
+    version: 4.2.0
   i18next:
     specifier: ^23.11.5
     version: 23.11.5
@@ -67,6 +70,9 @@ devDependencies:
   '@ianvs/prettier-plugin-sort-imports':
     specifier: ^4.2.1
     version: 4.2.1(prettier@3.2.5)
+  '@types/crypto-js':
+    specifier: ^4.2.2
+    version: 4.2.2
   '@types/js-cookie':
     specifier: ^3.0.6
     version: 3.0.6
@@ -1332,6 +1338,10 @@ packages:
       '@babel/types': 7.24.5
     dev: true
 
+  /@types/crypto-js@4.2.2:
+    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
+    dev: true
+
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
@@ -1958,6 +1968,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    dev: false
 
   /css-mediaquery@0.1.2:
     resolution: {integrity: sha512-COtn4EROW5dBGlE/4PiKnh6rZpAPxDeFLaEEwt4i10jpDMFt2EhQGS79QmmrO+iKCHv0PU/HrOWEhijFd1x99Q==}

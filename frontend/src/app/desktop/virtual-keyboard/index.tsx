@@ -12,7 +12,7 @@ type KeyboardProps = {
 
 export const VirtualKeyboard = ({ baseURL, isBigScreen, isOpen, setIsOpen }: KeyboardProps) => {
   return (
-    <Drawer.Root open={isOpen} onOpenChange={setIsOpen} modal={false} closeThreshold={1}>
+    <Drawer.Root open={isOpen} onOpenChange={setIsOpen} modal={false}>
       <Drawer.Portal>
         <Drawer.Content
           className={clsx(

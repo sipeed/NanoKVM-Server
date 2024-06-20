@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ScreenSize } from '@/types';
 import { api } from '@/lib/api.ts';
-import { setResolution } from '@/lib/cookie.ts';
+import { setResolution } from '@/lib/localstorage.ts';
 
 type ResolutionProps = {
   baseURL: string;
