@@ -80,7 +80,7 @@ export const Settings = ({ baseURL }: SettingsProps) => {
     api.post(url).then(() => {
       setHasUpdate(false);
       setIsModalOpen(false);
-      messageApi.info(t('startUpdate'));
+      messageApi.info(t('update.started'));
     });
   }
 
@@ -125,7 +125,7 @@ export const Settings = ({ baseURL }: SettingsProps) => {
         onClick={showUpdateModal}
       >
         <Badge dot={hasUpdate} color="blue" offset={[5, 5]}>
-          {t('checkForUpdate')}
+          {t('update.title')}
         </Badge>
       </div>
 
@@ -165,7 +165,7 @@ export const Settings = ({ baseURL }: SettingsProps) => {
 
       {/* 更新确认弹窗 */}
       <Modal
-        title={t('checkForUpdate')}
+        title={t('update.title')}
         open={isModalOpen}
         width={380}
         footer={null}
@@ -177,15 +177,15 @@ export const Settings = ({ baseURL }: SettingsProps) => {
             <Spin />
           ) : (
             <>
-              <div>{hasUpdate ? t('hasUpdate') : t('noUpdate')}</div>
+              <div>{hasUpdate ? t('update.available') : t('update.latest')}</div>
 
               <div className="mt-10 flex items-center space-x-3">
                 <Button type="primary" onClick={updateConfirm}>
-                  Confirm
+                  {t('update.confirm')}
                 </Button>
                 {hasUpdate && (
                   <Button type="default" onClick={updateCancel}>
-                    Cancel
+                    {t('update.cancel')}
                   </Button>
                 )}
               </div>
