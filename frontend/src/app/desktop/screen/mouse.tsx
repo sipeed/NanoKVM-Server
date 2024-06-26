@@ -21,8 +21,9 @@ type MouseData = {
 
 export const Mouse = ({ baseURL, width, height }: MouseProps) => {
   const buttonRef = useRef<MouseButton>('');
-  const positionRef = useRef<Position>({ x: 0, y: 0 });
-  const prePositionRef = useRef<Position>({ x: 0, y: 0 });
+
+  const url = `${baseURL}/api/events/mouse`;
+  const config = { timeout: 300 };
 
   // 监听鼠标事件
   useEffect(() => {
@@ -36,9 +37,6 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
     canvas.addEventListener('click', disableEvent);
     canvas.addEventListener('contextmenu', disableEvent);
 
-    let frameId: number;
-    frameId = requestAnimationFrame(sendPosition);
-
     // 鼠标按下事件
     function handleMouseDown(event: any) {
       disableEvent(event);
@@ -46,7 +44,8 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       const button = event.button === 1 ? 'wheel' : event.button === 2 ? 'right' : 'left';
       buttonRef.current = button;
 
-      sendMouseData({ type: 'mousedown', button, x: 0, y: 0 });
+      const data = { type: 'mousedown', button, x: 0, y: 0 };
+      api.post(url, data, config);
     }
 
     // 鼠标抬起事件
@@ -55,17 +54,32 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
 
       buttonRef.current = '';
 
-      sendMouseData({ type: 'mouseup', button: '', x: 0, y: 0 });
+      const data = { type: 'mouseup', button: '', x: 0, y: 0 };
+      api.post(url, data, config);
     }
 
     // 鼠标移动事件
+    let skipMove = false;
     function handleMouseMove(event: any) {
       disableEvent(event);
 
+      skipMove = !skipMove;
+      if (skipMove) return;
+
       const rect = canvas!.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      positionRef.current = { x: x < 0 ? 0 : x, y: y < 0 ? 0 : y };
+      const x = (event.clientX - rect.left) / width;
+      const y = (event.clientY - rect.top) / height;
+
+      const hexX = Math.floor(0x7fff * (x < 0 ? 0 : x)) + 0x0001;
+      const hexY = Math.floor(0x7fff * (y < 0 ? 0 : y)) + 0x0001;
+
+      const data: MouseData = {
+        type: 'mousemove',
+        button: buttonRef.current,
+        x: hexX,
+        y: hexY
+      };
+      api.post(url, data, config);
     }
 
     // 滚轮滚动事件
@@ -75,46 +89,8 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       const delta = Math.floor(event.deltaY);
       if (delta === 0) return;
 
-      sendMouseData({ type: 'scroll', button: '', x: 0, y: delta });
-    }
-
-    // 定时发送鼠标移动坐标
-    function sendPosition() {
-      const isMoved =
-        positionRef.current.x !== prePositionRef.current.x ||
-        positionRef.current.y !== prePositionRef.current.y;
-
-      if (isMoved) {
-        const x = positionRef.current.x / width;
-        const y = positionRef.current.y / height;
-        const hexX = Math.floor(0x7fff * x) + 0x0001;
-        const hexY = Math.floor(0x7fff * y) + 0x0001;
-
-        const data: MouseData = {
-          type: 'mousemove',
-          button: buttonRef.current,
-          x: hexX,
-          y: hexY
-        };
-        sendMouseData(data);
-
-        prePositionRef.current = positionRef.current;
-      }
-
-      frameId = requestAnimationFrame(sendPosition);
-    }
-
-    // 发送鼠标操作数据
-    function sendMouseData(data: MouseData) {
-      const url = `${baseURL}/api/events/mouse`;
-      const config = { timeout: 300 };
-
+      const data = { type: 'scroll', button: '', x: 0, y: delta };
       api.post(url, data, config);
-      // .then((rsp: any) => {
-      //   if (rsp.code !== 0) {
-      //     console.log(rsp.msg);
-      //   }
-      // });
     }
 
     // 注销事件
@@ -124,8 +100,6 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('click', disableEvent);
       canvas.removeEventListener('contextmenu', disableEvent);
-
-      cancelAnimationFrame(frameId);
     };
   }, [baseURL, width, height]);
 

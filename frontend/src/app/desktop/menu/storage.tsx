@@ -7,7 +7,7 @@ import {
   LoaderCircleIcon,
   PackageIcon,
   PackageSearchIcon,
-  SquareXIcon
+  XIcon
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -86,7 +86,7 @@ export const Storage = ({ baseURL }: StorageProps) => {
           <span className="text-sm">{t('loading')}</span>
         </div>
       ) : files.length === 0 ? (
-        <div className="flex items-center space-x-2 pl-2 pr-4 text-neutral-400">
+        <div className="flex items-center space-x-2 pl-2 pr-4 text-neutral-500">
           <PackageSearchIcon size={18} />
           <span className="text-sm">{t('empty')}</span>
         </div>
@@ -104,7 +104,7 @@ export const Storage = ({ baseURL }: StorageProps) => {
               <>
                 <div className="h-[18px] w-[18px] group-hover:text-red-500">
                   <PackageIcon size={18} className="block group-hover:hidden" />
-                  <SquareXIcon size={18} className="hidden group-hover:block" />
+                  <XIcon size={18} className="hidden group-hover:block" />
                 </div>
               </>
             ) : mountingFile === file ? (

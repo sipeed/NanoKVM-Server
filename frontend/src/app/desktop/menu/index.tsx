@@ -102,7 +102,7 @@ export const Menu = ({
             <Divider type="vertical" />
 
             <Extensions baseURL={baseURL} />
-            <Settings />
+            <Settings baseURL={baseURL} />
             <Fullscreen />
             <div
               className="mr-2 flex h-[30px] cursor-pointer items-center justify-center space-x-1 rounded px-2 text-white hover:bg-neutral-700"

@@ -8,6 +8,9 @@ type KeyboardProps = {
 };
 
 export const Keyboard = ({ baseURL }: KeyboardProps) => {
+  const url = `${baseURL}/api/events/keyboard`;
+  const config = { timeout: 500 };
+
   // 监听键盘事件
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -27,7 +30,7 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
         meta: event.metaKey
       };
 
-      sendKeyboardData(data);
+      api.post(url, data, config);
     }
 
     // 抬起按键
@@ -35,20 +38,8 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
       event.preventDefault();
       event.stopPropagation();
 
-      sendKeyboardData({ type: 'keyup', key: event.code });
-    }
-
-    // 发送键盘数据
-    function sendKeyboardData(data: KeyboardEvent) {
-      const url = `${baseURL}/api/events/keyboard`;
-      const config = { timeout: 500 };
-
+      const data = { type: 'keyup', key: event.code };
       api.post(url, data, config);
-      // .then((rsp: any) => {
-      //   if (rsp.code !== 0) {
-      //     console.log(rsp.msg);
-      //   }
-      // });
     }
 
     return () => {

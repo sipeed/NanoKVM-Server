@@ -24,3 +24,8 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export function getBaseURL() {
+  const port = 80;
+  return `${window.location.protocol}//${window.location.hostname}:${port}`;
+}

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Image } from 'antd';
+import { Image, message, Spin } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
 import NoConnection from '@/assets/images/monitor-x.svg';
 import { ScreenSize } from '@/types';
+import { api, getBaseURL } from '@/lib/api.ts';
 import { getResolution } from '@/lib/localstorage.ts';
 import { Head } from '@/components/head.tsx';
 import { Menu } from '@/app/desktop/menu';
@@ -18,14 +19,19 @@ import { VirtualKeyboard } from './virtual-keyboard';
 export const Desktop = () => {
   const { t } = useTranslation();
   const isBigScreen = useMediaQuery({ minWidth: 800 });
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [isUpdating, setIsUpdating] = useState(false);
   const [baseURL, setBaseURL] = useState('');
   const [size, setSize] = useState<ScreenSize>({ width: 1280, height: 720 });
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [mouseStyle, setMouseStyle] = useState('cursor-default');
 
   useEffect(() => {
-    const base = `${window.location.protocol}//${window.location.hostname}:80`;
+    const base = getBaseURL();
     setBaseURL(base);
+
+    checkLibmaixcam(base);
 
     const resolution = getResolution();
     if (resolution?.width && resolution?.height) {
@@ -33,8 +39,57 @@ export const Desktop = () => {
     }
   }, []);
 
+  // 检查 libmaixcam 库
+  function checkLibmaixcam(base: string) {
+    api.get(`${base}/api/firmware/libmaixcam`).then((rsp: any) => {
+      if (rsp.code !== 0) {
+        messageApi.open({
+          type: 'warning',
+          content: t('checkLibFailed'),
+          duration: 10,
+          className: 'check-class',
+          style: {
+            marginTop: '8vh'
+          }
+        });
+        return;
+      }
+
+      if (rsp.data.exist) {
+        return;
+      }
+
+      updateLibmaixcam(base);
+    });
+  }
+
+  // 更新 libmaixcam 库
+  function updateLibmaixcam(base: string) {
+    setIsUpdating(true);
+    api
+      .post(`${base}/api/firmware/libmaixcam/update`)
+      .then((rsp: any) => {
+        if (rsp.code !== 0) {
+          messageApi.open({
+            type: 'warning',
+            content: t('updateLibFailed'),
+            duration: 10,
+            className: 'update-class',
+            style: {
+              marginTop: '8vh'
+            }
+          });
+        }
+      })
+      .finally(() => {
+        setIsUpdating(false);
+      });
+  }
+
   return (
     <>
+      {contextHolder}
+      <Spin spinning={isUpdating} tip={t('updatingLib')} size="large" fullscreen />
       <Head title={t('head.desktop')} />
 
       {/* 菜单栏 */}

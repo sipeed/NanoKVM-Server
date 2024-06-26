@@ -4,7 +4,7 @@ import { Button, Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { api } from '@/lib/api.ts';
+import { api, getBaseURL } from '@/lib/api.ts';
 import { setToken } from '@/lib/cookie.ts';
 import { encrypt } from '@/lib/encrypt.ts';
 import { Head } from '@/components/head.tsx';
@@ -23,29 +23,36 @@ export const Login = () => {
   }, [msg]);
 
   function login(values: any) {
-    const base = `${window.location.protocol}//${window.location.hostname}:80`;
-    const url = `${base}/api/auth/login`;
+    const base = getBaseURL();
 
     const data = {
       username: values.username,
       password: encrypt(values.password)
     };
 
-    api.post(url, data).then((rsp: any) => {
-      if (rsp.code !== 0) {
-        const err = rsp.code === -3 ? t('auth.invalidUser') : t('auth.error');
-        setMsg(err);
-        return;
-      }
+    api
+      .post(`${base}/api/auth/login`, data)
+      .then((rsp: any) => {
+        if (rsp.code !== 0) {
+          if (rsp.code === -3) {
+            setMsg(t('auth.noAccount'));
+          } else if (rsp.code === -4) {
+            setMsg(t('auth.invalidUser'));
+          } else {
+            setMsg(t('auth.error'));
+          }
 
-      setMsg('');
-      setToken({
-        username: values.username,
-        password: values.password
+          return;
+        }
+
+        setMsg('');
+        setToken(rsp.data.token);
+
+        navigate('/', { replace: true });
+      })
+      .catch(() => {
+        setMsg(t('auth.error'));
       });
-
-      navigate('/', { replace: true });
-    });
   }
 
   return (

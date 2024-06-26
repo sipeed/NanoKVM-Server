@@ -20,16 +20,9 @@ export const Extensions = ({ baseURL }: ExtensionsProps) => {
   useEffect(() => {
     const url = `${baseURL}/api/extensions/service`;
     api.get(url).then((rsp: any) => {
-      if (rsp.code !== 0) {
-        console.log(rsp.msg);
-        return;
+      if (rsp.data?.services?.length > 0) {
+        setServices(rsp.data.services);
       }
-
-      if (!rsp.data?.services?.length) {
-        return;
-      }
-
-      setServices(rsp.data.services);
     });
   }, []);
 
