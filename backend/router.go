@@ -5,6 +5,7 @@ import (
 	"NanoKVM-Server/backend/service/auth"
 	"NanoKVM-Server/backend/service/events"
 	"NanoKVM-Server/backend/service/extensions"
+	"NanoKVM-Server/backend/service/firmware"
 	"NanoKVM-Server/backend/service/mjpeg"
 	"NanoKVM-Server/backend/service/storage"
 	"NanoKVM-Server/backend/service/vm"
@@ -38,9 +39,14 @@ func InitRouter(r *gin.Engine) {
 	api.GET("/storage/iso/mounted", storage.GetMountedIso) // 获取已挂载的 iso
 	apiAuth.POST("/storage/iso", storage.MountIso)         // 挂载 iso 镜像
 
-	api.GET("extensions/service", extensions.GetService) // 获取用户的扩展服务
+	apiAuth.GET("extensions/service", extensions.GetService) // 获取用户的扩展服务
 
 	apiAuth.GET("/mjpeg", mjpeg.Proxy) // mjpeg 代理
+
+	api.GET("/firmware/version", firmware.GetVersion)                      // 获取最新固件版本
+	api.GET("/firmware/libmaixcam", firmware.GetLibmaixcam)                // 获取 libmaixcam 信息
+	apiAuth.POST("/firmware/update", firmware.Update)                      // 更新固件
+	apiAuth.POST("/firmware/libmaixcam/update", firmware.UpdateLibmaixcam) // 更新加密文件
 }
 
 func initFrontend(r *gin.Engine) {

@@ -38,7 +38,14 @@ function getWithExpiry(key: string) {
 }
 
 export function getLanguage() {
-  return localStorage.getItem(LANGUAGE_KEY) || 'en';
+  const lang = localStorage.getItem(LANGUAGE_KEY);
+  if (lang) return lang;
+
+  if (navigator.language.indexOf("zh") > -1) {
+    return "zh"
+  }
+
+  return "en"
 }
 
 export function setLanguage(language: string) {

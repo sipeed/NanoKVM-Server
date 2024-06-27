@@ -4,11 +4,16 @@ import (
 	"NanoKVM-Server/backend/protocol"
 	"NanoKVM-Server/backend/utils"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 type LoginReq struct {
 	Username string `validate:"required"` // 用户名
 	Password string `validate:"required"` // 密码
+}
+
+type LoginRsp struct {
+	Token string `json:"token"`
 }
 
 func Login(c *gin.Context) {
@@ -26,12 +31,26 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	account := utils.GetAccount()
-
-	if req.Username != account.Username || passwordDecrypt != account.Password {
-		rsp.ErrRsp(c, -3, "invalid username or password")
+	account, err := GetAccount()
+	if err != nil {
+		rsp.ErrRsp(c, -3, "get account failed")
 		return
 	}
 
-	rsp.OkRsp(c)
+	if req.Username != account.Username || passwordDecrypt != account.Password {
+		rsp.ErrRsp(c, -4, "invalid username or password")
+		return
+	}
+
+	token, err := utils.GenerateJWT(req.Username)
+	if err != nil {
+		rsp.ErrRsp(c, -5, "generate token failed")
+		return
+	}
+
+	rsp.OkRspWithData(c, &LoginRsp{
+		Token: token,
+	})
+
+	log.Debugf("login success, username: %s", req.Username)
 }

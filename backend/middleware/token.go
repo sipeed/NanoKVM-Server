@@ -12,10 +12,8 @@ func CheckToken() gin.HandlerFunc {
 		cookie, err := c.Cookie("nano-kvm-token")
 
 		if err == nil {
-			cookieAccount, err := utils.Cookie2Account(cookie)
-			account := utils.GetAccount()
-
-			if err == nil && cookieAccount.Username == account.Username && cookieAccount.Password == account.Password {
+			_, err = utils.ParseJWT(cookie)
+			if err == nil {
 				c.Next()
 				return
 			}

@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/contrib v0.0.0-20240508051311-c1c6bf0061b0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/validator/v10 v10.20.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/websocket v1.5.1
 	github.com/mervick/aes-everywhere/go/aes256 v0.0.0-20240228221001-33356df39cf4
 	github.com/rs/cors/wrapper/gin v0.0.0-20240515105523-1562b1715b35

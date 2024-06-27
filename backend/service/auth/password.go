@@ -2,7 +2,6 @@ package auth
 
 import (
 	"NanoKVM-Server/backend/protocol"
-	"NanoKVM-Server/backend/utils"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,7 +20,7 @@ func ChangePassword(c *gin.Context) {
 		return
 	}
 
-	if err := utils.SetAccount(req.Username, req.Password); err != nil {
+	if err := SetAccount(req.Username, req.Password); err != nil {
 		rsp.ErrRsp(c, -2, "change password failed")
 		return
 	}

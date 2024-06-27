@@ -17,11 +17,12 @@ type MouseReq struct {
 
 func Mouse(c *gin.Context) {
 	var req MouseReq
-	var rsp protocol.Response
-
 	err := protocol.ParseFormRequest(c, &req)
+
+	// 不发送响应
+	c.Abort()
+
 	if err != nil {
-		rsp.ErrRsp(c, -1, "invalid arguments")
 		return
 	}
 
@@ -35,11 +36,7 @@ func Mouse(c *gin.Context) {
 
 	if err != nil {
 		log.Errorf("write to hid failed: %s", err)
-		rsp.ErrRsp(c, -2, "operation failed")
-		return
 	}
-
-	rsp.OkRsp(c)
 }
 
 func click(req *MouseReq) error {

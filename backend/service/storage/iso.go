@@ -2,10 +2,10 @@ package storage
 
 import (
 	"NanoKVM-Server/backend/protocol"
+	"NanoKVM-Server/backend/utils"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -81,7 +81,7 @@ func MountIso(c *gin.Context) {
 	}
 
 	for _, command := range commands {
-		err := runCommand(command)
+		err := utils.RunCommand(command)
 		if err != nil {
 			rsp.ErrRsp(c, -2, "execute command failed")
 			return
@@ -109,16 +109,4 @@ func GetMountedIso(c *gin.Context) {
 	}
 
 	rsp.OkRspWithData(c, data)
-}
-
-// 执行 shell 命令
-func runCommand(command string) error {
-	cmd := exec.Command("sh", "-c", command)
-	_, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Errorf("run command %s failed: %s", command, err)
-		return err
-	}
-
-	return nil
 }

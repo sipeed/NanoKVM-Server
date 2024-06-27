@@ -6,7 +6,7 @@ import (
 	"net/url"
 )
 
-const SecretKey = "nanokvm-sipeed-2024"
+const EncryptSecretKey = "nanokvm-sipeed-2024"
 
 func Decrypt(ciphertext string) (string, error) {
 	defer func() {
@@ -19,7 +19,7 @@ func Decrypt(ciphertext string) (string, error) {
 		return "", nil
 	}
 
-	decrypt := aes256.Decrypt(ciphertext, SecretKey)
+	decrypt := aes256.Decrypt(ciphertext, EncryptSecretKey)
 
 	return decrypt, nil
 }

@@ -79,7 +79,12 @@ export const Desktop = () => {
               marginTop: '8vh'
             }
           });
+          return;
         }
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 10000);
       })
       .finally(() => {
         setIsUpdating(false);

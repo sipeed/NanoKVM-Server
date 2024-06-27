@@ -6,11 +6,6 @@ import (
 	"net/http"
 )
 
-type Account struct {
-	Username string
-	Password string
-}
-
 func Proxy(c *gin.Context) {
 	mjpegURL := "http://127.0.0.1:8000/stream"
 

@@ -27,7 +27,7 @@ export const resources = {
       hddLed: 'HDD LED',
       checkLibFailed: 'Failed to check runtime library, please try again',
       updateLibFailed: 'Failed to update runtime library, please try again',
-      updatingLib: 'Updating runtime library, please wait',
+      updatingLib: 'Updating runtime library. Please refresh the page manually after updating.',
       checkForUpdate: 'Check for Update',
       update: {
         title: 'Check for Update',
@@ -103,7 +103,7 @@ export const resources = {
       hddLed: '硬盘指示灯',
       checkLibFailed: '检查运行库失败，请重试',
       updateLibFailed: '更新运行库失败，请重试',
-      updatingLib: '正在更新运行库，请稍等',
+      updatingLib: '正在更新运行库。更新完成后请手动刷新页面。',
       update: {
         title: '检查更新',
         available: '有新的可用版本，确定要更新吗？',

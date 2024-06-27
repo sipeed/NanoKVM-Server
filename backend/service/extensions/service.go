@@ -57,11 +57,8 @@ func GetService(c *gin.Context) {
 	var rsp protocol.Response
 
 	configFiles, err := getConfigFiles()
-	if err != nil {
-		rsp.ErrRsp(c, -2, "get configs failed")
-		return
-	}
-	if len(configFiles) == 0 {
+
+	if err != nil || len(configFiles) == 0 {
 		rsp.OkRsp(c)
 		return
 	}
@@ -98,10 +95,6 @@ func getConfigFiles() ([]string, error) {
 		}
 		return nil
 	})
-
-	if err != nil {
-		log.Errorf("get extensions config failed: %s", err)
-	}
 
 	return files, err
 }

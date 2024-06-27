@@ -1,7 +1,9 @@
-package utils
+package auth
 
 import (
+	"NanoKVM-Server/backend/utils"
 	"encoding/json"
+	"errors"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
@@ -14,29 +16,40 @@ type Account struct {
 	Password string `json:"password"`
 }
 
-func GetAccount() *Account {
-	account := &Account{
-		Username: "admin",
-		Password: "admin",
+// GetAccount 获取文件中保存的账户信息
+func GetAccount() (*Account, error) {
+	if _, err := os.Stat(AccountFile); err != nil {
+		// 文件不存在时，返回默认账户
+		if errors.Is(err, os.ErrNotExist) {
+			return &Account{
+				Username: "admin",
+				Password: "admin",
+			}, nil
+		}
+
+		return nil, err
 	}
 
 	content, err := os.ReadFile(AccountFile)
 	if err != nil {
-		return account
+		return nil, err
 	}
 
-	err = json.Unmarshal(content, account)
+	var account Account
+	err = json.Unmarshal(content, &account)
 	if err != nil {
 		log.Errorf("unmarshal account failed: %s", err)
-		return account
+		return nil, err
 	}
 
-	password, _ := DecodeDecrypt(account.Password)
-	if password != "" {
-		account.Password = password
+	password, err := utils.DecodeDecrypt(account.Password)
+	if err != nil {
+		return nil, err
 	}
 
-	return account
+	account.Password = password
+
+	return &account, nil
 }
 
 func SetAccount(username string, password string) error {
@@ -58,20 +71,4 @@ func SetAccount(username string, password string) error {
 	}
 
 	return nil
-}
-
-func Cookie2Account(cookie string) (Account, error) {
-	var account Account
-
-	cookieDecrypt, err := DecodeDecrypt(cookie)
-	if err != nil {
-		return account, err
-	}
-
-	err = json.Unmarshal([]byte(cookieDecrypt), &account)
-	if err != nil {
-		return account, err
-	}
-
-	return account, err
 }
