@@ -1,12 +1,10 @@
 import { useRef, useState } from 'react';
 import { XIcon } from 'lucide-react';
 import Keyboard from 'react-simple-keyboard';
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
 
 import 'react-simple-keyboard/build/css/index.css';
 import '@/assets/styles/keyboard.css';
-
-import { KeyboardEvent } from '@/types';
-import { api } from '@/lib/api.ts';
 
 import {
   doubleKeys,
@@ -18,14 +16,14 @@ import {
 } from './keys.ts';
 
 type WrapperProps = {
-  baseURL: string;
+  client: W3CWebSocket;
   isBigScreen: boolean;
   setIsOpen: (open: boolean) => void;
 };
 
 type KeyEvent = 'keydown' | 'keyup';
 
-export const Wrapper = ({ baseURL, isBigScreen, setIsOpen }: WrapperProps) => {
+export const Wrapper = ({ client, isBigScreen, setIsOpen }: WrapperProps) => {
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const keyboardRef = useRef<any>(null);
 
@@ -71,24 +69,18 @@ export const Wrapper = ({ baseURL, isBigScreen, setIsOpen }: WrapperProps) => {
     const specialKey = specialKeyMap.get(key);
     const realKey = specialKey ? specialKey : key;
 
-    const data: KeyboardEvent = {
-      type: event,
-      key: realKey
-    };
-    if (event === 'keydown') {
-      data.ctrl = existFunctionKey('ctrl');
-      data.shift = existFunctionKey('shift');
-      data.alt = existFunctionKey('alt');
-      data.meta = existFunctionKey('meta');
-    }
+    const type = event === 'keydown' ? 1 : 0;
+    const ctrl = existFunctionKey('ctrl') ? 1 : 0;
+    const shift = existFunctionKey('shift') ? 1 : 0;
+    const alt = existFunctionKey('alt') ? 1 : 0;
+    const meta = existFunctionKey('meta') ? 1 : 0;
 
-    const url = `${baseURL}/api/events/keyboard`;
-
-    api.post(url, data).then((rsp: any) => {
-      if (rsp.code !== 0) {
-        console.log(rsp.msg);
-      }
+    const message = JSON.stringify({
+      key: realKey,
+      array: [type, ctrl, shift, alt, meta]
     });
+
+    client.send(message);
   }
 
   function existFunctionKey(key: string) {

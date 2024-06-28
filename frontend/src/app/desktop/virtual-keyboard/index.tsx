@@ -1,16 +1,17 @@
 import clsx from 'clsx';
 import { Drawer } from 'vaul';
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
 
 import { Wrapper } from './wrapper.tsx';
 
 type KeyboardProps = {
-  baseURL: string;
+  client: W3CWebSocket;
   isBigScreen: boolean;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 };
 
-export const VirtualKeyboard = ({ baseURL, isBigScreen, isOpen, setIsOpen }: KeyboardProps) => {
+export const VirtualKeyboard = ({ client, isBigScreen, isOpen, setIsOpen }: KeyboardProps) => {
   return (
     <Drawer.Root open={isOpen} onOpenChange={setIsOpen} modal={false}>
       <Drawer.Portal>
@@ -20,7 +21,7 @@ export const VirtualKeyboard = ({ baseURL, isBigScreen, isOpen, setIsOpen }: Key
             isBigScreen ? 'w-[820px]' : 'w-[650px]'
           )}
         >
-          <Wrapper baseURL={baseURL} isBigScreen={isBigScreen} setIsOpen={setIsOpen} />
+          <Wrapper client={client} isBigScreen={isBigScreen} setIsOpen={setIsOpen} />
         </Drawer.Content>
         <Drawer.Overlay />
       </Drawer.Portal>

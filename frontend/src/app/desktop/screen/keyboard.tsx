@@ -1,18 +1,11 @@
 import { useEffect } from 'react';
-import Queue from 'yocto-queue';
-
-import { KeyboardEvent } from '@/types';
-import { api } from '@/lib/api.ts';
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
 
 type KeyboardProps = {
-  baseURL: string;
+  client: W3CWebSocket;
 };
 
-export const Keyboard = ({ baseURL }: KeyboardProps) => {
-  const url = `${baseURL}/api/events/keyboard`;
-  const config = { timeout: 500 };
-  const queue = new Queue<KeyboardEvent>();
-
+export const Keyboard = ({ client }: KeyboardProps) => {
   // 监听键盘事件
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -23,15 +16,16 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
       event.preventDefault();
       event.stopPropagation();
 
-      const data: KeyboardEvent = {
-        type: 'keydown',
+      const ctrl = event.ctrlKey ? 1 : 0;
+      const shift = event.shiftKey ? 1 : 0;
+      const alt = event.altKey ? 1 : 0;
+      const meta = event.metaKey ? 1 : 0;
+
+      const data = JSON.stringify({
         key: event.code,
-        ctrl: event.ctrlKey,
-        shift: event.shiftKey,
-        alt: event.altKey,
-        meta: event.metaKey
-      };
-      queue.enqueue(data);
+        array: [1, ctrl, shift, alt, meta]
+      });
+      client.send(data);
     }
 
     // 抬起按键
@@ -39,31 +33,18 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
       event.preventDefault();
       event.stopPropagation();
 
-      const data: KeyboardEvent = { type: 'keyup', key: event.code };
-      queue.enqueue(data);
-    }
-
-    function sendData() {
-      const data = queue.dequeue();
-      if (!data) {
-        setTimeout(sendData, 300);
-        return;
-      }
-
-      api.post(url, data, config).finally(() => {
-        sendData();
+      const data = JSON.stringify({
+        key: event.code,
+        array: [0, 0, 0, 0, 0]
       });
+      client.send(data);
     }
-
-    sendData();
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-
-      queue.clear();
     };
-  }, [baseURL]);
+  }, []);
 
   return <></>;
 };

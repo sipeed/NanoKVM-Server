@@ -1,37 +1,23 @@
 package events
 
 import (
-	"NanoKVM-Server/backend/protocol"
 	"encoding/binary"
-	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
 
-type MouseReq struct {
-	Type   string `validate:"required"`  // 事件类型：mousemove，mousedown，mouseup, scroll
-	Button string `validate:"omitempty"` // 鼠标按键：left，right，wheel
-	X      int    `validate:"omitempty"` // 鼠标x坐标
-	Y      int    `validate:"omitempty"` // 鼠标y坐标
-}
+func WriteMouse(event []int) {
+	var err error
 
-func Mouse(c *gin.Context) {
-	var req MouseReq
-	err := protocol.ParseFormRequest(c, &req)
-
-	// 不发送响应
-	c.Abort()
-
-	if err != nil {
-		return
-	}
-
-	if req.Type == "mousemove" {
-		err = move(&req)
-	} else if req.Type == "scroll" {
-		err = scroll(&req)
+	if event[0] == MouseDown || event[0] == MouseUp {
+		err = click(event)
+	} else if event[0] == MouseMove {
+		err = move(event)
+	} else if event[0] == MouseScroll {
+		err = scroll(event)
 	} else {
-		err = click(&req)
+		log.Debugf("invalid mouse event: %+v", event)
+		return
 	}
 
 	if err != nil {
@@ -39,12 +25,12 @@ func Mouse(c *gin.Context) {
 	}
 }
 
-func click(req *MouseReq) error {
+func click(event []int) error {
 	button := 0x00
-	if req.Type == "mousedown" {
-		if req.Button == "left" {
+	if event[0] == MouseDown {
+		if event[1] == MouseLeft {
 			button = 0x01
-		} else if req.Button == "right" {
+		} else if event[1] == MouseRight {
 			button = 0x12
 		}
 	}
@@ -61,9 +47,9 @@ func click(req *MouseReq) error {
 	return err
 }
 
-func scroll(req *MouseReq) error {
+func scroll(event []int) error {
 	direction := 0x01
-	if req.Y > 0 {
+	if event[3] > 0 {
 		direction = -0x1
 	}
 
@@ -79,18 +65,18 @@ func scroll(req *MouseReq) error {
 	return err
 }
 
-func move(req *MouseReq) error {
+func move(event []int) error {
 	button := 0x00
-	if req.Button == "left" {
+	if event[1] == MouseLeft {
 		button = 0x01
-	} else if req.Button == "right" {
+	} else if event[1] == MouseRight {
 		button = 0x12
 	}
 
 	x := make([]byte, 2)
 	y := make([]byte, 2)
-	binary.LittleEndian.PutUint16(x, uint16(req.X))
-	binary.LittleEndian.PutUint16(y, uint16(req.Y))
+	binary.LittleEndian.PutUint16(x, uint16(event[2]))
+	binary.LittleEndian.PutUint16(y, uint16(event[3]))
 
 	data := []byte{byte(button), x[0], x[1], y[0], y[1], 0x00}
 

@@ -3,6 +3,7 @@ import { Image, message, Spin } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
 
 import NoConnection from '@/assets/images/monitor-x.svg';
 import { ScreenSize } from '@/types';
@@ -15,6 +16,8 @@ import { MenuPhone } from '@/app/desktop/menu-phone';
 import { Keyboard } from './screen/keyboard';
 import { Mouse } from './screen/mouse';
 import { VirtualKeyboard } from './virtual-keyboard';
+
+const client = new W3CWebSocket(`ws://${window.location.hostname}:80/api/ws`);
 
 export const Desktop = () => {
   const { t } = useTranslation();
@@ -135,15 +138,15 @@ export const Desktop = () => {
             />
 
             {/* 监听键盘鼠标事件 */}
-            <Mouse baseURL={baseURL} width={size.width} height={size.height} />
-            <Keyboard baseURL={baseURL} />
+            <Mouse client={client} width={size.width} height={size.height} />
+            <Keyboard client={client} />
           </>
         </div>
       )}
 
       {/* 虚拟键盘 */}
       <VirtualKeyboard
-        baseURL={baseURL}
+        client={client}
         isBigScreen={isBigScreen}
         isOpen={isKeyboardOpen}
         setIsOpen={setIsKeyboardOpen}

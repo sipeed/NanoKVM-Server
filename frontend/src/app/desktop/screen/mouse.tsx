@@ -1,31 +1,20 @@
 import { useEffect, useRef } from 'react';
-import Queue from 'yocto-queue';
-
-import { api } from '@/lib/api.ts';
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
 
 type MouseProps = {
-  baseURL: string;
+  client: W3CWebSocket;
   width: number;
   height: number;
 };
 
-type MouseType = 'mousemove' | 'mousedown' | 'mouseup' | 'scroll';
-type MouseButton = '' | 'left' | 'right' | 'wheel';
-type Position = {
-  x: number;
-  y: number;
-};
-type MouseData = {
-  type: MouseType;
-  button: MouseButton;
-} & Position;
+// 鼠标事件为四个数字组成：
+// 第一个数字-事件类型：0-鼠标抬起，1-鼠标按下，2-鼠标移动，3-滚轮滚动
+// 第二个数字-鼠标按键：0-左键，1-中键，2-右键
+// 第三个数字-x坐标
+// 第四个数字-y坐标
 
-export const Mouse = ({ baseURL, width, height }: MouseProps) => {
-  const buttonRef = useRef<MouseButton>('');
-
-  const url = `${baseURL}/api/events/mouse`;
-  const config = { timeout: 300 };
-  const clickQueue = new Queue<MouseData>();
+export const Mouse = ({ client, width, height }: MouseProps) => {
+  const buttonRef = useRef(0);
 
   // 监听鼠标事件
   useEffect(() => {
@@ -42,29 +31,26 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
     // 鼠标按下事件
     function handleMouseDown(event: any) {
       disableEvent(event);
+      if (event.button > 2) return;
 
-      const button = event.button === 1 ? 'wheel' : event.button === 2 ? 'right' : 'left';
-      buttonRef.current = button;
-
-      clickQueue.enqueue({ type: 'mousedown', button, x: 0, y: 0 });
+      buttonRef.current = event.button;
+      sendData([1, event.button, 0, 0]);
     }
 
     // 鼠标抬起事件
     function handleMouseUp(event: any) {
       disableEvent(event);
-
-      buttonRef.current = '';
-
-      clickQueue.enqueue({ type: 'mouseup', button: '', x: 0, y: 0 });
+      buttonRef.current = 0;
+      sendData([0, 0, 0, 0]);
     }
 
     // 鼠标移动事件
-    let skipMove = false;
+    let skipMove = 0;
     function handleMouseMove(event: any) {
       disableEvent(event);
 
-      skipMove = !skipMove;
-      if (skipMove) return;
+      skipMove = (skipMove + 1) % Number.MAX_VALUE;
+      if (skipMove % 4 !== 0) return;
 
       const rect = canvas!.getBoundingClientRect();
       const x = (event.clientX - rect.left) / width;
@@ -73,13 +59,8 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       const hexX = Math.floor(0x7fff * (x < 0 ? 0 : x)) + 0x0001;
       const hexY = Math.floor(0x7fff * (y < 0 ? 0 : y)) + 0x0001;
 
-      const data: MouseData = {
-        type: 'mousemove',
-        button: buttonRef.current,
-        x: hexX,
-        y: hexY
-      };
-      api.post(url, data, config);
+      const data = [2, buttonRef.current, hexX, hexY];
+      sendData(data);
     }
 
     // 滚轮滚动事件
@@ -89,23 +70,9 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       const delta = Math.floor(event.deltaY);
       if (delta === 0) return;
 
-      const data = { type: 'scroll', button: '', x: 0, y: delta };
-      api.post(url, data, config);
+      const data = [3, 0, 0, delta];
+      sendData(data);
     }
-
-    function sendClickData() {
-      const data = clickQueue.dequeue();
-      if (!data) {
-        setTimeout(sendClickData, 100);
-        return;
-      }
-
-      api.post(url, data, config).finally(() => {
-        sendClickData();
-      });
-    }
-
-    sendClickData();
 
     return () => {
       // 注销事件
@@ -114,10 +81,17 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('click', disableEvent);
       canvas.removeEventListener('contextmenu', disableEvent);
-
-      clickQueue.clear();
     };
-  }, [baseURL, width, height]);
+  }, [width, height]);
+
+  function sendData(data: number[]) {
+    const message = JSON.stringify({
+      key: '',
+      array: data
+    });
+
+    client.send(message);
+  }
 
   // 禁用默认事件
   function disableEvent(event: any) {
