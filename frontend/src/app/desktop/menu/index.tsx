@@ -59,9 +59,9 @@ export const Menu = ({
     }
 
     const screen = `${baseURL}/api/vm/screen`;
-    api.post(screen, { type: 'resolution', value: size.height }).then();
-    api.post(screen, { type: 'fps', value: currentFps }).then();
-    api.post(screen, { type: 'quality', value: currentQuality }).then();
+    api.post(screen, { type: 'resolution', value: size.height });
+    api.post(screen, { type: 'fps', value: currentFps });
+    api.post(screen, { type: 'quality', value: currentQuality });
   }, []);
 
   return (

@@ -26,7 +26,7 @@ export const Desktop = () => {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [baseURL, setBaseURL] = useState('');
-  const [size, setSize] = useState<ScreenSize>({ width: 1280, height: 720 });
+  const [size, setSize] = useState<ScreenSize | undefined>(undefined);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [mouseStyle, setMouseStyle] = useState('cursor-default');
 
@@ -34,12 +34,14 @@ export const Desktop = () => {
     const base = getBaseURL();
     setBaseURL(base);
 
-    checkLibmaixcam(base);
-
     const resolution = getResolution();
     if (resolution?.width && resolution?.height) {
       setSize({ width: resolution.width, height: resolution.height });
+    } else {
+      setSize({ width: 1080, height: 720 });
     }
+
+    checkLibmaixcam(base);
   }, []);
 
   // 检查 libmaixcam 库
@@ -100,48 +102,50 @@ export const Desktop = () => {
       <Spin spinning={isUpdating} tip={t('updatingLib')} size="large" fullscreen />
       <Head title={t('head.desktop')} />
 
-      {/* 菜单栏 */}
-      {isBigScreen ? (
-        <Menu
-          baseURL={baseURL}
-          size={size}
-          setSize={setSize}
-          isKeyboardOpen={isKeyboardOpen}
-          setIsKeyboardOpen={setIsKeyboardOpen}
-          mouseStyle={mouseStyle}
-          setMouseStyle={setMouseStyle}
-        />
-      ) : (
-        <MenuPhone
-          baseURL={baseURL}
-          size={size}
-          setSize={setSize}
-          isKeyboardOpen={isKeyboardOpen}
-          setIsKeyboardOpen={setIsKeyboardOpen}
-        />
-      )}
-
-      {baseURL && (
-        <div
-          className="flex h-full w-full items-start justify-center xl:items-center"
-          style={{ minWidth: `${size.width}px`, minHeight: `${size.height}px` }}
-        >
-          <>
-            <Image
-              id="screen"
-              className={clsx('block select-none bg-neutral-950', mouseStyle)}
-              width={size.width}
-              height={size.height}
-              src={`${baseURL}/api/mjpeg`}
-              fallback={NoConnection}
-              preview={false}
+      {baseURL && size !== undefined && (
+        <>
+          {/* 菜单栏 */}
+          {isBigScreen ? (
+            <Menu
+              baseURL={baseURL}
+              size={size}
+              setSize={setSize}
+              isKeyboardOpen={isKeyboardOpen}
+              setIsKeyboardOpen={setIsKeyboardOpen}
+              mouseStyle={mouseStyle}
+              setMouseStyle={setMouseStyle}
             />
+          ) : (
+            <MenuPhone
+              baseURL={baseURL}
+              size={size}
+              setSize={setSize}
+              isKeyboardOpen={isKeyboardOpen}
+              setIsKeyboardOpen={setIsKeyboardOpen}
+            />
+          )}
 
-            {/* 监听键盘鼠标事件 */}
-            <Mouse client={client} width={size.width} height={size.height} />
-            <Keyboard client={client} />
-          </>
-        </div>
+          <div
+            className="flex h-full w-full items-start justify-center xl:items-center"
+            style={{ minWidth: `${size.width}px`, minHeight: `${size.height}px` }}
+          >
+            <>
+              <Image
+                id="screen"
+                className={clsx('block select-none bg-neutral-950', mouseStyle)}
+                width={size.width}
+                height={size.height}
+                src={`${baseURL}/api/mjpeg`}
+                fallback={NoConnection}
+                preview={false}
+              />
+
+              {/* 监听键盘鼠标事件 */}
+              <Mouse client={client} width={size.width} height={size.height} />
+              <Keyboard client={client} />
+            </>
+          </div>
+        </>
       )}
 
       {/* 虚拟键盘 */}
