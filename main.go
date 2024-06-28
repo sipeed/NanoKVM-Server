@@ -9,6 +9,7 @@ import (
 
 func main() {
 	backend.InitLog()
+	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.New()
 	r.Use(gin.Recovery())
