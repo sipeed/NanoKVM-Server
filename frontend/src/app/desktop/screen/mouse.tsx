@@ -50,7 +50,7 @@ export const Mouse = ({ client, width, height }: MouseProps) => {
       disableEvent(event);
 
       skipMove = (skipMove + 1) % Number.MAX_VALUE;
-      if (skipMove % 4 !== 0) return;
+      if (skipMove % 3 !== 0) return;
 
       const rect = canvas!.getBoundingClientRect();
       const x = (event.clientX - rect.left) / width;
