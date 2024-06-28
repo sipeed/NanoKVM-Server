@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import Queue from 'yocto-queue';
 
 import { api } from '@/lib/api.ts';
 
@@ -24,6 +25,7 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
 
   const url = `${baseURL}/api/events/mouse`;
   const config = { timeout: 300 };
+  const clickQueue = new Queue<MouseData>();
 
   // 监听鼠标事件
   useEffect(() => {
@@ -44,8 +46,7 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       const button = event.button === 1 ? 'wheel' : event.button === 2 ? 'right' : 'left';
       buttonRef.current = button;
 
-      const data = { type: 'mousedown', button, x: 0, y: 0 };
-      api.post(url, data, config);
+      clickQueue.enqueue({ type: 'mousedown', button, x: 0, y: 0 });
     }
 
     // 鼠标抬起事件
@@ -54,8 +55,7 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
 
       buttonRef.current = '';
 
-      const data = { type: 'mouseup', button: '', x: 0, y: 0 };
-      api.post(url, data, config);
+      clickQueue.enqueue({ type: 'mouseup', button: '', x: 0, y: 0 });
     }
 
     // 鼠标移动事件
@@ -93,13 +93,29 @@ export const Mouse = ({ baseURL, width, height }: MouseProps) => {
       api.post(url, data, config);
     }
 
-    // 注销事件
+    function sendClickData() {
+      const data = clickQueue.dequeue();
+      if (!data) {
+        setTimeout(sendClickData, 100);
+        return;
+      }
+
+      api.post(url, data, config).finally(() => {
+        sendClickData();
+      });
+    }
+
+    sendClickData();
+
     return () => {
+      // 注销事件
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('click', disableEvent);
       canvas.removeEventListener('contextmenu', disableEvent);
+
+      clickQueue.clear();
     };
   }, [baseURL, width, height]);
 

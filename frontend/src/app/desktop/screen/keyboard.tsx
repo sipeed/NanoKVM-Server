@@ -11,7 +11,7 @@ type KeyboardProps = {
 export const Keyboard = ({ baseURL }: KeyboardProps) => {
   const url = `${baseURL}/api/events/keyboard`;
   const config = { timeout: 500 };
-  const queue = new Queue();
+  const queue = new Queue<KeyboardEvent>();
 
   // 监听键盘事件
   useEffect(() => {
@@ -31,7 +31,6 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
         alt: event.altKey,
         meta: event.metaKey
       };
-
       queue.enqueue(data);
     }
 
@@ -40,22 +39,23 @@ export const Keyboard = ({ baseURL }: KeyboardProps) => {
       event.preventDefault();
       event.stopPropagation();
 
-      const data = { type: 'keyup', key: event.code };
+      const data: KeyboardEvent = { type: 'keyup', key: event.code };
       queue.enqueue(data);
     }
 
     function sendData() {
       const data = queue.dequeue();
-      if (data) {
-        api.post(url, data, config).finally(() => {
-          sendData();
-        });
-      } else {
+      if (!data) {
         setTimeout(sendData, 300);
+        return;
       }
+
+      api.post(url, data, config).finally(() => {
+        sendData();
+      });
     }
 
-    setTimeout(sendData, 300);
+    sendData();
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
