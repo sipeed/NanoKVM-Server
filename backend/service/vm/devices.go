@@ -6,9 +6,9 @@ const (
 	GPIO_LED_PWR = "/sys/class/gpio/gpio504/value"
 	GPIO_LED_HDD = "/sys/class/gpio/gpio505/value"
 
-	KVM_FPS        = "/boot/kvm/fps"
-	KVM_QUALITY    = "/boot/kvm/qlty"
-	KVM_RESOLUTION = "/boot/kvm/res"
+	KVM_FPS        = "/kvmapp/kvm/fps"
+	KVM_QUALITY    = "/kvmapp/kvm/qlty"
+	KVM_RESOLUTION = "/kvmapp/kvm/res"
 )
 
 var kvmMap = map[string]string{
