@@ -10,6 +10,7 @@ const (
 
 	Temporary      = "/tmp/firmware"
 	Workspace      = "/kvmapp"
+	Backup         = "/root/old"
 	LibMaixcamDir  = "/kvmapp/jpg_stream/dl_lib"
 	LibMaixcamName = "libmaixcam_lib.so"
 )
