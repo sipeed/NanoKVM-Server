@@ -68,7 +68,7 @@ func updateFirmware() {
 	commands := []string{
 		fmt.Sprintf("mv -f %s/%s %s/latest/jpg_stream/dl_lib/", Temporary, LibMaixcamName, Temporary), // 移动 libmaixcam 到指定位置
 		fmt.Sprintf("rm -rf %s && mv %s %s", Backup, Workspace, Backup),                               // 备份原固件
-		fmt.Sprintf("mv %s/latest %s", Temporary, Workspace),                                          // 更新固件
+		fmt.Sprintf("rm -rf %s && mv %s/latest %s", Workspace, Temporary, Workspace),                  // 更新固件
 		fmt.Sprintf("chmod -R 755 %s", Workspace),                                                     // 修改文件权限
 	}
 	for _, command := range commands {
