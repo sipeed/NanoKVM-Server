@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import {
-  BoxIcon,
+  DiscIcon,
   FileBoxIcon,
   LoaderCircleIcon,
   PackageIcon,
@@ -117,7 +117,7 @@ export const Storage = ({ baseURL }: StorageProps) => {
         <div
           className={clsx('h-[18px] w-[18px]', !mountedFile ? 'text-neutral-300' : 'text-blue-500')}
         >
-          <BoxIcon size={18} />
+          <DiscIcon size={18} />
         </div>
         <span className="select-none text-sm">{t('storage')}</span>
       </div>
