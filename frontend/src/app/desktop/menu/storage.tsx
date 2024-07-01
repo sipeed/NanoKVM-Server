@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Divider, Popover } from 'antd';
 import clsx from 'clsx';
 import {
@@ -19,13 +19,23 @@ type StorageProps = {
 
 export const Storage = ({ baseURL }: StorageProps) => {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [mountingFile, setMountingFile] = useState('');
   const [mountedFile, setMountedFile] = useState('');
 
-  useEffect(() => {
-    // 获取镜像列表
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      getFiles();
+    }
+
+    setOpen(newOpen);
+  };
+
+  // 获取镜像列表
+  function getFiles() {
+    if (loading) return;
     setLoading(true);
 
     api
@@ -46,12 +56,14 @@ export const Storage = ({ baseURL }: StorageProps) => {
               setMountedFile(rsp.data.file);
             }
           });
+        } else {
+          setFiles([]);
         }
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }
 
   // 挂载/取消挂载
   function mountFile(file: string) {
@@ -120,7 +132,13 @@ export const Storage = ({ baseURL }: StorageProps) => {
   );
 
   return (
-    <Popover content={content} placement="bottomLeft" trigger="click">
+    <Popover
+      content={content}
+      placement="bottomLeft"
+      trigger="click"
+      open={open}
+      onOpenChange={handleOpenChange}
+    >
       <div className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700">
         <div
           className={clsx('h-[18px] w-[18px]', !mountedFile ? 'text-neutral-300' : 'text-blue-500')}
