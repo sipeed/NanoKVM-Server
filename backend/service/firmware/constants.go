@@ -1,7 +1,7 @@
 package firmware
 
 const (
-	Version   = "1.7.0"
+	Version   = "1.8.0"
 	DeviceKey = "/device_key"
 
 	VersionURL    = "https://cdn.sipeed.com/nanokvm/latest"
