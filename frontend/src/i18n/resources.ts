@@ -48,7 +48,8 @@ export const resources = {
         cell: 'Cell cursor',
         text: 'Text cursor',
         grab: 'Grab cursor',
-        hide: 'Hide cursor'
+        hide: 'Hide cursor',
+        resetHid: 'Reset HID'
       },
       auth: {
         login: 'Login',
@@ -123,7 +124,8 @@ export const resources = {
         cell: '单元指针',
         text: '文本指针',
         grab: '抓取指针',
-        hide: '隐藏指针'
+        hide: '隐藏指针',
+        resetHid: '重置 HID'
       },
       auth: {
         login: '登录',

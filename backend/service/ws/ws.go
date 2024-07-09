@@ -11,11 +11,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Event struct {
-	Key   string `json:"key"`
-	Array []int  `json:"array"`
-}
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -41,17 +36,17 @@ func HandleWebSocket(c *gin.Context) {
 			break
 		}
 
-		var event Event
+		var event []int
 		err = json.Unmarshal(message, &event)
 		if err != nil {
 			log.Debugf("receive invalid message: %s", message)
 			continue
 		}
 
-		if event.Key == "" {
-			go events.WriteMouse(event.Array)
-		} else {
-			go events.WriteKeyboard(event.Key, event.Array)
+		if event[0] == 1 && len(event) == 6 {
+			events.WriteKeyboard(event[1:])
+		} else if event[0] == 2 && len(event) == 5 {
+			events.WriteMouse(event[1:])
 		}
 
 		log.Debugf("receive event: %+v", event)

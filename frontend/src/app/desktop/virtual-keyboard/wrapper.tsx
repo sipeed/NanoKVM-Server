@@ -6,6 +6,8 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import 'react-simple-keyboard/build/css/index.css';
 import '@/assets/styles/keyboard.css';
 
+import { KeyboardCodes } from '@/lib/keyboard-codes.ts';
+
 import {
   doubleKeys,
   functionKeys,
@@ -21,38 +23,36 @@ type WrapperProps = {
   setIsOpen: (open: boolean) => void;
 };
 
-type KeyEvent = 'keydown' | 'keyup';
-
 export const Wrapper = ({ client, isBigScreen, setIsOpen }: WrapperProps) => {
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const keyboardRef = useRef<any>(null);
 
   // 按下按键
   function onKeyPress(key: string) {
-    let event: KeyEvent;
-
+    // 按下功能键
     if (functionKeys.includes(key)) {
-      // 功能键：如果未激活则按下按键;如果已激活则抬起按键
       if (!activeKeys.includes(key)) {
+        // 激活功能键
         setActiveKeys([...activeKeys, key]);
-        event = 'keydown';
+        sendKeydown(key);
       } else {
+        // 取消功能键
         setActiveKeys(activeKeys.filter((k) => k !== key));
-        event = 'keyup';
+        sendKeyup();
       }
-    } else {
-      // 非功能键
-      event = 'keydown';
 
-      if (key === '{capslock}') {
-        // 大写键
-        setActiveKeys(
-          activeKeys.includes(key) ? activeKeys.filter((k) => k !== key) : [...activeKeys, key]
-        );
-      }
+      return;
     }
 
-    sendKeyboardData(event, key);
+    // 按下非功能键
+    if (key === '{capslock}') {
+      // 大写键
+      setActiveKeys(
+        activeKeys.includes(key) ? activeKeys.filter((k) => k !== key) : [...activeKeys, key]
+      );
+    }
+
+    sendKeydown(key);
   }
 
   // 释放按键
@@ -61,26 +61,30 @@ export const Wrapper = ({ client, isBigScreen, setIsOpen }: WrapperProps) => {
       return;
     }
 
-    sendKeyboardData('keyup', key);
+    sendKeyup();
   }
 
-  // 发送键盘数据
-  function sendKeyboardData(event: KeyEvent, key: string) {
+  function sendKeydown(key: string) {
     const specialKey = specialKeyMap.get(key);
     const realKey = specialKey ? specialKey : key;
+    const code = KeyboardCodes.get(realKey);
+    if (!code) {
+      console.log('unknown code: ', realKey);
+      return;
+    }
 
-    const type = event === 'keydown' ? 1 : 0;
     const ctrl = existFunctionKey('ctrl') ? 1 : 0;
     const shift = existFunctionKey('shift') ? 1 : 0;
     const alt = existFunctionKey('alt') ? 1 : 0;
     const meta = existFunctionKey('meta') ? 1 : 0;
 
-    const message = JSON.stringify({
-      key: realKey,
-      array: [type, ctrl, shift, alt, meta]
-    });
+    const data = [1, code, ctrl, shift, alt, meta];
+    client.send(JSON.stringify(data));
+  }
 
-    client.send(message);
+  function sendKeyup() {
+    const data = [1, 0, 0, 0, 0, 0];
+    client.send(JSON.stringify(data));
   }
 
   function existFunctionKey(key: string) {

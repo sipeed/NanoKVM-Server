@@ -38,7 +38,7 @@ export const ForgetPassword = () => {
           <div>{t('auth.reset2')}</div>
           <div>
             {t('auth.reset3')}
-            <Text code={true}>/root/kvm/pwd</Text>
+            <Text code={true}>/etc/kvm/pwd</Text>
           </div>
           <div>
             {t('auth.reset4')}

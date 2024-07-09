@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { api, getBaseURL } from '@/lib/api.ts';
-import { setToken } from '@/lib/cookie.ts';
+import { existToken, setToken } from '@/lib/cookie.ts';
 import { encrypt } from '@/lib/encrypt.ts';
 import { Head } from '@/components/head.tsx';
 
@@ -15,6 +15,12 @@ export const Login = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    if (existToken()) {
+      navigate('/', { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     if (msg) {
@@ -49,6 +55,7 @@ export const Login = () => {
         setToken(rsp.data.token);
 
         navigate('/', { replace: true });
+        window.location.reload();
       })
       .catch(() => {
         setMsg(t('auth.error'));

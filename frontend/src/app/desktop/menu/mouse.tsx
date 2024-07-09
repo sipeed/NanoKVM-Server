@@ -1,24 +1,27 @@
 import { useEffect } from 'react';
-import { Popover } from 'antd';
+import { Divider, Popover } from 'antd';
 import clsx from 'clsx';
 import {
+  EyeOffIcon,
   HandIcon,
   MouseIcon,
   MousePointerIcon,
   PlusIcon,
-  PointerIcon,
+  RefreshCwIcon,
   TextCursorIcon
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { api } from '@/lib/api.ts';
 import { getMouse, setMouse } from '@/lib/localstorage.ts';
 
 type MouseProps = {
+  baseURL: string;
   mouseStyle: string;
   setMouseStyle: (style: string) => void;
 };
 
-export const Mouse = ({ mouseStyle, setMouseStyle }: MouseProps) => {
+export const Mouse = ({ baseURL, mouseStyle, setMouseStyle }: MouseProps) => {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -33,13 +36,17 @@ export const Mouse = ({ mouseStyle, setMouseStyle }: MouseProps) => {
     setMouse(style);
   }
 
+  function resetHid() {
+    const url = `${baseURL}/api/storage/resethid`;
+    api.post(url);
+  }
+
   const mouseTypes = [
     { name: t('cursor.default'), icon: <MousePointerIcon size={14} />, value: 'cursor-default' },
-    { name: t('cursor.pointer'), icon: <PointerIcon size={14} />, value: 'cursor-pointer' },
+    { name: t('cursor.grab'), icon: <HandIcon size={14} />, value: 'cursor-grab' },
     { name: t('cursor.cell'), icon: <PlusIcon size={14} />, value: 'cursor-cell' },
     { name: t('cursor.text'), icon: <TextCursorIcon size={14} />, value: 'cursor-text' },
-    { name: t('cursor.grab'), icon: <HandIcon size={14} />, value: 'cursor-grab' },
-    { name: t('cursor.hide'), icon: <></>, value: 'cursor-none' }
+    { name: t('cursor.hide'), icon: <EyeOffIcon size={14} />, value: 'cursor-none' }
   ];
 
   const content = (
@@ -57,6 +64,18 @@ export const Mouse = ({ mouseStyle, setMouseStyle }: MouseProps) => {
           <span>{mouse.name}</span>
         </div>
       ))}
+
+      <Divider style={{ margin: '10px 0' }} />
+
+      <div
+        className="flex cursor-pointer select-none items-center space-x-1 rounded px-3 py-1.5 hover:bg-neutral-600"
+        onClick={resetHid}
+      >
+        <div className="flex h-[14px] w-[20px] items-end">
+          <RefreshCwIcon size={14} />
+        </div>
+        <span>{t('cursor.resetHid')}</span>
+      </div>
     </>
   );
 

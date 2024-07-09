@@ -91,7 +91,7 @@ export const Menu = ({
             </Popover>
 
             <Keyboard isOpen={isKeyboardOpen} setIsOpen={setIsKeyboardOpen} />
-            <Mouse mouseStyle={mouseStyle} setMouseStyle={setMouseStyle} />
+            <Mouse baseURL={baseURL} mouseStyle={mouseStyle} setMouseStyle={setMouseStyle} />
             <Divider type="vertical" />
 
             <Storage baseURL={baseURL} />

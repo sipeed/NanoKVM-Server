@@ -34,9 +34,10 @@ func InitRouter(r *gin.Engine) {
 	apiAuth.POST("/vm/screen", vm.Screen) // 更新虚拟机屏幕设置
 	apiAuth.GET("/vm/ws-ssh", vm.WsSsh)   // 通过 websocket 转发 ssh 数据
 
-	api.GET("/storage/iso", storage.GetIso)                // 获取 iso 文件列表
-	api.GET("/storage/iso/mounted", storage.GetMountedIso) // 获取已挂载的 iso
-	apiAuth.POST("/storage/iso", storage.MountIso)         // 挂载 iso 镜像
+	apiAuth.GET("/storage/iso", storage.GetIso)                // 获取 iso 文件列表
+	apiAuth.GET("/storage/iso/mounted", storage.GetMountedIso) // 获取已挂载的 iso
+	apiAuth.POST("/storage/iso", storage.MountIso)             // 挂载 iso 镜像
+	apiAuth.POST("/storage/resethid", storage.ResetHid)        // 重置 hid
 
 	apiAuth.GET("extensions/service", extensions.GetService) // 获取用户的扩展服务
 

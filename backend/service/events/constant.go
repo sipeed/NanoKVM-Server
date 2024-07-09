@@ -19,10 +19,20 @@ const (
 )
 
 const (
-	MouseLeft = iota
-	MouseWheel
-	MouseRight
+	MouseLeft  = 1
+	MouseRight = 2
 )
 
-// 键盘事件由按键和五个数字组成：
-// 五位数字：0-keydown/keyup, 1-ctrl, 2-shift, 3-alt, 4-meta
+const (
+	HidMouseNone  = 0x00
+	HidMouseLeft  = 0x01
+	HidMouseRight = 0x02
+)
+
+const (
+	ModifierLCtrl  uint16 = 0x01
+	ModifierLShift uint16 = 0x02
+	ModifierLAlt   uint16 = 0x04
+	ModifierLGUI   uint16 = 0x08
+	//ModifierLWIN          = ModifierLGUI
+)

@@ -7,14 +7,21 @@ type MouseProps = {
   height: number;
 };
 
-// 鼠标事件为四个数字组成：
-// 第一个数字-事件类型：0-鼠标抬起，1-鼠标按下，2-鼠标移动，3-滚轮滚动
-// 第二个数字-鼠标按键：0-左键，1-中键，2-右键
-// 第三个数字-x坐标
-// 第四个数字-y坐标
+enum MouseEvent {
+  Up = 0,
+  Down = 1,
+  Move = 2,
+  Scroll = 3
+}
+
+enum MouseButton {
+  None = 0,
+  Left = 1,
+  Right = 2
+}
 
 export const Mouse = ({ client, width, height }: MouseProps) => {
-  const buttonRef = useRef(0);
+  const buttonRef = useRef<MouseButton>(MouseButton.None);
 
   // 监听鼠标事件
   useEffect(() => {
@@ -31,17 +38,27 @@ export const Mouse = ({ client, width, height }: MouseProps) => {
     // 鼠标按下事件
     function handleMouseDown(event: any) {
       disableEvent(event);
-      if (event.button > 2) return;
 
-      buttonRef.current = event.button;
-      sendData([1, event.button, 0, 0]);
+      if (event.button === 0) {
+        buttonRef.current = MouseButton.Left;
+      } else if (event.button === 2) {
+        buttonRef.current = MouseButton.Right;
+      } else {
+        return;
+      }
+
+      const data = [2, MouseEvent.Down, buttonRef.current, 0, 0];
+      sendData(data);
     }
 
     // 鼠标抬起事件
     function handleMouseUp(event: any) {
       disableEvent(event);
-      buttonRef.current = 0;
-      sendData([0, 0, 0, 0]);
+
+      buttonRef.current = MouseButton.None;
+
+      const data = [2, MouseEvent.Up, buttonRef.current, 0, 0];
+      sendData(data);
     }
 
     // 鼠标移动事件
@@ -55,11 +72,10 @@ export const Mouse = ({ client, width, height }: MouseProps) => {
       const rect = canvas!.getBoundingClientRect();
       const x = (event.clientX - rect.left) / width;
       const y = (event.clientY - rect.top) / height;
+      const hexX = x < 0 ? 0x0001 : Math.floor(0x7fff * x) + 0x0001;
+      const hexY = y < 0 ? 0x0001 : Math.floor(0x7fff * y) + 0x0001;
 
-      const hexX = Math.floor(0x7fff * (x < 0 ? 0 : x)) + 0x0001;
-      const hexY = Math.floor(0x7fff * (y < 0 ? 0 : y)) + 0x0001;
-
-      const data = [2, buttonRef.current, hexX, hexY];
+      const data = [2, MouseEvent.Move, buttonRef.current, hexX, hexY];
       sendData(data);
     }
 
@@ -70,7 +86,7 @@ export const Mouse = ({ client, width, height }: MouseProps) => {
       const delta = Math.floor(event.deltaY);
       if (delta === 0) return;
 
-      const data = [3, 0, 0, delta];
+      const data = [2, MouseEvent.Scroll, 0, 0, delta];
       sendData(data);
     }
 
@@ -85,12 +101,7 @@ export const Mouse = ({ client, width, height }: MouseProps) => {
   }, [width, height]);
 
   function sendData(data: number[]) {
-    const message = JSON.stringify({
-      key: '',
-      array: data
-    });
-
-    client.send(message);
+    client.send(JSON.stringify(data));
   }
 
   // 禁用默认事件

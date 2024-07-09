@@ -42,6 +42,15 @@ export const Desktop = () => {
     }
 
     checkLibmaixcam(base);
+
+    const timer = setInterval(() => {
+      client.send(JSON.stringify([0]));
+    });
+
+    return () => {
+      clearInterval(timer);
+      client.close();
+    };
   }, []);
 
   // 检查 libmaixcam 库

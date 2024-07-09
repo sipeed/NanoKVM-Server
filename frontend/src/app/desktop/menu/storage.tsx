@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Divider, Popover } from 'antd';
 import clsx from 'clsx';
 import {
@@ -24,6 +24,10 @@ export const Storage = ({ baseURL }: StorageProps) => {
   const [files, setFiles] = useState<string[]>([]);
   const [mountingFile, setMountingFile] = useState('');
   const [mountedFile, setMountedFile] = useState('');
+
+  useEffect(() => {
+    getFiles();
+  }, []);
 
   const handleOpenChange = (newOpen: boolean) => {
     if (newOpen) {

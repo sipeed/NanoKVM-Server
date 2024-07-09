@@ -1,36 +1,29 @@
 package events
 
 import (
-	"NanoKVM-Server/backend/utils/keyboard"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
 
-func WriteKeyboard(key string, options []int) {
+func WriteKeyboard(event []int) {
 	var data []byte
 
-	if options[0] == 1 {
+	if event[0] > 0 {
 		var modifier uint16 = 0x00
-		if options[1] == 1 {
-			modifier = modifier | keyboard.ModifierLCtrl
+		if event[1] == 1 {
+			modifier = modifier | ModifierLCtrl
 		}
-		if options[2] == 1 {
-			modifier = modifier | keyboard.ModifierLShift
+		if event[2] == 1 {
+			modifier = modifier | ModifierLShift
 		}
-		if options[3] == 1 {
-			modifier = modifier | keyboard.ModifierLAlt
+		if event[3] == 1 {
+			modifier = modifier | ModifierLAlt
 		}
-		if options[4] == 1 {
-			modifier = modifier | keyboard.ModifierLGUI
-		}
-
-		keyCode, ok := keyboard.CodeMap[key]
-		if !ok {
-			log.Errorf("invalid key: %s", key)
-			return
+		if event[4] == 1 {
+			modifier = modifier | ModifierLGUI
 		}
 
-		data = []byte{byte(modifier), 0x00, byte(keyCode), 0x00, 0x00, 0x00, 0x00, 0x00}
+		data = []byte{byte(modifier), 0x00, byte(event[0]), 0x00, 0x00, 0x00, 0x00, 0x00}
 	} else {
 		data = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	}

@@ -1,6 +1,9 @@
 import Axios from 'axios';
+import axios from 'axios';
 
 import { removeToken } from '@/lib/cookie.ts';
+
+axios.defaults.withCredentials = true;
 
 export const api = Axios.create();
 
