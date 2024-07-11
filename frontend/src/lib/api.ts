@@ -28,7 +28,9 @@ api.interceptors.response.use(
   }
 );
 
-export function getBaseURL() {
-  const port = 80;
-  return `${window.location.protocol}//${window.location.hostname}:${port}`;
+export function getBaseURL(proto?: string) {
+  const protocol = proto ? proto : window.location.protocol;
+  const host = window.location.host;
+
+  return `${protocol}//${host}`;
 }

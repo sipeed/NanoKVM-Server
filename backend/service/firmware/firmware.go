@@ -14,8 +14,8 @@ import (
 )
 
 type GetVersionRsp struct {
-	Version   string `json:"version"`
-	HasUpdate bool   `json:"hasUpdate"`
+	Current string `json:"current"`
+	Latest  string `json:"latest"`
 }
 
 // GetVersion 获取最新版本号
@@ -30,7 +30,7 @@ func GetVersion(c *gin.Context) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		rsp.ErrRsp(c, -2, "get version failed")
+		rsp.ErrRsp(c, -3, "get version failed")
 		return
 	}
 
@@ -38,8 +38,8 @@ func GetVersion(c *gin.Context) {
 	latestVersion := strings.Replace(string(body), "\n", "", -1)
 
 	data := &GetVersionRsp{
-		Version:   latestVersion,
-		HasUpdate: latestVersion > Version,
+		Current: Version,
+		Latest:  latestVersion,
 	}
 
 	rsp.OkRspWithData(c, data)

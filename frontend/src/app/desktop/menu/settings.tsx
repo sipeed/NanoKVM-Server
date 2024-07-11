@@ -51,7 +51,7 @@ export const Settings = ({ baseURL }: SettingsProps) => {
       .get(`${baseURL}/api/firmware/version`)
       .then((rsp: any) => {
         if (rsp.code === 0) {
-          setHasUpdate(rsp.data.hasUpdate);
+          setHasUpdate(rsp.data.latest > rsp.data.current);
         }
       })
       .finally(() => {

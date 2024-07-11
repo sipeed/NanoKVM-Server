@@ -48,7 +48,5 @@ func HandleWebSocket(c *gin.Context) {
 		} else if event[0] == 2 && len(event) == 5 {
 			events.WriteMouse(event[1:])
 		}
-
-		log.Debugf("receive event: %+v", event)
 	}
 }

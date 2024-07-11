@@ -17,7 +17,7 @@ import { Keyboard } from './screen/keyboard';
 import { Mouse } from './screen/mouse';
 import { VirtualKeyboard } from './virtual-keyboard';
 
-const client = new W3CWebSocket(`ws://${window.location.hostname}:80/api/ws`);
+const client = new W3CWebSocket(`${getBaseURL('ws:')}/api/ws`);
 
 export const Desktop = () => {
   const { t } = useTranslation();
@@ -45,7 +45,7 @@ export const Desktop = () => {
 
     const timer = setInterval(() => {
       client.send(JSON.stringify([0]));
-    });
+    }, 1000 * 60);
 
     return () => {
       clearInterval(timer);
