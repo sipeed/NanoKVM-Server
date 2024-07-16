@@ -51,20 +51,12 @@ func scroll(event []int) error {
 }
 
 func move(event []int) error {
-	button := HidMouseNone
-
-	if event[1] == MouseLeft {
-		button = HidMouseLeft
-	} else if event[1] == MouseRight {
-		button = HidMouseRight
-	}
-
 	x := make([]byte, 2)
 	y := make([]byte, 2)
 	binary.LittleEndian.PutUint16(x, uint16(event[2]))
 	binary.LittleEndian.PutUint16(y, uint16(event[3]))
 
-	data := []byte{byte(button), x[0], x[1], y[0], y[1], 0x00}
+	data := []byte{0x00, x[0], x[1], y[0], y[1], 0x00}
 	return writeHid(Hidg2, data)
 }
 
