@@ -62,12 +62,8 @@ export const Mouse = ({ client, width, height }: MouseProps) => {
     }
 
     // 鼠标移动事件
-    let skipMove = false;
     function handleMouseMove(event: any) {
       disableEvent(event);
-
-      skipMove = !skipMove;
-      if (skipMove) return;
 
       const rect = canvas!.getBoundingClientRect();
       const x = (event.clientX - rect.left) / width;
