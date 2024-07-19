@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Badge, Button, Modal, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
+import semver from 'semver';
 
 import * as api from '@/api/firmware.ts';
 import { getSkipUpdate, setSkipUpdate } from '@/lib/localstorage.ts';
@@ -52,7 +53,7 @@ export const Update = ({ setIsPopoverOpen, setIsBadgeVisible }: UpdateProps) => 
         setCurrent(rsp.data.current);
         setLatest(rsp.data.latest);
 
-        if (rsp.data.latest > rsp.data.current) {
+        if (semver.gt(rsp.data.latest, rsp.data.current)) {
           setIsLatest(false);
           setIsBadgeVisible(true);
         }
@@ -66,7 +67,7 @@ export const Update = ({ setIsPopoverOpen, setIsBadgeVisible }: UpdateProps) => 
   }
 
   function confirm() {
-    if (!latest || latest <= current) {
+    if (isLatest || !latest) {
       setIsModalOpen(false);
       return;
     }

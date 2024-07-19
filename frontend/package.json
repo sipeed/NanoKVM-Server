@@ -30,6 +30,7 @@
     "react-responsive": "^10.0.0",
     "react-router-dom": "^6.23.1",
     "react-simple-keyboard": "^3.7.124",
+    "semver": "^7.6.3",
     "vaul": "^0.9.1",
     "websocket": "^1.0.35"
   },
@@ -39,6 +40,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
+    "@types/semver": "^7.5.8",
     "@types/websocket": "^1.0.10",
     "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@typescript-eslint/parser": "^7.10.0",
