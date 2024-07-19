@@ -1,4 +1,4 @@
-package backend
+package utils
 
 import (
 	"bytes"
@@ -45,8 +45,13 @@ func (f *formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 // InitLog 初始化日志
 func InitLog() {
+	logLevel := GetConfig().Log
+	if logLevel == "" {
+		logLevel = "error"
+	}
+
 	// 设置日志级别
-	level, err := logrus.ParseLevel("error")
+	level, err := logrus.ParseLevel(logLevel)
 	if err == nil {
 		logrus.SetLevel(level)
 	} else {

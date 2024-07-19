@@ -10,33 +10,33 @@ import (
 	"os"
 )
 
-type GetLibmaixcamRsp struct {
+type GetLibRsp struct {
 	Exist bool `json:"exist"`
 }
 
-// GetLibmaixcam 获取 libmaixcam 信息
-func GetLibmaixcam(c *gin.Context) {
+// GetLib 检查 lib 是否存在
+func GetLib(c *gin.Context) {
 	var rsp protocol.Response
 
-	exist, err := isLibmaixcamExist()
+	exist, err := isLibExist()
 	if err != nil {
-		rsp.ErrRsp(c, -1, "check libmaixcam error")
+		rsp.ErrRsp(c, -1, "check lib error")
 		return
 	}
 
-	data := &GetLibmaixcamRsp{
+	data := &GetLibRsp{
 		Exist: exist,
 	}
 
 	rsp.OkRspWithData(c, data)
-	log.Debugf("get lib maixcam success, exist: %t", exist)
+	log.Debugf("get lib success, exist: %t", exist)
 }
 
-// UpdateLibmaixcam 更新 libmaixcam
-func UpdateLibmaixcam(c *gin.Context) {
+// UpdateLib 更新 lib
+func UpdateLib(c *gin.Context) {
 	var rsp protocol.Response
 
-	exist, _ := isLibmaixcamExist()
+	exist, _ := isLibExist()
 	if exist {
 		rsp.OkRsp(c)
 		return
@@ -64,12 +64,12 @@ func UpdateLibmaixcam(c *gin.Context) {
 	}
 
 	rsp.OkRsp(c)
-	log.Debugf("update libmaixcam success")
+	log.Debugf("update lib success")
 
 	utils.RunCommandBackend("/etc/init.d/S95webkvm restart")
 }
 
-func isLibmaixcamExist() (bool, error) {
+func isLibExist() (bool, error) {
 	libPath := fmt.Sprintf("%s/%s", LibMaixcamDir, LibMaixcamName)
 	_, err := os.Stat(libPath)
 

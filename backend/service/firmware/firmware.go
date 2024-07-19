@@ -13,6 +13,10 @@ import (
 	"strings"
 )
 
+type GetVersionReq struct {
+	Type string `form:"type" validate:"omitempty"`
+}
+
 type GetVersionRsp struct {
 	Current string `json:"current"`
 	Latest  string `json:"latest"`
@@ -20,11 +24,32 @@ type GetVersionRsp struct {
 
 // GetVersion 获取最新版本号
 func GetVersion(c *gin.Context) {
+	var req GetVersionReq
 	var rsp protocol.Response
 
+	if err := protocol.ParseQueryRequest(c, &req); err != nil {
+		rsp.ErrRsp(c, -1, "invalid parameters")
+		return
+	}
+
+	// 获取当前版本号
+	currentVersion := "1.0.0"
+	content, err := os.ReadFile(VersionFile)
+	if err == nil {
+		currentVersion = strings.ReplaceAll(string(content), "\n", "")
+	}
+
+	if req.Type == "current" {
+		rsp.OkRspWithData(c, &GetVersionRsp{
+			Current: currentVersion,
+		})
+		return
+	}
+
+	// 获取最新版本号
 	resp, err := http.Get(VersionURL)
 	if err != nil {
-		rsp.ErrRsp(c, -2, "get version failed")
+		rsp.ErrRsp(c, -2, "Unable to access sipeed.com. Please check your network.")
 		return
 	}
 	defer resp.Body.Close()
@@ -37,32 +62,36 @@ func GetVersion(c *gin.Context) {
 	body, err := io.ReadAll(resp.Body)
 	latestVersion := strings.Replace(string(body), "\n", "", -1)
 
-	data := &GetVersionRsp{
-		Current: Version,
+	rsp.OkRspWithData(c, &GetVersionRsp{
+		Current: currentVersion,
 		Latest:  latestVersion,
-	}
-
-	rsp.OkRspWithData(c, data)
+	})
 }
 
 // Update 更新到最新版本
 func Update(c *gin.Context) {
-	go updateFirmware()
-
 	var rsp protocol.Response
+
+	if err := updateFirmware(); err != nil {
+		rsp.ErrRsp(c, -1, "update ")
+	}
+
 	rsp.OkRsp(c)
+	log.Debugf("update firmware success")
+
+	utils.RunCommandBackend("/etc/init.d/S95webkvm restart")
 }
 
-func updateFirmware() {
+func updateFirmware() error {
 	_ = utils.RunCommand(fmt.Sprintf("rm -rf %s", Temporary))
 	_ = os.MkdirAll(Temporary, 0755)
 
 	if err := downloadLib(); err != nil {
-		return
+		return err
 	}
 
 	if err := downloadFirmware(); err != nil {
-		return
+		return err
 	}
 
 	commands := []string{
@@ -72,16 +101,16 @@ func updateFirmware() {
 		fmt.Sprintf("chmod -R 755 %s", Workspace),                                                     // 修改文件权限
 	}
 	for _, command := range commands {
-		_ = utils.RunCommand(command)
+		if err := utils.RunCommand(command); err != nil {
+			return err
+		}
 	}
 
-	log.Debugf("update firmware success")
-
-	utils.RunCommandBackend("/etc/init.d/S95webkvm restart")
+	return nil
 }
 
 func downloadLib() error {
-	content, err := os.ReadFile(DeviceKey)
+	content, err := os.ReadFile(DeviceKeyFile)
 	if err != nil {
 		log.Errorf("read devcie key err: %s", err)
 		return err

@@ -1,15 +1,14 @@
-package events
+package hid
 
 import (
 	log "github.com/sirupsen/logrus"
-	"os"
 )
 
 func WriteKeyboard(event []int) {
 	var data []byte
 
 	if event[0] > 0 {
-		var modifier uint16 = 0x00
+		var modifier byte = 0x00
 		if event[1] == 1 {
 			modifier = modifier | ModifierLCtrl
 		}
@@ -23,18 +22,17 @@ func WriteKeyboard(event []int) {
 			modifier = modifier | ModifierLGUI
 		}
 
-		data = []byte{byte(modifier), 0x00, byte(event[0]), 0x00, 0x00, 0x00, 0x00, 0x00}
+		data = []byte{modifier, 0x00, byte(event[0]), 0x00, 0x00, 0x00, 0x00, 0x00}
 	} else {
 		data = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	}
 
-	hidg0, err := os.OpenFile(Hidg0, os.O_WRONLY, 0666)
-	if err != nil {
+	if Hidg0 == nil {
+		log.Errorf("write to hidg0 failed: hidg0 not opened")
 		return
 	}
-	defer hidg0.Close()
 
-	_, err = hidg0.Write(data)
+	_, err := Hidg0.Write(data)
 	if err != nil {
 		log.Errorf("write to hidg0 failed: %s", err)
 		return

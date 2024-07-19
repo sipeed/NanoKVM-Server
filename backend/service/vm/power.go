@@ -9,7 +9,8 @@ import (
 )
 
 type PowerReq struct {
-	Type string `validate:"required"` // restart:重启键 power-short：短按开机键 power-long：长按开机键
+	Type   string `validate:"required"`  // restart:重启键 power-short：短按开机键 power-long：长按开机键
+	Second uint   `validate:"omitempty"` // power 按下时间（单位：秒）
 }
 
 func Power(c *gin.Context) {
@@ -32,7 +33,9 @@ func Power(c *gin.Context) {
 	}
 
 	var duration time.Duration
-	if req.Type == "power-long" {
+	if req.Second > 0 {
+		duration = time.Duration(req.Second) * time.Second
+	} else if req.Type == "power-long" {
 		duration = 5 * time.Second
 	} else {
 		duration = 800 * time.Millisecond

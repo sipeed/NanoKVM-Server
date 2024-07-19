@@ -12,49 +12,52 @@ import (
 
 const MountDevice = "/sys/kernel/config/usb_gadget/g0/functions/mass_storage.disk0/lun.0/file"
 
-type GetIsoRsp struct {
+type GetImagesRsp struct {
 	Files []string `json:"files"`
 }
 
-type MountIsoReq struct {
+type MountImageReq struct {
 	File string `json:"file" validate:"omitempty"`
 }
 
-type GetMountedIsoRsp struct {
+type GetMountedImageRsp struct {
 	File string `json:"file"`
 }
 
-// GetIso 获取 iso 文件列表
-func GetIso(c *gin.Context) {
+// GetImages 获取镜像列表
+func GetImages(c *gin.Context) {
 	var rsp protocol.Response
-	var isoFiles []string
+	var images []string
 
-	err := filepath.Walk("/data", func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(ImageDirectory, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if !info.IsDir() && strings.HasSuffix(info.Name(), ".iso") {
-			isoFiles = append(isoFiles, path)
+		if !info.IsDir() {
+			name := strings.ToLower(info.Name())
+			if strings.HasSuffix(name, ".iso") || strings.HasSuffix(name, ".img") {
+				images = append(images, path)
+			}
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		rsp.ErrRsp(c, -2, "get iso failed")
+		rsp.ErrRsp(c, -2, "get images failed")
 		return
 	}
 
-	rsp.OkRspWithData(c, &GetIsoRsp{
-		Files: isoFiles,
+	rsp.OkRspWithData(c, &GetImagesRsp{
+		Files: images,
 	})
-	log.Debugf("get iso list success, total %d", len(isoFiles))
+	log.Debugf("get images success, total %d", len(images))
 }
 
-// MountIso 挂载 iso 文件
-func MountIso(c *gin.Context) {
-	var req MountIsoReq
+// MountImage 挂载镜像文件
+func MountImage(c *gin.Context) {
+	var req MountImageReq
 	var rsp protocol.Response
 
 	if err := protocol.ParseFormRequest(c, &req); err != nil {
@@ -89,11 +92,11 @@ func MountIso(c *gin.Context) {
 	}
 
 	rsp.OkRsp(c)
-	log.Debugf("mount iso success: %s", req.File)
+	log.Debugf("mount image %s success", req.File)
 }
 
-// GetMountedIso 获取已挂载的 iso
-func GetMountedIso(c *gin.Context) {
+// GetMountedImage 获取已挂载的镜像
+func GetMountedImage(c *gin.Context) {
 	var rsp protocol.Response
 
 	content, err := os.ReadFile(MountDevice)
@@ -102,10 +105,10 @@ func GetMountedIso(c *gin.Context) {
 		return
 	}
 
-	iso := strings.ReplaceAll(string(content), "\n", "")
+	image := strings.ReplaceAll(string(content), "\n", "")
 
-	data := &GetMountedIsoRsp{
-		File: iso,
+	data := &GetMountedImageRsp{
+		File: image,
 	}
 
 	rsp.OkRspWithData(c, data)

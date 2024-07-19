@@ -32,21 +32,21 @@ func InitRouter(r *gin.Engine) {
 	api.GET("/vm/led", vm.Led)            // 获取虚拟机 led 灯状态
 	apiAuth.POST("/vm/power", vm.Power)   // 虚拟机开机/关机/重启
 	apiAuth.POST("/vm/screen", vm.Screen) // 更新虚拟机屏幕设置
-	apiAuth.GET("/vm/ws-ssh", vm.WsSsh)   // 通过 websocket 转发 ssh 数据
+	apiAuth.GET("/vm/ssh", vm.WsSsh)      // 通过 websocket 转发 ssh 数据
 
-	apiAuth.GET("/storage/iso", storage.GetIso)                // 获取 iso 文件列表
-	apiAuth.GET("/storage/iso/mounted", storage.GetMountedIso) // 获取已挂载的 iso
-	apiAuth.POST("/storage/iso", storage.MountIso)             // 挂载 iso 镜像
-	apiAuth.POST("/storage/resethid", storage.ResetHid)        // 重置 hid
+	apiAuth.GET("/storage/images", storage.GetImages)               // 获取镜像列表
+	apiAuth.GET("/storage/images/mounted", storage.GetMountedImage) // 获取已挂载的镜像
+	apiAuth.POST("/storage/image/mount", storage.MountImage)        // 挂载镜像
+	apiAuth.POST("/storage/hid/reset", storage.ResetHid)            // 重置 hid
 
 	apiAuth.GET("extensions/service", extensions.GetService) // 获取用户的扩展服务
 
 	apiAuth.GET("/mjpeg", mjpeg.Proxy) // mjpeg 代理
 
-	api.GET("/firmware/version", firmware.GetVersion)                      // 获取最新固件版本
-	api.GET("/firmware/libmaixcam", firmware.GetLibmaixcam)                // 获取 libmaixcam 信息
-	apiAuth.POST("/firmware/update", firmware.Update)                      // 更新固件
-	apiAuth.POST("/firmware/libmaixcam/update", firmware.UpdateLibmaixcam) // 更新加密文件
+	apiAuth.GET("/firmware/version", firmware.GetVersion)    // 获取当前固件版本
+	apiAuth.POST("/firmware/update", firmware.Update)        // 更新固件
+	apiAuth.GET("/firmware/lib", firmware.GetLib)            // 检查 lib 是否存在
+	apiAuth.POST("/firmware/lib/update", firmware.UpdateLib) // 更新 lib 文件
 }
 
 func initFrontend(r *gin.Engine) {

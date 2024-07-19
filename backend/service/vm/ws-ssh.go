@@ -139,7 +139,7 @@ func (s *SshClient) wsRead() error {
 	}
 }
 
-func (s *SshClient) bridgeWSAnsSSH() {
+func (s *SshClient) bridgeWSAndSSH() {
 	defer s.conn.Close()
 
 	size, err := s.getWindowSize()
@@ -230,5 +230,5 @@ func WsSsh(c *gin.Context) {
 		closeSig: make(chan struct{}, 1),
 	}
 
-	go sshClient.bridgeWSAnsSSH()
+	go sshClient.bridgeWSAndSSH()
 }

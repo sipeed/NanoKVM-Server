@@ -1,8 +1,7 @@
 package firmware
 
 const (
-	Version   = "1.9.0"
-	DeviceKey = "/device_key"
+	DeviceKeyFile = "/device_key"
 
 	VersionURL    = "https://cdn.sipeed.com/nanokvm/latest"
 	FirmwareURL   = "https://cdn.sipeed.com/nanokvm/latest.zip"
@@ -13,4 +12,5 @@ const (
 	Backup         = "/root/old"
 	LibMaixcamDir  = "/kvmapp/jpg_stream/dl_lib"
 	LibMaixcamName = "libmaixcam_lib.so"
+	VersionFile    = "/kvmapp/version"
 )

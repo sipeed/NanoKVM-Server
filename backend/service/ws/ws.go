@@ -1,15 +1,23 @@
 package ws
 
 import (
-	"NanoKVM-Server/backend/service/events"
+	"NanoKVM-Server/backend/service/hid"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
+
+const (
+	KeyboardEvent int = 1
+	MouseEvent    int = 2
+)
+
+type WsClient struct {
+	conn *websocket.Conn
+}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -25,7 +33,17 @@ func HandleWebSocket(c *gin.Context) {
 		log.Errorf("create websocket failed: %s", er)
 		return
 	}
-	defer ws.Close()
+
+	if err := hid.Open(); err != nil {
+		return
+	}
+
+	log.Debugf("websocket connected")
+	defer func() {
+		_ = ws.Close()
+		//hid.Close()
+		log.Debugf("websocket closed")
+	}()
 
 	var zeroTime time.Time
 	_ = ws.SetReadDeadline(zeroTime)
@@ -43,10 +61,12 @@ func HandleWebSocket(c *gin.Context) {
 			continue
 		}
 
-		if event[0] == 1 && len(event) == 6 {
-			events.WriteKeyboard(event[1:])
-		} else if event[0] == 2 && len(event) == 5 {
-			events.WriteMouse(event[1:])
+		log.Debugf("receive message: %s", message)
+
+		if event[0] == KeyboardEvent {
+			hid.WriteKeyboard(event[1:])
+		} else if event[0] == MouseEvent {
+			hid.WriteMouse(event[1:])
 		}
 	}
 }
