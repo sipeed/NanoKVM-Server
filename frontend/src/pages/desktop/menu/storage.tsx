@@ -1,57 +1,71 @@
 import { useEffect, useState } from 'react';
-import { Popover } from 'antd';
+import { Divider, Popover } from 'antd';
 import clsx from 'clsx';
 import {
   DiscIcon,
   FileBoxIcon,
   LoaderCircleIcon,
   PackageIcon,
-  PackageSearchIcon
+  PackageSearchIcon,
+  XIcon
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { api } from '@/lib/api.ts';
+import * as api from '@/api/storage';
 
-type StorageProps = {
-  baseURL: string;
-};
-
-export const Storage = ({ baseURL }: StorageProps) => {
+export const Storage = () => {
   const { t } = useTranslation();
+
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [mountingFile, setMountingFile] = useState('');
   const [mountedFile, setMountedFile] = useState('');
 
   useEffect(() => {
+    getFiles();
+  }, []);
+
+  function handleOpenChange(_open: boolean) {
+    if (_open) {
+      getFiles();
+    }
+
+    setOpen(_open);
+  }
+
+  // 获取镜像列表
+  function getFiles() {
+    if (loading) return;
     setLoading(true);
 
-    // 获取镜像列表
     api
-      .get(`${baseURL}/api/storage/iso`)
-      .then((rsp: any) => {
+      .getImages()
+      .then((rsp) => {
         if (rsp.code !== 0) {
-          console.log(rsp.msg);
           return;
         }
 
-        if (rsp.data.files?.length > 0) {
-          const isoList = rsp.data.files;
+        const images = rsp.data.files;
 
-          setFiles(isoList);
-
-          // 获取已挂载的镜像
-          api.get(`${baseURL}/api/storage/iso/mounted`).then((rsp: any) => {
-            if (rsp.code === 0 && rsp.data?.file && isoList.includes(rsp.data.file)) {
-              setMountedFile(rsp.data.file);
-            }
-          });
+        if (!images?.length) {
+          setFiles([]);
+          return;
         }
+
+        setFiles(images);
+
+        // 获取已挂载的镜像
+        api.getMountedImage().then((rsp) => {
+          if (rsp.code === 0 && rsp.data?.file && images.includes(rsp.data.file)) {
+            setMountedFile(rsp.data.file);
+          }
+        });
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }
 
   // 挂载/取消挂载
   function mountFile(file: string) {
@@ -61,8 +75,8 @@ export const Storage = ({ baseURL }: StorageProps) => {
     const filename = mountedFile === file ? '' : file;
 
     api
-      .post(`${baseURL}/api/storage/iso`, { file: filename })
-      .then((rsp: any) => {
+      .mountImage(filename)
+      .then((rsp) => {
         if (rsp.code !== 0) {
           console.log(rsp.msg);
           return;
@@ -76,14 +90,20 @@ export const Storage = ({ baseURL }: StorageProps) => {
   }
 
   const content = (
-    <>
+    <div className="min-w-[250px]">
+      <div className="flex items-center justify-between px-2">
+        <span className="text-base font-bold text-neutral-300">{t('images')}</span>
+      </div>
+
+      <Divider style={{ margin: '10px 0 15px 0' }} />
+
       {loading ? (
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-2 py-2 pl-2 pr-4 text-neutral-400">
           <LoaderCircleIcon className="animate-spin" size={18} />
           <span className="text-sm">{t('loading')}</span>
         </div>
       ) : files.length === 0 ? (
-        <div className="flex items-center space-x-2 py-3 pr-3 text-neutral-500">
+        <div className="flex items-center space-x-2 pl-2 pr-4 text-neutral-500">
           <PackageSearchIcon size={18} />
           <span className="text-sm">{t('empty')}</span>
         </div>
@@ -92,13 +112,18 @@ export const Storage = ({ baseURL }: StorageProps) => {
           <div
             key={file}
             className={clsx(
-              'my-1 flex h-[32px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
-              { 'text-green-500': mountedFile === file }
+              'group my-1 flex h-[32px] max-w-[300px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
+              { 'text-blue-500': mountedFile === file }
             )}
             onClick={() => mountFile(file)}
           >
             {mountedFile === file ? (
-              <PackageIcon size={18} />
+              <>
+                <div className="h-[18px] w-[18px] group-hover:text-red-500">
+                  <PackageIcon size={18} className="block group-hover:hidden" />
+                  <XIcon size={18} className="hidden group-hover:block" />
+                </div>
+              </>
             ) : mountingFile === file ? (
               <LoaderCircleIcon className="animate-spin" size={18} />
             ) : (
@@ -108,18 +133,23 @@ export const Storage = ({ baseURL }: StorageProps) => {
           </div>
         ))
       )}
-    </>
+    </div>
   );
 
   return (
-    <Popover content={content} placement="right" trigger="click">
-      <div className="flex h-[32px] cursor-pointer items-center space-x-1 rounded-sm pl-2 text-neutral-300 hover:bg-neutral-700">
+    <Popover
+      content={content}
+      placement="bottomLeft"
+      trigger="click"
+      open={open}
+      onOpenChange={handleOpenChange}
+    >
+      <div className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700">
         <div
           className={clsx('h-[18px] w-[18px]', !mountedFile ? 'text-neutral-300' : 'text-blue-500')}
         >
           <DiscIcon size={18} />
         </div>
-        <span className="select-none text-sm">{t('storage')}</span>
       </div>
     </Popover>
   );
