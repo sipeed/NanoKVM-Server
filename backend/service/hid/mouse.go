@@ -3,6 +3,7 @@ package hid
 import (
 	"encoding/binary"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 func WriteMouse(event []int) {
@@ -36,20 +37,12 @@ func down(event []int) {
 	}
 
 	data := []byte{button, 0, 0, 0}
-
-	_, err := Hidg1.Write(data)
-	if err != nil {
-		log.Errorf("write to hidg1 failed: %s", err)
-	}
+	writeToHid(Hidg1, data)
 }
 
 func up() {
 	data := []byte{0, 0, 0, 0}
-
-	_, err := Hidg1.Write(data)
-	if err != nil {
-		log.Errorf("write to hidg1 failed: %s", err)
-	}
+	writeToHid(Hidg1, data)
 }
 
 func scroll(event []int) {
@@ -59,11 +52,7 @@ func scroll(event []int) {
 	}
 
 	data := []byte{0, 0, 0, byte(direction)}
-
-	_, err := Hidg1.Write(data)
-	if err != nil {
-		log.Errorf("write to hidg2 failed: %s", err)
-	}
+	writeToHid(Hidg1, data)
 }
 
 func move(event []int) {
@@ -73,9 +62,17 @@ func move(event []int) {
 	binary.LittleEndian.PutUint16(y, uint16(event[3]))
 
 	data := []byte{0, x[0], x[1], y[0], y[1], 0}
+	writeToHid(Hidg2, data)
+}
 
-	_, err := Hidg2.Write(data)
-	if err != nil {
-		log.Errorf("write to hidg2 failed: %s", err)
+func writeToHid(file *os.File, data []byte) {
+	if file == nil {
+		log.Errorf("hid not opened")
+		return
+	}
+
+	if _, err := file.Write(data); err != nil {
+		log.Errorf("write to hid failed: %s", err)
+		return
 	}
 }

@@ -75,7 +75,7 @@ export const Desktop = () => {
 
         setTimeout(() => {
           window.location.reload();
-        }, 8000);
+        }, 6000);
       })
       .finally(() => {
         setIsUpdating(false);

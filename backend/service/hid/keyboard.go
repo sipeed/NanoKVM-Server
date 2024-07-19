@@ -28,7 +28,7 @@ func WriteKeyboard(event []int) {
 	}
 
 	if Hidg0 == nil {
-		log.Errorf("write to hidg0 failed: hidg0 not opened")
+		log.Errorf("write to hidg0 failed: not opened")
 		return
 	}
 

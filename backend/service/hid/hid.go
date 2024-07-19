@@ -11,27 +11,24 @@ var (
 	Hidg2 *os.File
 )
 
-func Open() (err error) {
+func Open() {
 	Close()
 
+	var err error
 	Hidg0, err = os.OpenFile("/dev/hidg0", os.O_WRONLY, 0666)
 	if err != nil {
 		log.Errorf("open hidg0 failed: %s", err)
-		return
 	}
 	Hidg1, err = os.OpenFile("/dev/hidg1", os.O_WRONLY, 0666)
 	if err != nil {
 		log.Errorf("open hidg1 failed: %s", err)
-		return
 	}
 	Hidg2, err = os.OpenFile("/dev/hidg2", os.O_WRONLY, 0666)
 	if err != nil {
 		log.Errorf("open hidg2 failed: %s", err)
-		return
 	}
 
 	log.Debugf("hid opened")
-	return
 }
 
 func Close() {

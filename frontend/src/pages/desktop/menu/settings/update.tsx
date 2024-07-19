@@ -86,7 +86,7 @@ export const Update = ({ setIsPopoverOpen, setIsBadgeVisible }: UpdateProps) => 
 
         setTimeout(() => {
           window.location.reload();
-        }, 8000);
+        }, 6000);
       })
       .catch(() => {
         setErrMsg(t('update.updateFailed'));

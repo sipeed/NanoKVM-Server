@@ -56,7 +56,7 @@ export const Terminal = ({ token, setToken }: TerminalProps) => {
   }, []);
 
   return (
-    <div className="h-full w-full overflow-hidden p-3">
+    <div className="h-full w-full overflow-hidden">
       <div id="terminal" className="h-full"></div>
     </div>
   );
