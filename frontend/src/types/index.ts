@@ -1,4 +1,4 @@
-export type ScreenSize = {
+export type Resolution = {
   width: number;
   height: number;
 };

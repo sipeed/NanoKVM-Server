@@ -3,14 +3,15 @@ import { initReactI18next } from 'react-i18next';
 
 import { getLanguage } from '@/lib/localstorage.ts';
 
-import { resources } from './resources';
+import { en } from './en';
+import { zh } from './zh';
 
 const lng = getLanguage();
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
-    resources,
+    resources: { zh, en },
     lng,
 
     interpolation: {

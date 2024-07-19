@@ -1,3 +1,5 @@
+import { Resolution } from '@/types';
+
 const LANGUAGE_KEY = 'nano-kvm-language';
 const RESOLUTION_KEY = 'nano-kvm-resolution';
 const FPS_KEY = 'nano-kvm-fps';
@@ -41,28 +43,28 @@ export function getLanguage() {
   const lang = localStorage.getItem(LANGUAGE_KEY);
   if (lang) return lang;
 
-  if (navigator.language.indexOf("zh") > -1) {
-    return "zh"
+  if (navigator.language.indexOf('zh') > -1) {
+    return 'zh';
   }
 
-  return "en"
+  return 'en';
 }
 
 export function setLanguage(language: string) {
   localStorage.setItem(LANGUAGE_KEY, language);
 }
 
-export function getResolution() {
+export function getResolution(): Resolution | null {
   const resolution = localStorage.getItem(RESOLUTION_KEY);
-  return resolution ? JSON.parse(window.atob(resolution)) : null;
+  if (resolution) {
+    const obj = JSON.parse(window.atob(resolution));
+    return obj as Resolution;
+  }
+
+  return null;
 }
 
-export function setResolution(width: number, height: number) {
-  const resolution = {
-    width,
-    height
-  };
-
+export function setResolution(resolution: Resolution) {
   localStorage.setItem(RESOLUTION_KEY, window.btoa(JSON.stringify(resolution)));
 }
 

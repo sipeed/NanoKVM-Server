@@ -13,12 +13,12 @@ importOrder:
   - ^@/env(.*)$
   - ^@/types$
   - ^@/config/(.*)$
+  - ^@/api/(.*)$
   - ^@/lib/(.*)$
+  - ^@/jotai/(.*)$
   - ^@/hooks/(.*)$
-  - ^@/components/ui/(.*)$
   - ^@/components/(.*)$
   - ^@/styles/(.*)$
-  - ^@/app/(.*)$
   - ''
   - '^[./]'
 importOrderSeparation: false
