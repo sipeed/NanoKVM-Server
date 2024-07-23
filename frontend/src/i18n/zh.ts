@@ -55,6 +55,10 @@ export const zh = {
       text: '文本指针',
       grab: '抓取指针',
       hide: '隐藏指针',
+      mode: '鼠标模式',
+      absolute: '绝对模式',
+      relative: '相对模式',
+      requestPointer: '正在使用鼠标相对模式，请点击桌面获取鼠标指针。',
       resetHid: '重置 HID'
     },
     auth: {

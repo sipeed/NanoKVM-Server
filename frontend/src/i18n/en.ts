@@ -54,6 +54,10 @@ export const en = {
       text: 'Text cursor',
       grab: 'Grab cursor',
       hide: 'Hide cursor',
+      mode: 'Mouse mode',
+      absolute: 'Absolute mode',
+      relative: 'Relative mode',
+      requestPointer: 'Using relative mode. Please click desktop to get mouse pointer.',
       resetHid: 'Reset HID'
     },
     auth: {

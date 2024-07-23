@@ -9,11 +9,13 @@ import (
 func WriteMouse(event []int) {
 	switch event[0] {
 	case MouseDown:
-		down(event)
+		mousedown(event)
 	case MouseUp:
-		up()
-	case MouseMove:
-		move(event)
+		mouseup()
+	case MouseMoveAbsolute:
+		mousemoveAbsolute(event)
+	case MouseMoveRelative:
+		mousemoveRelative(event)
 	case MouseScroll:
 		scroll(event)
 	default:
@@ -21,7 +23,7 @@ func WriteMouse(event []int) {
 	}
 }
 
-func down(event []int) {
+func mousedown(event []int) {
 	var button byte
 
 	switch event[1] {
@@ -40,7 +42,7 @@ func down(event []int) {
 	writeToHid(Hidg1, data)
 }
 
-func up() {
+func mouseup() {
 	data := []byte{0, 0, 0, 0}
 	writeToHid(Hidg1, data)
 }
@@ -55,7 +57,7 @@ func scroll(event []int) {
 	writeToHid(Hidg1, data)
 }
 
-func move(event []int) {
+func mousemoveAbsolute(event []int) {
 	x := make([]byte, 2)
 	y := make([]byte, 2)
 	binary.LittleEndian.PutUint16(x, uint16(event[2]))
@@ -63,16 +65,27 @@ func move(event []int) {
 
 	data := []byte{0, x[0], x[1], y[0], y[1], 0}
 	writeToHid(Hidg2, data)
+
 }
 
-func writeToHid(file *os.File, data []byte) {
-	if file == nil {
-		log.Errorf("hid not opened")
+func mousemoveRelative(event []int) {
+	data := []byte{byte(event[1]), byte(event[2]), byte(event[3]), 0}
+	writeToHid(Hidg1, data)
+}
+
+func writeToHid(path string, data []byte) {
+	file, err := os.OpenFile(path, os.O_WRONLY, 0600)
+	if err != nil {
+		log.Errorf("open %s failed: %s", path, err)
+		return
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		log.Errorf("write to %s failed: %s", path, err)
 		return
 	}
 
-	if _, err := file.Write(data); err != nil {
-		log.Errorf("write to hid failed: %s", err)
-		return
-	}
+	log.Debugf("write to %s: %+v", path, data)
 }

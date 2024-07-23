@@ -4,21 +4,9 @@ import { useAtomValue } from 'jotai';
 import { client } from '@/lib/websocket.ts';
 import { resolutionAtom } from '@/jotai/resolution.ts';
 
-enum MouseEvent {
-  Up = 0,
-  Down = 1,
-  Move = 2,
-  Scroll = 3
-}
+import { MouseButton, MouseEvent } from './constants';
 
-enum MouseButton {
-  None = 0,
-  Left = 1,
-  Right = 2,
-  Wheel = 3
-}
-
-export const Mouse = () => {
+export const Absolute = () => {
   const resolution = useAtomValue(resolutionAtom);
 
   // 监听鼠标事件
@@ -75,7 +63,7 @@ export const Mouse = () => {
       const hexX = x < 0 ? 0x0001 : Math.floor(0x7fff * x) + 0x0001;
       const hexY = y < 0 ? 0x0001 : Math.floor(0x7fff * y) + 0x0001;
 
-      const data = [2, MouseEvent.Move, MouseButton.None, hexX, hexY];
+      const data = [2, MouseEvent.MoveAbsolute, MouseButton.None, hexX, hexY];
       client.send(data);
     }
 

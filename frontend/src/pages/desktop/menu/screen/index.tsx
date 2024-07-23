@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { MonitorIcon } from 'lucide-react';
 
 import { updateScreen } from '@/api/vm';
-import * as cookie from '@/lib/localstorage';
+import * as ls from '@/lib/localstorage';
 import { resolutionAtom } from '@/jotai/resolution';
 
 import { Fps } from './fps';
@@ -19,7 +19,7 @@ export const Screen = () => {
   useEffect(() => {
     updateScreen('resolution', resolution!.height);
 
-    const cookieFps = cookie.getFps();
+    const cookieFps = ls.getFps();
     if (cookieFps) {
       updateScreen('fps', cookieFps).then((rsp) => {
         if (rsp.code === 0) {
@@ -28,7 +28,7 @@ export const Screen = () => {
       });
     }
 
-    const cookieQuality = cookie.getQuality();
+    const cookieQuality = ls.getQuality();
     if (cookieQuality) {
       updateScreen('quality', cookieQuality).then((rsp) => {
         if (rsp.code === 0) {

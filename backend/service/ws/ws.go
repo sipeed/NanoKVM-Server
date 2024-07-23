@@ -34,8 +34,6 @@ func HandleWebSocket(c *gin.Context) {
 		return
 	}
 
-	hid.Open()
-
 	log.Debugf("websocket connected")
 	defer func() {
 		_ = ws.Close()

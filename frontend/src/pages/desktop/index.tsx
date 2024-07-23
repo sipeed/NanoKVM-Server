@@ -15,13 +15,13 @@ import { Head } from '@/components/head.tsx';
 
 import { Menu } from './menu';
 import { MenuPhone } from './menu-phone';
+import { Mouse } from './mouse';
 import { Keyboard } from './screen/keyboard';
-import { Mouse } from './screen/mouse';
 import { VirtualKeyboard } from './virtual-keyboard';
 
 export const Desktop = () => {
   const { t } = useTranslation();
-  const isBigScreen = useMediaQuery({ minWidth: 800 });
+  const isBigScreen = useMediaQuery({ minWidth: 850 });
   const [messageApi, contextHolder] = message.useMessage();
 
   const mouseStyle = useAtomValue(mouseStyleAtom);
@@ -87,7 +87,6 @@ export const Desktop = () => {
       type: 'warning',
       content,
       duration: 10,
-      className: 'update-class',
       style: {
         marginTop: '8vh'
       }
@@ -97,6 +96,7 @@ export const Desktop = () => {
   return (
     <>
       {contextHolder}
+
       <Spin spinning={isUpdating} tip={t('updatingLib')} size="large" fullscreen />
       <Head title={t('head.desktop')} />
 

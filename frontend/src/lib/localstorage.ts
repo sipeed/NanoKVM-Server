@@ -4,7 +4,8 @@ const LANGUAGE_KEY = 'nano-kvm-language';
 const RESOLUTION_KEY = 'nano-kvm-resolution';
 const FPS_KEY = 'nano-kvm-fps';
 const QUALITY_KEY = 'nano-kvm-quality';
-const MOUSE_KEY = 'nano-kvm-mouse';
+const MOUSE_STYLE_KEY = 'nano-kvm-mouse-style';
+const MOUSE_MODE_KEY = 'nano-kvm-mouse-mode';
 const SKIP_UPDATE_KEY = 'nano-kvm-check-update';
 
 type Item = {
@@ -86,12 +87,20 @@ export function setQuality(quality: number) {
   localStorage.setItem(QUALITY_KEY, String(quality));
 }
 
-export function getMouse() {
-  return localStorage.getItem(MOUSE_KEY);
+export function getMouseStyle() {
+  return localStorage.getItem(MOUSE_STYLE_KEY);
 }
 
-export function setMouse(mouse: string) {
-  localStorage.setItem(MOUSE_KEY, mouse);
+export function setMouseStyle(mouse: string) {
+  localStorage.setItem(MOUSE_STYLE_KEY, mouse);
+}
+
+export function getMouseMode() {
+  return localStorage.getItem(MOUSE_MODE_KEY);
+}
+
+export function setMouseMode(mouse: string) {
+  localStorage.setItem(MOUSE_MODE_KEY, mouse);
 }
 
 export function getSkipUpdate() {

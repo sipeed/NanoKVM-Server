@@ -2,6 +2,7 @@ package hid
 
 import (
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 func WriteKeyboard(event []int) {
@@ -27,17 +28,19 @@ func WriteKeyboard(event []int) {
 		data = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	}
 
-	if Hidg0 == nil {
-		log.Errorf("write to hidg0 failed: not opened")
-		return
-	}
-
-	_, err := Hidg0.Write(data)
+	file, err := os.OpenFile(Hidg0, os.O_WRONLY, 0600)
 	if err != nil {
-		log.Errorf("write to hidg0 failed: %s", err)
+		log.Errorf("open %s failed: %s", Hidg0, err)
+		return
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		log.Errorf("write to %s failed: %s", Hidg0, err)
 		return
 	}
 
-	log.Debugf("write to hidg0: %+v", data)
+	log.Debugf("write to %s: %+v", Hidg0, data)
 	return
 }

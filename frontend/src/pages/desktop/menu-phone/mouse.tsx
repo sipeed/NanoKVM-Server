@@ -14,7 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import * as api from '@/api/storage';
-import { getMouse, setMouse } from '@/lib/localstorage.ts';
+import * as ls from '@/lib/localstorage';
 import { client } from '@/lib/websocket.ts';
 import { mouseStyleAtom } from '@/jotai/mouse.ts';
 
@@ -24,7 +24,7 @@ export const Mouse = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   useEffect(() => {
-    const mouse = getMouse();
+    const mouse = ls.getMouseStyle();
     if (mouse && mouse !== mouseStyle) {
       setMouseStyle(mouse);
     }
@@ -32,7 +32,7 @@ export const Mouse = () => {
 
   function updateMouse(style: string) {
     setMouseStyle(style);
-    setMouse(style);
+    ls.setMouseStyle(style);
   }
 
   function resetHid() {
