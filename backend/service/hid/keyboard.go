@@ -2,10 +2,15 @@ package hid
 
 import (
 	log "github.com/sirupsen/logrus"
-	"os"
 )
 
-func WriteKeyboard(event []int) {
+func Keyboard(queue <-chan []int) {
+	for event := range queue {
+		writeKeyboard(event)
+	}
+}
+
+func writeKeyboard(event []int) {
 	var data []byte
 
 	if event[0] > 0 {
@@ -28,19 +33,12 @@ func WriteKeyboard(event []int) {
 		data = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	}
 
-	file, err := os.OpenFile(Hidg0, os.O_WRONLY, 0600)
+	_, err := Hidg0.Write(data)
 	if err != nil {
-		log.Errorf("open %s failed: %s", Hidg0, err)
-		return
-	}
-	defer file.Close()
-
-	_, err = file.Write(data)
-	if err != nil {
-		log.Errorf("write to %s failed: %s", Hidg0, err)
+		log.Errorf("write keyboard data failed: %s", err)
 		return
 	}
 
-	log.Debugf("write to %s: %+v", Hidg0, data)
+	log.Debugf("write keyboard data: %+v", data)
 	return
 }

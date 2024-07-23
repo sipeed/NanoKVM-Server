@@ -6,20 +6,22 @@ import (
 	"os"
 )
 
-func WriteMouse(event []int) {
-	switch event[0] {
-	case MouseDown:
-		mousedown(event)
-	case MouseUp:
-		mouseup()
-	case MouseMoveAbsolute:
-		mousemoveAbsolute(event)
-	case MouseMoveRelative:
-		mousemoveRelative(event)
-	case MouseScroll:
-		scroll(event)
-	default:
-		log.Debugf("invalid mouse event: %+v", event)
+func Mouse(queue <-chan []int) {
+	for event := range queue {
+		switch event[0] {
+		case MouseDown:
+			mousedown(event)
+		case MouseUp:
+			mouseup()
+		case MouseMoveAbsolute:
+			mousemoveAbsolute(event)
+		case MouseMoveRelative:
+			mousemoveRelative(event)
+		case MouseScroll:
+			scroll(event)
+		default:
+			log.Debugf("invalid mouse event: %+v", event)
+		}
 	}
 }
 
@@ -73,19 +75,12 @@ func mousemoveRelative(event []int) {
 	writeToHid(Hidg1, data)
 }
 
-func writeToHid(path string, data []byte) {
-	file, err := os.OpenFile(path, os.O_WRONLY, 0600)
+func writeToHid(file *os.File, data []byte) {
+	_, err := file.Write(data)
 	if err != nil {
-		log.Errorf("open %s failed: %s", path, err)
-		return
-	}
-	defer file.Close()
-
-	_, err = file.Write(data)
-	if err != nil {
-		log.Errorf("write to %s failed: %s", path, err)
+		log.Errorf("write mouse data failed: %s", err)
 		return
 	}
 
-	log.Debugf("write to %s: %+v", path, data)
+	log.Debugf("write mouse data: %+v", data)
 }

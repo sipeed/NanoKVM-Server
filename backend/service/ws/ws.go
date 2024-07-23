@@ -15,10 +15,6 @@ const (
 	MouseEvent    int = 2
 )
 
-type WsClient struct {
-	conn *websocket.Conn
-}
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -33,15 +29,23 @@ func HandleWebSocket(c *gin.Context) {
 		log.Errorf("create websocket failed: %s", er)
 		return
 	}
-
 	log.Debugf("websocket connected")
+
+	hid.Open()
 	defer func() {
 		_ = ws.Close()
+		hid.Close()
 		log.Debugf("websocket closed")
 	}()
 
 	var zeroTime time.Time
 	_ = ws.SetReadDeadline(zeroTime)
+
+	keyboardQueue := make(chan []int, 200)
+	mouseQueue := make(chan []int, 300)
+
+	go hid.Keyboard(keyboardQueue)
+	go hid.Mouse(mouseQueue)
 
 	for {
 		_, message, err := ws.ReadMessage()
@@ -59,9 +63,23 @@ func HandleWebSocket(c *gin.Context) {
 		log.Debugf("receive message: %s", message)
 
 		if event[0] == KeyboardEvent {
-			hid.WriteKeyboard(event[1:])
+			if len(keyboardQueue) == cap(keyboardQueue) {
+				clearQueue(keyboardQueue)
+			}
+
+			keyboardQueue <- event[1:]
 		} else if event[0] == MouseEvent {
-			hid.WriteMouse(event[1:])
+			if len(mouseQueue) == cap(mouseQueue) {
+				clearQueue(mouseQueue)
+			}
+
+			mouseQueue <- event[1:]
 		}
+	}
+}
+
+func clearQueue(queue chan []int) {
+	for len(queue) > 0 {
+		<-queue
 	}
 }
