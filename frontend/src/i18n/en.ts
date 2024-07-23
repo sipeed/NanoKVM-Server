@@ -38,7 +38,7 @@ export const en = {
       updateFailed: 'Update failed. Please retry.',
       isLatest: 'You already have the latest version.',
       available: 'An update is available. Are you sure to update?',
-      started: 'Update started. Please wait...',
+      updating: 'Update started. Please wait...',
       confirm: 'Confirm',
       cancel: 'Cancel'
     },
