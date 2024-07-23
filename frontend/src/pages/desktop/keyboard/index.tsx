@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 
-import { KeyboardCodes } from '@/lib/keyboard-codes.ts';
 import { client } from '@/lib/websocket.ts';
+
+import { KeyboardCodes } from './mappings.ts';
 
 export const Keyboard = () => {
   const metaRef = useRef(false);

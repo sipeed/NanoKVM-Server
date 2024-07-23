@@ -13,11 +13,11 @@ import { mouseStyleAtom } from '@/jotai/mouse.ts';
 import { resolutionAtom } from '@/jotai/resolution.ts';
 import { Head } from '@/components/head.tsx';
 
+import { Keyboard } from './keyboard';
+import { VirtualKeyboard } from './keyboard/virtual-keyboard';
 import { Menu } from './menu';
 import { MenuPhone } from './menu-phone';
 import { Mouse } from './mouse';
-import { Keyboard } from './screen/keyboard';
-import { VirtualKeyboard } from './virtual-keyboard';
 
 export const Desktop = () => {
   const { t } = useTranslation();

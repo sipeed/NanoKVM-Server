@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
+import clsx from 'clsx';
+import { useAtom } from 'jotai';
 import { XIcon } from 'lucide-react';
 import Keyboard, { KeyboardButtonTheme } from 'react-simple-keyboard';
+import { Drawer } from 'vaul';
 
 import 'react-simple-keyboard/build/css/index.css';
 import '@/assets/styles/keyboard.css';
-
-import { useSetAtom } from 'jotai';
 
 import { KeyboardCodes } from '@/lib/keyboard-codes.ts';
 import { client } from '@/lib/websocket.ts';
@@ -18,14 +19,14 @@ import {
   keyboardControlPadOptions,
   keyboardOptions,
   specialKeyMap
-} from './keys.ts';
+} from './virtual-keys.ts';
 
-type WrapperProps = {
+type KeyboardProps = {
   isBigScreen: boolean;
 };
 
-export const Wrapper = ({ isBigScreen }: WrapperProps) => {
-  const setIsKeyboardOpen = useSetAtom(isKeyboardOpenAtom);
+export const VirtualKeyboard = ({ isBigScreen }: KeyboardProps) => {
+  const [isKeyboardOpen, setIsKeyboardOpen] = useAtom(isKeyboardOpenAtom);
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [isCapsLock, setIsCapsLock] = useState(false);
@@ -106,49 +107,59 @@ export const Wrapper = ({ isBigScreen }: WrapperProps) => {
   }
 
   return (
-    <div>
-      {/* header */}
-      <div className="flex items-center justify-between px-3 py-1">
-        <div className="w-[100px] text-sm font-bold text-neutral-500">Keyboard</div>
-        <div className="h-1.5 w-12 flex-shrink-0 rounded-full bg-zinc-300" />
-        <div className="flex w-[100px] items-center justify-end">
-          <div
-            className="flex h-[20px] w-[20px] cursor-pointer items-center justify-center rounded text-neutral-600 hover:bg-neutral-300 hover:text-white"
-            onClick={() => setIsKeyboardOpen(false)}
-          >
-            <XIcon size={18} />
+    <Drawer.Root open={isKeyboardOpen} onOpenChange={setIsKeyboardOpen} modal={false}>
+      <Drawer.Portal>
+        <Drawer.Content
+          className={clsx(
+            'fixed bottom-0 left-0 right-0 z-[999] mx-auto overflow-hidden rounded bg-white outline-none',
+            isBigScreen ? 'w-[820px]' : 'w-[650px]'
+          )}
+        >
+          {/* header */}
+          <div className="flex items-center justify-between px-3 py-1">
+            <div className="w-[100px] text-sm font-bold text-neutral-500">Keyboard</div>
+            <div className="h-1.5 w-12 flex-shrink-0 rounded-full bg-zinc-300" />
+            <div className="flex w-[100px] items-center justify-end">
+              <div
+                className="flex h-[20px] w-[20px] cursor-pointer items-center justify-center rounded text-neutral-600 hover:bg-neutral-300 hover:text-white"
+                onClick={() => setIsKeyboardOpen(false)}
+              >
+                <XIcon size={18} />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="h-px flex-shrink-0 border-b bg-neutral-300" />
+          <div className="h-px flex-shrink-0 border-b bg-neutral-300" />
 
-      <div className="keyboardContainer w-full">
-        {/* 主键盘 */}
-        <Keyboard
-          buttonTheme={getButtonTheme()}
-          keyboardRef={(r) => (keyboardRef.current = r)}
-          onKeyPress={onKeyPress}
-          onKeyReleased={onKeyReleased}
-          {...keyboardOptions}
-        />
-
-        {/* 控制键 */}
-        {isBigScreen && (
-          <div className="controlArrows">
+          <div className="keyboardContainer w-full">
+            {/* 主键盘 */}
             <Keyboard
+              buttonTheme={getButtonTheme()}
+              keyboardRef={(r) => (keyboardRef.current = r)}
               onKeyPress={onKeyPress}
               onKeyReleased={onKeyReleased}
-              {...keyboardControlPadOptions}
+              {...keyboardOptions}
             />
 
-            <Keyboard
-              onKeyPress={onKeyPress}
-              onKeyReleased={onKeyReleased}
-              {...keyboardArrowsOptions}
-            />
+            {/* 控制键 */}
+            {isBigScreen && (
+              <div className="controlArrows">
+                <Keyboard
+                  onKeyPress={onKeyPress}
+                  onKeyReleased={onKeyReleased}
+                  {...keyboardControlPadOptions}
+                />
+
+                <Keyboard
+                  onKeyPress={onKeyPress}
+                  onKeyReleased={onKeyReleased}
+                  {...keyboardArrowsOptions}
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </div>
+        </Drawer.Content>
+        <Drawer.Overlay />
+      </Drawer.Portal>
+    </Drawer.Root>
   );
 };
