@@ -2,8 +2,10 @@ package hid
 
 import (
 	"encoding/binary"
+	"errors"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"time"
 )
 
 func Mouse(queue <-chan []int) {
@@ -76,9 +78,15 @@ func mousemoveRelative(event []int) {
 }
 
 func writeToHid(file *os.File, data []byte) {
+	_ = file.SetDeadline(time.Now().Add(200 * time.Millisecond))
+
 	_, err := file.Write(data)
 	if err != nil {
-		log.Errorf("write mouse data failed: %s", err)
+		if errors.Is(err, os.ErrDeadlineExceeded) {
+			log.Debugf("write mouse data timeout")
+		} else {
+			log.Errorf("write mouse data failed: %s", err)
+		}
 		return
 	}
 

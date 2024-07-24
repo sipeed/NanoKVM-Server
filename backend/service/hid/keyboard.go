@@ -1,7 +1,10 @@
 package hid
 
 import (
+	"errors"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"time"
 )
 
 func Keyboard(queue <-chan []int) {
@@ -33,9 +36,15 @@ func writeKeyboard(event []int) {
 		data = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	}
 
+	_ = Hidg0.SetDeadline(time.Now().Add(200 * time.Millisecond))
+
 	_, err := Hidg0.Write(data)
 	if err != nil {
-		log.Errorf("write keyboard data failed: %s", err)
+		if errors.Is(err, os.ErrDeadlineExceeded) {
+			log.Debugf("write keyboard data timeout")
+		} else {
+			log.Errorf("write keyboard data failed: %s", err)
+		}
 		return
 	}
 
