@@ -12,6 +12,13 @@ export const router = createHashRouter([
     }
   },
   {
+    path: 'auth/password',
+    lazy: async () => {
+      const { Password } = await import('./pages/auth/password');
+      return { Component: Password };
+    }
+  },
+  {
     path: '/',
     element: (
       <ProtectedRoute>
@@ -31,13 +38,6 @@ export const router = createHashRouter([
         lazy: async () => {
           const { Terminal } = await import('./pages/terminal');
           return { Component: Terminal };
-        }
-      },
-      {
-        path: 'auth/password',
-        lazy: async () => {
-          const { ChangePassword } = await import('./pages/auth/change-password');
-          return { Component: ChangePassword };
         }
       }
     ]

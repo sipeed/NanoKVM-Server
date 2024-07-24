@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
-export const ForgetPassword = () => {
+export const Tips = () => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 

@@ -9,7 +9,7 @@ import { removeToken } from '@/lib/cookie.ts';
 import { encrypt } from '@/lib/encrypt.ts';
 import { Head } from '@/components/head.tsx';
 
-export const ChangePassword = () => {
+export const Password = () => {
   const { t } = useTranslation();
   const [msg, setMsg] = useState('');
   const navigate = useNavigate();

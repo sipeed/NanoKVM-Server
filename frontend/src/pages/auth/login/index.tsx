@@ -9,7 +9,7 @@ import { existToken, setToken } from '@/lib/cookie.ts';
 import { encrypt } from '@/lib/encrypt.ts';
 import { Head } from '@/components/head.tsx';
 
-import { ForgetPassword } from './forget-password.tsx';
+import { Tips } from './tips.tsx';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -97,7 +97,7 @@ export const Login = () => {
           </Form.Item>
 
           <div className="flex justify-end pb-4 text-sm">
-            <ForgetPassword />
+            <Tips />
           </div>
         </Form>
       </div>
