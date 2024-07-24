@@ -14,10 +14,10 @@ import { isKeyboardOpenAtom } from '@/jotai/keyboard.ts';
 
 import {
   doubleKeys,
-  functionKeys,
   keyboardArrowsOptions,
   keyboardControlPadOptions,
   keyboardOptions,
+  modifierKeys,
   specialKeyMap
 } from './virtual-keys.ts';
 
@@ -28,37 +28,30 @@ type KeyboardProps = {
 export const VirtualKeyboard = ({ isBigScreen }: KeyboardProps) => {
   const [isKeyboardOpen, setIsKeyboardOpen] = useAtom(isKeyboardOpenAtom);
 
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [isCapsLock, setIsCapsLock] = useState(false);
+  const [activeModifierKeys, setActiveModifierKeys] = useState<string[]>([]);
 
   const keyboardRef = useRef<any>(null);
 
-  // 按下按键
   function onKeyPress(key: string) {
-    // 功能键
-    if (functionKeys.includes(key)) {
-      if (!activeKeys.includes(key)) {
-        setActiveKeys([...activeKeys, key]);
+    if (modifierKeys.includes(key)) {
+      if (activeModifierKeys.includes(key)) {
+        sendModifierKeyDown();
+        sendModifierKeyUp();
       } else {
-        sendKeydown(key);
-        sendKeyup();
+        setActiveModifierKeys([...activeModifierKeys, key]);
+      }
+    } else {
+      if (key === '{capslock}') {
+        setIsCapsLock(!isCapsLock);
       }
 
-      return;
+      sendKeydown(key);
     }
-
-    // 大写键
-    if (key === '{capslock}') {
-      setIsCapsLock(!isCapsLock);
-    }
-
-    // 其他按键
-    sendKeydown(key);
   }
 
-  // 释放按键
   function onKeyReleased(key: string) {
-    if (functionKeys.includes(key)) {
+    if (modifierKeys.includes(key)) {
       return;
     }
 
@@ -67,40 +60,67 @@ export const VirtualKeyboard = ({ isBigScreen }: KeyboardProps) => {
 
   function sendKeydown(key: string) {
     const specialKey = specialKeyMap.get(key);
-    const realKey = specialKey ? specialKey : key;
-    const code = KeyboardCodes.get(realKey);
+    const code = KeyboardCodes.get(specialKey ? specialKey : key);
     if (!code) {
-      console.log('unknown code: ', realKey);
+      console.log('unknown code: ', key);
       return;
     }
 
-    const ctrl = existFunctionKey('ctrl') ? 1 : 0;
-    const shift = existFunctionKey('shift') ? 1 : 0;
-    const alt = existFunctionKey('alt') ? 1 : 0;
-    const meta = existFunctionKey('meta') ? 1 : 0;
+    const modifiers = sendModifierKeyDown();
 
-    setActiveKeys([]);
-
-    const data = [1, code, ctrl, shift, alt, meta];
-    client.send(data);
+    client.send([1, code, ...modifiers]);
   }
 
   function sendKeyup() {
-    const data = [1, 0, 0, 0, 0, 0];
-    client.send(data);
+    sendModifierKeyUp();
+    client.send([1, 0, 0, 0, 0, 0]);
   }
 
-  function existFunctionKey(key: string) {
-    return activeKeys.includes(`{${key}left}`) || activeKeys.includes(`{${key}right}`);
+  function sendModifierKeyDown() {
+    let ctrl = 0;
+    let shift = 0;
+    let alt = 0;
+    let meta = 0;
+
+    activeModifierKeys.forEach((modifierKey) => {
+      const specialKey = specialKeyMap.get(modifierKey)!;
+      const code = KeyboardCodes.get(specialKey)!;
+
+      if ([224, 228].includes(code)) {
+        ctrl = 1;
+      } else if ([225, 229].includes(code)) {
+        shift = 1;
+      } else if ([226, 230].includes(code)) {
+        alt = 1;
+      } else if ([227, 231].includes(code)) {
+        meta = 1;
+      }
+
+      client.send([1, code, ctrl, shift, alt, meta]);
+    });
+
+    return [ctrl, shift, alt, meta];
+  }
+
+  function sendModifierKeyUp() {
+    if (activeModifierKeys.length === 0) return;
+
+    activeModifierKeys.forEach(() => {
+      client.send([1, 0, 0, 0, 0, 0]);
+    });
+
+    setActiveModifierKeys([]);
   }
 
   function getButtonTheme(): KeyboardButtonTheme[] {
     const theme = [{ class: 'hg-double', buttons: doubleKeys.join(' ') }];
 
-    if (activeKeys.length > 0 || isCapsLock) {
-      const buttons = [...activeKeys];
-      isCapsLock && buttons.push('{capslock}');
-      theme.push({ class: 'hg-highlight', buttons: buttons.join(' ') });
+    const activeKeys = [...activeModifierKeys];
+    if (isCapsLock) {
+      activeKeys.push('{capslock}');
+    }
+    if (activeKeys.length > 0) {
+      theme.push({ class: 'hg-highlight', buttons: activeKeys.join(' ') });
     }
 
     return theme;
@@ -130,7 +150,7 @@ export const VirtualKeyboard = ({ isBigScreen }: KeyboardProps) => {
           </div>
           <div className="h-px flex-shrink-0 border-b bg-neutral-300" />
 
-          <div className="keyboardContainer w-full">
+          <div data-vaul-no-drag className="keyboardContainer w-full">
             {/* 主键盘 */}
             <Keyboard
               buttonTheme={getButtonTheme()}

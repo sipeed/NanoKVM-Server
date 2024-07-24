@@ -145,7 +145,7 @@ export const specialKeyMap = new Map([
 ]);
 
 // 功能键
-export const functionKeys = [
+export const modifierKeys = [
   '{shiftleft}',
   '{controlleft}',
   '{altleft}',
