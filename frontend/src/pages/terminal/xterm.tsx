@@ -10,7 +10,7 @@ type TerminalProps = {
   setToken: (token: string) => void;
 };
 
-export const Terminal = ({ token, setToken }: TerminalProps) => {
+export const Xterm = ({ token, setToken }: TerminalProps) => {
   useEffect(() => {
     const terminalEle = document.getElementById('terminal');
     if (!terminalEle) return;
@@ -57,7 +57,7 @@ export const Terminal = ({ token, setToken }: TerminalProps) => {
 
   return (
     <div className="h-full w-full overflow-hidden">
-      <div id="terminal" className="h-full"></div>
+      <div id="terminal" className="h-full px-2"></div>
     </div>
   );
 };

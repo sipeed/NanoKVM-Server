@@ -29,8 +29,8 @@ export const router = createHashRouter([
       {
         path: 'terminal',
         lazy: async () => {
-          const { SshTerminal } = await import('./pages/ssh-terminal');
-          return { Component: SshTerminal };
+          const { Terminal } = await import('./pages/terminal');
+          return { Component: Terminal };
         }
       },
       {

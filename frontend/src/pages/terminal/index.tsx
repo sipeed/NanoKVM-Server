@@ -5,9 +5,9 @@ import { encrypt } from '@/lib/encrypt.ts';
 import { Head } from '@/components/head.tsx';
 
 import { Login } from './login.tsx';
-import { Terminal } from './terminal.tsx';
+import { Xterm } from './xterm.tsx';
 
-export const SshTerminal = () => {
+export const Terminal = () => {
   const { t } = useTranslation();
   const [token, setToken] = useState(`?t=${encrypt('root')}`);
 
@@ -15,11 +15,7 @@ export const SshTerminal = () => {
     <>
       <Head title={t('terminal')} />
 
-      {token === '' ? (
-        <Login setToken={setToken} />
-      ) : (
-        <Terminal token={token} setToken={setToken} />
-      )}
+      {token === '' ? <Login setToken={setToken} /> : <Xterm token={token} setToken={setToken} />}
     </>
   );
 };
