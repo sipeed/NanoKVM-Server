@@ -3,9 +3,9 @@ package backend
 import (
 	"NanoKVM-Server/backend/middleware"
 	"NanoKVM-Server/backend/service/auth"
-	"NanoKVM-Server/backend/service/extensions"
 	"NanoKVM-Server/backend/service/firmware"
 	"NanoKVM-Server/backend/service/mjpeg"
+	"NanoKVM-Server/backend/service/network"
 	"NanoKVM-Server/backend/service/storage"
 	"NanoKVM-Server/backend/service/vm"
 	"NanoKVM-Server/backend/service/ws"
@@ -39,14 +39,16 @@ func InitRouter(r *gin.Engine) {
 	apiAuth.POST("/storage/image/mount", storage.MountImage)        // 挂载镜像
 	apiAuth.POST("/storage/hid/reset", storage.ResetHid)            // 重置 hid
 
-	apiAuth.GET("extensions/service", extensions.GetService) // 获取用户的扩展服务
-
 	apiAuth.GET("/mjpeg", mjpeg.Proxy) // mjpeg 代理
 
 	apiAuth.GET("/firmware/version", firmware.GetVersion)    // 获取当前固件版本
 	apiAuth.POST("/firmware/update", firmware.Update)        // 更新固件
 	apiAuth.GET("/firmware/lib", firmware.GetLib)            // 检查 lib 是否存在
 	apiAuth.POST("/firmware/lib/update", firmware.UpdateLib) // 更新 lib 文件
+
+	apiAuth.POST("/network/wol", network.WakeOnLAN)       // 远程唤醒
+	apiAuth.GET("/network/wol/mac", network.GetMac)       // 获取保存的mac地址
+	apiAuth.DELETE("/network/wol/mac", network.DeleteMac) // 删除保存的mac地址
 }
 
 func initFrontend(r *gin.Engine) {

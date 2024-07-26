@@ -3,7 +3,6 @@ package main
 import (
 	"NanoKVM-Server/backend"
 	"NanoKVM-Server/backend/middleware"
-	"NanoKVM-Server/backend/service/extensions"
 	"NanoKVM-Server/backend/utils"
 	"fmt"
 
@@ -22,8 +21,6 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(cors.AllowAll())
 	backend.InitRouter(r)
-
-	extensions.StartServices()
 
 	if conf.Protocol == "https" {
 		r.Use(middleware.Tls())

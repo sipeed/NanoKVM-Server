@@ -11,7 +11,7 @@ export const zh = {
     customize: '自定义',
     quality: '图像质量',
     keyboard: '键盘',
-    images: '镜像列表',
+    images: '镜像',
     loading: '加载中',
     empty: '无镜像文件',
     settings: '设置',
@@ -83,6 +83,12 @@ export const zh = {
       reset4: '3. 使用默认的账号登录： ',
       ok: '确定',
       cancel: '取消'
+    },
+    wol: {
+      sending: '指令发送中...',
+      sent: '指令已发送',
+      input: '请输入MAC地址',
+      ok: '确定'
     }
   }
 };

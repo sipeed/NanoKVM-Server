@@ -57,7 +57,7 @@ export const Xterm = ({ token, setToken }: TerminalProps) => {
 
   return (
     <div className="h-full w-full overflow-hidden">
-      <div id="terminal" className="h-full px-2"></div>
+      <div id="terminal" className="h-full p-2"></div>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import NoConnection from '@/assets/images/monitor-x.svg';
 import * as api from '@/api/firmware.ts';
 import { getResolution } from '@/lib/localstorage.ts';
 import { client } from '@/lib/websocket.ts';
+import { isKeyboardEnableAtom } from '@/jotai/keyboard.ts';
 import { mouseStyleAtom } from '@/jotai/mouse.ts';
 import { resolutionAtom } from '@/jotai/resolution.ts';
 import { Head } from '@/components/head.tsx';
@@ -25,6 +26,7 @@ export const Desktop = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const mouseStyle = useAtomValue(mouseStyleAtom);
+  const isKeyboardEnable = useAtomValue(isKeyboardEnableAtom);
   const [resolution, setResolution] = useAtom(resolutionAtom);
 
   const [isUpdating, setIsUpdating] = useState(false);
@@ -122,7 +124,7 @@ export const Desktop = () => {
 
               {/* 监听键盘鼠标事件 */}
               <Mouse />
-              <Keyboard />
+              {isKeyboardEnable && <Keyboard />}
             </>
           </div>
         </>

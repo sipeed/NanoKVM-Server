@@ -82,6 +82,12 @@ export const en = {
       reset4: '3. Use the default account to login: ',
       ok: 'Ok',
       cancel: 'Cancel'
+    },
+    wol: {
+      sending: 'Sending command...',
+      sent: 'Command sent',
+      input: 'Please enter the MAC',
+      ok: 'Ok'
     }
   }
 };

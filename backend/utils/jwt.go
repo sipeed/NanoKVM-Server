@@ -13,7 +13,7 @@ type Token struct {
 
 const (
 	JWTSecretKey   = "sipeed-nanokvm2024"
-	ExpireDuration = 181 * 24 * time.Hour
+	ExpireDuration = 31 * 24 * time.Hour
 )
 
 func GenerateJWT(username string) (string, error) {

@@ -12,12 +12,13 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import * as api from '@/api/storage';
+import { client } from '@/lib/websocket.ts';
 
 export const Storage = () => {
   const { t } = useTranslation();
 
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [mountingFile, setMountingFile] = useState('');
   const [mountedFile, setMountedFile] = useState('');
@@ -26,18 +27,17 @@ export const Storage = () => {
     getFiles();
   }, []);
 
-  function handleOpenChange(_open: boolean) {
-    if (_open) {
+  function handleOpenChange(open: boolean) {
+    if (open) {
       getFiles();
     }
-
-    setOpen(_open);
+    setIsPopoverOpen(open);
   }
 
   // 获取镜像列表
   function getFiles() {
-    if (loading) return;
-    setLoading(true);
+    if (isLoading) return;
+    setIsLoading(true);
 
     api
       .getImages()
@@ -63,7 +63,7 @@ export const Storage = () => {
         });
       })
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
       });
   }
 
@@ -71,6 +71,8 @@ export const Storage = () => {
   function mountFile(file: string) {
     if (mountingFile) return;
     setMountingFile(file);
+
+    client.close();
 
     const filename = mountedFile === file ? '' : file;
 
@@ -86,18 +88,19 @@ export const Storage = () => {
       })
       .finally(() => {
         setMountingFile('');
+        client.connect();
       });
   }
 
   const content = (
     <div className="min-w-[250px]">
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between px-1">
         <span className="text-base font-bold text-neutral-300">{t('images')}</span>
       </div>
 
       <Divider style={{ margin: '10px 0 15px 0' }} />
 
-      {loading ? (
+      {isLoading ? (
         <div className="flex items-center space-x-2 py-2 pl-2 pr-4 text-neutral-400">
           <LoaderCircleIcon className="animate-spin" size={18} />
           <span className="text-sm">{t('loading')}</span>
@@ -141,7 +144,7 @@ export const Storage = () => {
       content={content}
       placement="bottomLeft"
       trigger="click"
-      open={open}
+      open={isPopoverOpen}
       onOpenChange={handleOpenChange}
     >
       <div className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700">

@@ -3,14 +3,15 @@ import { Divider } from 'antd';
 import clsx from 'clsx';
 import { MenuIcon, XIcon } from 'lucide-react';
 
-import { Fullscreen } from './fullscreen.tsx';
-import { Keyboard } from './keyboard.tsx';
-import { Mouse } from './mouse.tsx';
-import { Power } from './power.tsx';
+import { Fullscreen } from './fullscreen';
+import { Keyboard } from './keyboard';
+import { Mouse } from './mouse';
+import { Power } from './power';
 import { Screen } from './screen';
 import { Settings } from './settings';
-import { Storage } from './storage.tsx';
+import { Storage } from './storage';
 import { Terminal } from './terminal';
+import { Wol } from './wol';
 
 export const Menu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
@@ -34,6 +35,7 @@ export const Menu = () => {
           <Divider type="vertical" />
 
           <Storage />
+          <Wol />
           <Terminal />
           <Divider type="vertical" />
 
