@@ -52,6 +52,7 @@ func loadConfig() {
 
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.As(err, &viper.ConfigFileNotFoundError{}) {
+			_ = os.MkdirAll("/etc/kvm", 0644)
 			_ = os.WriteFile("/etc/kvm/server.yaml", defaultConfig, 0755)
 			fmt.Printf("File /etc/kvm/server.yaml not exists. Use default configuration.\n")
 		} else {

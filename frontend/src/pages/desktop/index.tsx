@@ -35,7 +35,7 @@ export const Desktop = () => {
     getLib();
 
     const cookieResolution = getResolution();
-    setResolution(cookieResolution ? cookieResolution : { width: 1080, height: 720 });
+    setResolution(cookieResolution ? cookieResolution : { width: 1280, height: 720 });
 
     const timer = setInterval(() => {
       client.send([0]);
@@ -114,7 +114,11 @@ export const Desktop = () => {
             <>
               <Image
                 id="screen"
-                className={clsx('block select-none bg-neutral-950', mouseStyle)}
+                className={clsx(
+                  'block select-none bg-neutral-950',
+                  mouseStyle,
+                  resolution.width === 800 ? 'object-cover' : 'object-none'
+                )}
                 width={resolution.width}
                 height={resolution.height}
                 src={`${window.location.protocol}//${window.location.host}/api/mjpeg`}

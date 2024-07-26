@@ -115,7 +115,7 @@ export const Storage = () => {
           <div
             key={file}
             className={clsx(
-              'group my-1 flex h-[32px] max-w-[300px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
+              'group my-1 flex max-w-[300px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
               { 'text-blue-500': mountedFile === file }
             )}
             onClick={() => mountFile(file)}
@@ -128,11 +128,15 @@ export const Storage = () => {
                 </div>
               </>
             ) : mountingFile === file ? (
-              <LoaderCircleIcon className="animate-spin" size={18} />
+              <div className="h-[18px] w-[18px]">
+                <LoaderCircleIcon className="animate-spin" size={18} />
+              </div>
             ) : (
-              <FileBoxIcon size={18} />
+              <div className="h-[18px] w-[18px]">
+                <FileBoxIcon size={18} />
+              </div>
             )}
-            <span className="text-base">{file.replace(/^.*[\\/]/, '')}</span>
+            <span className="break-all">{file.replace(/^.*[\\/]/, '')}</span>
           </div>
         ))
       )}
