@@ -116,9 +116,4 @@ export const KeyboardCodes: Map<string, number> = new Map([
   ['AltRight', 230],
   ['MetaRight', 231],
   ['WinRight', 231]
-
-  // ['ModifierCtrl', 0],
-  // ['ModifierShift', 0],
-  // ['ModifierAlt', 0],
-  // ['ModifierMeta', 0]
 ]);

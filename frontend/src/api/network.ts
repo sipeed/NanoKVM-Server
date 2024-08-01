@@ -4,7 +4,6 @@ export function wol(mac: string) {
   const data = {
     mac
   };
-
   return http.post('/api/network/wol', data);
 }
 

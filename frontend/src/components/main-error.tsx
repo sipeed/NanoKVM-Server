@@ -7,7 +7,7 @@ export const MainError = () => {
       role="alert"
     >
       <h2 className="text-lg font-semibold text-red-500">
-        Sorry, there seems to be some problem :(
+        Sorry, there seems to be some problems :(
       </h2>
       <Button type="primary" danger onClick={() => window.location.assign(window.location.origin)}>
         Refresh

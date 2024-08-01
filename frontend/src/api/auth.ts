@@ -1,5 +1,3 @@
-// apiAuth.POST("/auth/password", auth.ChangePassword) // 修改密码
-
 import { http } from '@/lib/http';
 
 export function login(username: string, password: string) {
