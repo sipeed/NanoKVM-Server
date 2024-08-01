@@ -79,7 +79,7 @@ func Update(c *gin.Context) {
 	rsp.OkRsp(c)
 	log.Debugf("update firmware success")
 
-	utils.RunCommandBackend("/etc/init.d/S95webkvm restart")
+	utils.RunCommandBackend("/etc/init.d/S95nanokvm restart")
 }
 
 func updateFirmware() error {
