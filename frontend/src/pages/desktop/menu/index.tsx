@@ -8,6 +8,7 @@ import { Keyboard } from './keyboard';
 import { Mouse } from './mouse';
 import { Power } from './power';
 import { Screen } from './screen';
+import { Script } from './script';
 import { Settings } from './settings';
 import { Storage } from './storage';
 import { Terminal } from './terminal';
@@ -35,8 +36,9 @@ export const Menu = () => {
           <Divider type="vertical" />
 
           <Storage />
-          <Wol />
+          <Script />
           <Terminal />
+          <Wol />
           <Divider type="vertical" />
 
           <Power />

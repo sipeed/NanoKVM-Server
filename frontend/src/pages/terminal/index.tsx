@@ -13,7 +13,7 @@ export const Terminal = () => {
 
   return (
     <>
-      <Head title={t('terminal')} />
+      <Head title={t('head.terminal')} />
 
       {token === '' ? <Login setToken={setToken} /> : <Xterm token={token} setToken={setToken} />}
     </>

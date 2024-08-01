@@ -1,9 +1,9 @@
 import { http } from '@/lib/http.ts';
 
-export function power(type: string, second?: number) {
+export function power(type: string, duration: number) {
   const data = {
     type,
-    second: second ? second : 0
+    duration
   };
   return http.post('/api/vm/power', data);
 }

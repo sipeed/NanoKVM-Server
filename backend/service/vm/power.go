@@ -9,8 +9,8 @@ import (
 )
 
 type PowerReq struct {
-	Type   string `validate:"required"`  // restart:重启键 power-short：短按开机键 power-long：长按开机键
-	Second uint   `validate:"omitempty"` // power 按下时间（单位：秒）
+	Type     string `validate:"required"`  // reset:重启键 power 电源键
+	Duration uint   `validate:"omitempty"` // power 按下时间（单位：毫秒）
 }
 
 func Power(c *gin.Context) {
@@ -23,20 +23,18 @@ func Power(c *gin.Context) {
 	}
 
 	var device string
-	if req.Type == "power-short" || req.Type == "power-long" {
-		device = GPIO_PWR
-	} else if req.Type == "restart" {
+	if req.Type == "reset" {
 		device = GPIO_RST
+	} else if req.Type == "power" {
+		device = GPIO_PWR
 	} else {
 		rsp.ErrRsp(c, -2, "invalid power event")
 		return
 	}
 
 	var duration time.Duration
-	if req.Second > 0 {
-		duration = time.Duration(req.Second) * time.Second
-	} else if req.Type == "power-long" {
-		duration = 5 * time.Second
+	if req.Duration > 0 {
+		duration = time.Duration(req.Duration) * time.Millisecond
 	} else {
 		duration = 800 * time.Millisecond
 	}

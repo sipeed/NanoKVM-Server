@@ -115,7 +115,7 @@ export const Storage = () => {
           <div
             key={file}
             className={clsx(
-              'group my-1 flex max-w-[300px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
+              'group my-1 flex max-w-[300px] cursor-pointer select-none items-center space-x-2 rounded py-2 pl-2 pr-4 hover:bg-neutral-700/80',
               { 'text-blue-500': mountedFile === file }
             )}
             onClick={() => mountFile(file)}
@@ -151,12 +151,13 @@ export const Storage = () => {
       open={isPopoverOpen}
       onOpenChange={handleOpenChange}
     >
-      <div className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700">
-        <div
-          className={clsx('h-[18px] w-[18px]', !mountedFile ? 'text-neutral-300' : 'text-blue-500')}
-        >
-          <DiscIcon size={18} />
-        </div>
+      <div
+        className={clsx(
+          'flex h-[30px] cursor-pointer items-center justify-center rounded px-2 hover:bg-neutral-700',
+          mountedFile ? 'text-blue-500' : 'text-neutral-300'
+        )}
+      >
+        <DiscIcon size={18} />
       </div>
     </Popover>
   );

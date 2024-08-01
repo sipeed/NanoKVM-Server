@@ -146,7 +146,7 @@ export const Wol = () => {
   return (
     <Popover
       content={content}
-      placement="bottomLeft"
+      placement="rightTop"
       trigger="click"
       open={isPopoverOpen}
       onOpenChange={handleOpenChange}

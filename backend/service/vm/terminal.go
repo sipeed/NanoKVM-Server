@@ -40,9 +40,9 @@ var upgrader = websocket.Upgrader{
 }
 
 var terminalModes = ssh.TerminalModes{
-	ssh.ECHO:          1,     // enable echoing (different from the example in docs)
-	ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
-	ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
+	ssh.ECHO:          1,
+	ssh.TTY_OP_ISPEED: 14400,
+	ssh.TTY_OP_OSPEED: 14400,
 }
 
 func (s *SshClient) getWindowSize() (size *WindowSize, err error) {
@@ -201,7 +201,7 @@ func (s *SshClient) bridgeWSAndSSH() {
 	<-s.closeSig
 }
 
-func WsSsh(c *gin.Context) {
+func Terminal(c *gin.Context) {
 	user := c.Query("u")
 	if user == "" {
 		user = "root"

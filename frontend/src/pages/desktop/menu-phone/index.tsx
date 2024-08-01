@@ -2,13 +2,15 @@ import { useState } from 'react';
 import clsx from 'clsx';
 import { MenuIcon } from 'lucide-react';
 
-import { Keyboard } from './keyboard.tsx';
-import { Mouse } from './mouse.tsx';
-import { Power } from './power.tsx';
+import { Keyboard } from './keyboard';
+import { Mouse } from './mouse';
+import { Power } from './power';
 import { Screen } from './screen';
+import { Script } from './script';
 import { Settings } from './settings';
-import { Storage } from './storage.tsx';
+import { Storage } from './storage';
 import { Terminal } from './terminal';
+import { Wol } from './wol';
 
 export const MenuPhone = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,7 +20,7 @@ export const MenuPhone = () => {
       <div className="sticky top-[10px]">
         {!isMenuOpen && (
           <div
-            className="flex h-[32px] items-center justify-center rounded bg-neutral-800/80 px-3 text-white"
+            className="flex h-[32px] items-center justify-center rounded bg-neutral-800/80 px-2 text-white"
             onClick={() => setIsMenuOpen((o) => !o)}
           >
             <MenuIcon size={18} />
@@ -38,7 +40,9 @@ export const MenuPhone = () => {
           <Keyboard />
           <Mouse />
           <Storage />
+          <Script />
           <Terminal />
+          <Wol />
           <Power />
         </div>
       </div>

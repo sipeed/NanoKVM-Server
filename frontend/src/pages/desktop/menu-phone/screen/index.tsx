@@ -49,9 +49,8 @@ export const Screen = () => {
       }
       placement="rightBottom"
       trigger="click"
-      arrow={false}
     >
-      <div className="flex h-[32px] cursor-pointer items-center justify-center rounded px-3 text-neutral-300 hover:bg-neutral-700/80">
+      <div className="flex h-[32px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700/80">
         <MonitorIcon size={18} />
       </div>
     </Popover>

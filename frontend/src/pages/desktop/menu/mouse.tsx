@@ -84,7 +84,7 @@ export const Mouse = () => {
         <div
           key={style.value}
           className={clsx(
-            'flex cursor-pointer select-none items-center space-x-1 rounded px-5 py-1.5 hover:bg-neutral-600',
+            'flex cursor-pointer select-none items-center space-x-1 rounded px-3 py-1.5 hover:bg-neutral-600',
             style.value === mouseStyle ? 'text-green-500' : 'text-white'
           )}
           onClick={() => updateStyle(style.value)}
@@ -117,7 +117,7 @@ export const Mouse = () => {
         arrow={true}
         trigger="hover"
       >
-        <div className="flex h-[30px] cursor-pointer items-center space-x-1 rounded px-5 text-neutral-300 hover:bg-neutral-700">
+        <div className="flex h-[30px] cursor-pointer items-center space-x-1 rounded px-3 text-neutral-300 hover:bg-neutral-700">
           <div className="flex h-[14px] w-[20px] items-end">
             <SquareMousePointerIcon size={14} />
           </div>
@@ -126,7 +126,7 @@ export const Mouse = () => {
       </Popover>
 
       <div
-        className="flex cursor-pointer select-none items-center space-x-1 rounded px-5 py-1.5 hover:bg-neutral-600"
+        className="flex cursor-pointer select-none items-center space-x-1 rounded px-3 py-1.5 hover:bg-neutral-600"
         onClick={resetHid}
       >
         <div className="flex h-[14px] w-[20px] items-end">
@@ -145,7 +145,7 @@ export const Mouse = () => {
       open={isPopoverOpen}
       onOpenChange={setIsPopoverOpen}
     >
-      <div className="flex h-[30px] cursor-pointer items-center rounded px-3 text-neutral-300 hover:bg-neutral-700">
+      <div className="flex h-[30px] cursor-pointer items-center rounded px-2 text-neutral-300 hover:bg-neutral-700">
         <MouseIcon size={18} />
       </div>
     </Popover>

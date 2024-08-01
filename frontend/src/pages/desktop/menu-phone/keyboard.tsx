@@ -9,7 +9,7 @@ export const Keyboard = () => {
   return (
     <>
       <div
-        className="flex h-[30px] cursor-pointer items-center justify-center rounded px-3 text-neutral-300 hover:bg-neutral-700"
+        className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700"
         onClick={() => setIsKeyboardOpen((o) => !o)}
       >
         <KeyboardIcon size={18} />

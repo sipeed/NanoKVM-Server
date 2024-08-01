@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Badge, Popover } from 'antd';
+import { Badge, Divider, Popover } from 'antd';
 import { SettingsIcon } from 'lucide-react';
 
 import { About } from './about.tsx';
@@ -7,19 +7,25 @@ import { ChangePassword } from './change-password.tsx';
 import { Language } from './language.tsx';
 import { Logout } from './logout.tsx';
 import { Update } from './update.tsx';
+import { VirtualDevice } from './virtual-device.tsx';
 
 export const Settings = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isBadgeVisible, setIsBadgeVisible] = useState(false);
 
   const content = (
-    <div>
+    <>
       <Language />
       <About setIsPopoverOpen={setIsPopoverOpen} />
       <Update setIsPopoverOpen={setIsPopoverOpen} setIsBadgeVisible={setIsBadgeVisible} />
+      <Divider style={{ margin: '10px 0' }} />
+
+      <VirtualDevice />
+      <Divider style={{ margin: '10px 0' }} />
+
       <ChangePassword />
       <Logout />
-    </div>
+    </>
   );
 
   return (
@@ -28,7 +34,6 @@ export const Settings = () => {
         content={content}
         placement="rightBottom"
         trigger="click"
-        arrow={false}
         open={isPopoverOpen}
         onOpenChange={setIsPopoverOpen}
       >

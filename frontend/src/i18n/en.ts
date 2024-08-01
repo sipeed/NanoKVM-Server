@@ -16,9 +16,7 @@ export const en = {
     showMouse: 'Show mouse',
     hideMouse: 'Hide mouse',
     power: 'Power',
-    terminal: 'Terminal',
-    kvmTerminal: 'NanoKVM Terminal',
-    restart: 'Restart',
+    reset: 'Reset',
     powerShort: 'Power (short click)',
     powerLong: 'Power (long click)',
     hddLed: 'HDD LED',
@@ -26,39 +24,11 @@ export const en = {
     updateLibFailed: 'Failed to update runtime library, please try again',
     updatingLib: 'Updating runtime library. Please refresh the page after updating.',
     checkForUpdate: 'Check for Update',
-    about: {
-      title: 'About NanoKVM',
-      version: 'Version',
-      queryFailed: 'Query failed',
-      community: 'Community'
-    },
-    update: {
-      title: 'Check for Update',
-      queryFailed: 'Get version failed',
-      updateFailed: 'Update failed. Please retry.',
-      isLatest: 'You already have the latest version.',
-      available: 'An update is available. Are you sure to update?',
-      updating: 'Update started. Please wait...',
-      confirm: 'Confirm',
-      cancel: 'Cancel'
-    },
     head: {
       desktop: 'Remote Desktop',
       login: 'Login',
-      changePassword: 'Change Password'
-    },
-    cursor: {
-      default: 'Default cursor',
-      pointer: 'Pointer cursor',
-      cell: 'Cell cursor',
-      text: 'Text cursor',
-      grab: 'Grab cursor',
-      hide: 'Hide cursor',
-      mode: 'Mouse mode',
-      absolute: 'Absolute mode',
-      relative: 'Relative mode',
-      requestPointer: 'Using relative mode. Please click desktop to get mouse pointer.',
-      resetHid: 'Reset HID'
+      changePassword: 'Change Password',
+      terminal: 'Terminal'
     },
     auth: {
       login: 'Login',
@@ -83,11 +53,66 @@ export const en = {
       ok: 'Ok',
       cancel: 'Cancel'
     },
+    cursor: {
+      default: 'Default cursor',
+      pointer: 'Pointer cursor',
+      cell: 'Cell cursor',
+      text: 'Text cursor',
+      grab: 'Grab cursor',
+      hide: 'Hide cursor',
+      mode: 'Mouse mode',
+      absolute: 'Absolute mode',
+      relative: 'Relative mode',
+      requestPointer: 'Using relative mode. Please click desktop to get mouse pointer.',
+      resetHid: 'Reset HID'
+    },
+    script: {
+      title: 'Script',
+      upload: 'Upload',
+      run: 'Run',
+      runBackground: 'Run Background',
+      runFailed: 'Run failed',
+      attention: 'Attention',
+      delDesc: 'Are you sure to delete this file?',
+      confirm: 'Yes',
+      cancel: 'No',
+      delete: 'Delete',
+      close: 'Close'
+    },
+    terminal: {
+      title: 'Terminal',
+      nanokvm: 'NanoKVM Terminal',
+      serial: 'Serial Port Terminal',
+      serialPort: 'Serial Port',
+      serialPortPlaceholder: 'Please enter the serial port',
+      baudrate: 'Baud rate',
+      confirm: 'Ok'
+    },
     wol: {
       sending: 'Sending command...',
       sent: 'Command sent',
       input: 'Please enter the MAC',
       ok: 'Ok'
+    },
+    about: {
+      title: 'About NanoKVM',
+      version: 'Version',
+      queryFailed: 'Query failed',
+      community: 'Community'
+    },
+    update: {
+      title: 'Check for Update',
+      queryFailed: 'Get version failed',
+      updateFailed: 'Update failed. Please retry.',
+      isLatest: 'You already have the latest version.',
+      available: 'An update is available. Are you sure to update?',
+      updating: 'Update started. Please wait...',
+      confirm: 'Confirm',
+      cancel: 'Cancel'
+    },
+    virtualDevice: {
+      network: 'Virtual Network',
+      usb: 'Virtual USB'
     }
   }
 };

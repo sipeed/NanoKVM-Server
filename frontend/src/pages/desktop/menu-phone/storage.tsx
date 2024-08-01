@@ -12,11 +12,13 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import * as api from '@/api/storage';
+import { client } from '@/lib/websocket.ts';
 
 export const Storage = () => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [mountingFile, setMountingFile] = useState('');
   const [mountedFile, setMountedFile] = useState('');
@@ -25,18 +27,17 @@ export const Storage = () => {
     getFiles();
   }, []);
 
-  function handleOpenChange(_open: boolean) {
-    if (_open) {
+  function handleOpenChange(open: boolean) {
+    if (open) {
       getFiles();
     }
-
-    setOpen(_open);
+    setIsPopoverOpen(open);
   }
 
   // 获取镜像列表
   function getFiles() {
-    if (loading) return;
-    setLoading(true);
+    if (isLoading) return;
+    setIsLoading(true);
 
     api
       .getImages()
@@ -62,7 +63,7 @@ export const Storage = () => {
         });
       })
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
       });
   }
 
@@ -70,6 +71,8 @@ export const Storage = () => {
   function mountFile(file: string) {
     if (mountingFile) return;
     setMountingFile(file);
+
+    client.close();
 
     const filename = mountedFile === file ? '' : file;
 
@@ -85,15 +88,19 @@ export const Storage = () => {
       })
       .finally(() => {
         setMountingFile('');
+        client.connect();
       });
   }
 
   const content = (
-    <>
-      <div className="pl-2 font-bold text-neutral-400">{t('isoList')}</div>
-      <Divider style={{ margin: '10px 0' }} />
+    <div className="min-w-[250px]">
+      <div className="flex items-center justify-between px-1">
+        <span className="text-base font-bold text-neutral-300">{t('images')}</span>
+      </div>
 
-      {loading ? (
+      <Divider style={{ margin: '10px 0 15px 0' }} />
+
+      {isLoading ? (
         <div className="flex items-center space-x-2 py-2 pl-2 pr-4 text-neutral-400">
           <LoaderCircleIcon className="animate-spin" size={18} />
           <span className="text-sm">{t('loading')}</span>
@@ -108,7 +115,7 @@ export const Storage = () => {
           <div
             key={file}
             className={clsx(
-              'group my-1 flex h-[32px] cursor-pointer select-none items-center space-x-2 rounded pl-2 pr-4 hover:bg-neutral-600',
+              'group my-1 flex max-w-[300px] cursor-pointer select-none items-center space-x-2 rounded py-2 pl-2 pr-4 hover:bg-neutral-700/80',
               { 'text-blue-500': mountedFile === file }
             )}
             onClick={() => mountFile(file)}
@@ -121,32 +128,36 @@ export const Storage = () => {
                 </div>
               </>
             ) : mountingFile === file ? (
-              <LoaderCircleIcon className="animate-spin" size={18} />
+              <div className="h-[18px] w-[18px]">
+                <LoaderCircleIcon className="animate-spin" size={18} />
+              </div>
             ) : (
-              <FileBoxIcon size={18} />
+              <div className="h-[18px] w-[18px]">
+                <FileBoxIcon size={18} />
+              </div>
             )}
-            <span className="text-base">{file.replace(/^.*[\\/]/, '')}</span>
+            <span className="break-all">{file.replace(/^.*[\\/]/, '')}</span>
           </div>
         ))
       )}
-    </>
+    </div>
   );
 
   return (
     <Popover
       content={content}
-      placement="rightBottom"
+      placement="rightTop"
       trigger="click"
-      arrow={false}
-      open={open}
+      open={isPopoverOpen}
       onOpenChange={handleOpenChange}
     >
-      <div className="flex h-[30px] cursor-pointer items-center justify-center rounded px-2 text-neutral-300 hover:bg-neutral-700">
-        <div
-          className={clsx('h-[18px] w-[18px]', !mountedFile ? 'text-neutral-300' : 'text-blue-500')}
-        >
-          <DiscIcon size={18} />
-        </div>
+      <div
+        className={clsx(
+          'flex h-[30px] cursor-pointer items-center justify-center rounded px-2 hover:bg-neutral-700',
+          mountedFile ? 'text-blue-500' : 'text-neutral-300'
+        )}
+      >
+        <DiscIcon size={18} />
       </div>
     </Popover>
   );

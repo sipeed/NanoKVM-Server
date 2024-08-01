@@ -10,8 +10,6 @@ import (
 	"strings"
 )
 
-const MountDevice = "/sys/kernel/config/usb_gadget/g0/functions/mass_storage.disk0/lun.0/file"
-
 type GetImagesRsp struct {
 	Files []string `json:"files"`
 }

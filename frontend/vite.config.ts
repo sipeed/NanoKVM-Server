@@ -7,5 +7,8 @@ export default defineConfig({
   plugins: [react(), viteTsconfigPaths()],
   server: {
     port: 3001
+  },
+  build: {
+    chunkSizeWarningLimit: 1024
   }
 });

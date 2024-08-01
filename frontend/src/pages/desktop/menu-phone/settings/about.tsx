@@ -66,7 +66,7 @@ export const About = ({ setIsPopoverOpen }: AboutPorps) => {
         title={t('about.title')}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        width={350}
+        width={450}
         footer={null}
         centered
       >

@@ -1,6 +1,5 @@
 export const zh = {
   translation: {
-    language: '语言',
     currentVersion: '版本',
     latestVersion: '最新版本：',
     changePassword: '修改密码',
@@ -18,48 +17,18 @@ export const zh = {
     showMouse: '显示鼠标',
     hideMouse: '隐藏鼠标',
     power: '电源',
-    terminal: '终端',
-    kvmTerminal: 'NanoKVM 终端',
-    restart: '重启',
+    reset: '重启',
     powerShort: '电源（短按）',
     powerLong: '电源（长按）',
     hddLed: '硬盘指示灯',
     checkLibFailed: '检查运行库失败，请重试',
     updateLibFailed: '更新运行库失败，请重试',
     updatingLib: '正在更新运行库。更新完成后请刷新页面。',
-    about: {
-      title: '关于 NanoKVM',
-      version: '版本',
-      queryFailed: '查询失败',
-      community: '社区'
-    },
-    update: {
-      title: '检查更新',
-      queryFailed: '获取版本号失败',
-      updateFailed: '更新失败，请重试',
-      isLatest: '已经是最新版本。',
-      available: '有新的可用版本，确定要更新吗？',
-      updating: '更新中，请稍候...',
-      confirm: '确定',
-      cancel: '取消'
-    },
     head: {
       desktop: '远程桌面',
       login: '登录',
-      changePassword: '修改密码'
-    },
-    cursor: {
-      default: '默认指针',
-      pointer: '悬浮指针',
-      cell: '单元指针',
-      text: '文本指针',
-      grab: '抓取指针',
-      hide: '隐藏指针',
-      mode: '鼠标模式',
-      absolute: '绝对模式',
-      relative: '相对模式',
-      requestPointer: '正在使用鼠标相对模式，请点击桌面获取鼠标指针。',
-      resetHid: '重置 HID'
+      changePassword: '修改密码',
+      terminal: '终端'
     },
     auth: {
       login: '登录',
@@ -84,11 +53,66 @@ export const zh = {
       ok: '确定',
       cancel: '取消'
     },
+    cursor: {
+      default: '默认指针',
+      pointer: '悬浮指针',
+      cell: '单元指针',
+      text: '文本指针',
+      grab: '抓取指针',
+      hide: '隐藏指针',
+      mode: '鼠标模式',
+      absolute: '绝对模式',
+      relative: '相对模式',
+      requestPointer: '正在使用鼠标相对模式，请点击桌面获取鼠标指针。',
+      resetHid: '重置 HID'
+    },
+    script: {
+      title: '脚本',
+      upload: '上传',
+      run: '运行',
+      runBackground: '后台运行',
+      runFailed: '运行失败',
+      attention: '注意',
+      delDesc: '确定要删除该文件吗？',
+      confirm: '确定',
+      cancel: '取消',
+      delete: '删除',
+      close: '关闭'
+    },
+    terminal: {
+      title: '终端',
+      nanokvm: 'NanoKVM 终端',
+      serial: '串口终端',
+      serialPort: '串口',
+      serialPortPlaceholder: '请输入串口',
+      baudrate: '波特率',
+      confirm: '确定'
+    },
     wol: {
       sending: '指令发送中...',
       sent: '指令已发送',
       input: '请输入MAC地址',
       ok: '确定'
+    },
+    about: {
+      title: '关于 NanoKVM',
+      version: '版本',
+      queryFailed: '查询失败',
+      community: '社区'
+    },
+    update: {
+      title: '检查更新',
+      queryFailed: '获取版本号失败',
+      updateFailed: '更新失败，请重试',
+      isLatest: '已经是最新版本。',
+      available: '有新的可用版本，确定要更新吗？',
+      updating: '更新中，请稍候...',
+      confirm: '确定',
+      cancel: '取消'
+    },
+    virtualDevice: {
+      network: '虚拟网口',
+      usb: '虚拟U盘'
     }
   }
 };
