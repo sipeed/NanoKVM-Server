@@ -73,13 +73,14 @@ func Update(c *gin.Context) {
 	var rsp protocol.Response
 
 	if err := updateFirmware(); err != nil {
-		rsp.ErrRsp(c, -1, "update ")
+		rsp.ErrRsp(c, -1, "update failed")
+		return
 	}
 
 	rsp.OkRsp(c)
 	log.Debugf("update firmware success")
 
-	utils.RunCommandBackend("/etc/init.d/S95nanokvm restart")
+	restart()
 }
 
 func updateFirmware() error {
@@ -184,4 +185,9 @@ func download(req *http.Request, target string) error {
 	}
 
 	return nil
+}
+
+func restart() {
+	command := "/etc/init.d/S95nanokvm restart"
+	utils.RunCommandBackend(command)
 }

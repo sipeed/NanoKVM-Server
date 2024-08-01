@@ -66,7 +66,7 @@ func UpdateLib(c *gin.Context) {
 	rsp.OkRsp(c)
 	log.Debugf("update lib success")
 
-	utils.RunCommandBackend("/etc/init.d/S95nanokvm restart")
+	restart()
 }
 
 func isLibExist() (bool, error) {
