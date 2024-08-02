@@ -2,10 +2,7 @@ package hid
 
 import (
 	"encoding/binary"
-	"errors"
 	log "github.com/sirupsen/logrus"
-	"os"
-	"time"
 )
 
 func Mouse(queue <-chan []int) {
@@ -43,12 +40,12 @@ func mousedown(event []int) {
 	}
 
 	data := []byte{button, 0, 0, 0}
-	writeToHid(Hidg1, data)
+	Write(Hidg1, data)
 }
 
 func mouseup() {
 	data := []byte{0, 0, 0, 0}
-	writeToHid(Hidg1, data)
+	Write(Hidg1, data)
 }
 
 func scroll(event []int) {
@@ -58,7 +55,7 @@ func scroll(event []int) {
 	}
 
 	data := []byte{0, 0, 0, byte(direction)}
-	writeToHid(Hidg1, data)
+	Write(Hidg1, data)
 }
 
 func mousemoveAbsolute(event []int) {
@@ -68,27 +65,11 @@ func mousemoveAbsolute(event []int) {
 	binary.LittleEndian.PutUint16(y, uint16(event[3]))
 
 	data := []byte{0, x[0], x[1], y[0], y[1], 0}
-	writeToHid(Hidg2, data)
+	Write(Hidg2, data)
 
 }
 
 func mousemoveRelative(event []int) {
 	data := []byte{byte(event[1]), byte(event[2]), byte(event[3]), 0}
-	writeToHid(Hidg1, data)
-}
-
-func writeToHid(file *os.File, data []byte) {
-	_ = file.SetDeadline(time.Now().Add(200 * time.Millisecond))
-
-	_, err := file.Write(data)
-	if err != nil {
-		if errors.Is(err, os.ErrDeadlineExceeded) {
-			log.Debugf("write mouse data timeout")
-		} else {
-			log.Errorf("write mouse data failed: %s", err)
-		}
-		return
-	}
-
-	log.Debugf("write mouse data: %+v", data)
+	Write(Hidg1, data)
 }

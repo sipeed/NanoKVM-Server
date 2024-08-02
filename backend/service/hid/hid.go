@@ -1,8 +1,10 @@
 package hid
 
 import (
+	"errors"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"time"
 )
 
 var (
@@ -42,4 +44,24 @@ func Close() {
 	if Hidg2 != nil {
 		_ = Hidg2.Close()
 	}
+}
+
+func Write(file *os.File, data []byte) {
+	_ = file.SetDeadline(time.Now().Add(200 * time.Millisecond))
+
+	_, err := file.Write(data)
+	if err != nil {
+		if errors.Is(err, os.ErrClosed) {
+			Open()
+			log.Debugf("hid already closed, reopen it...")
+		} else if errors.Is(err, os.ErrDeadlineExceeded) {
+			log.Debugf("write to hid timeout")
+		} else {
+			log.Errorf("write to hid failed: %s", err)
+		}
+
+		return
+	}
+
+	log.Debugf("write to hid: %+v", data)
 }
