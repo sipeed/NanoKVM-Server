@@ -121,7 +121,7 @@ export const Script = () => {
         <input
           ref={inputRef}
           type="file"
-          accept="*.sh,*.py"
+          accept=".sh,.py"
           className="hidden"
           onChange={uploadFile}
         />
