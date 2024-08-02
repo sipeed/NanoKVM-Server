@@ -22,6 +22,7 @@ type WindowSize struct {
 	Height int `json:"height"`
 	Width  int `json:"width"`
 }
+
 type SshClient struct {
 	conn       *websocket.Conn
 	addr       string
@@ -92,7 +93,6 @@ func (s *SshClient) wsWrite() error {
 			}
 		}
 	}
-
 }
 
 func (s *SshClient) wsRead() error {
@@ -140,7 +140,12 @@ func (s *SshClient) wsRead() error {
 }
 
 func (s *SshClient) bridgeWSAndSSH() {
-	defer s.conn.Close()
+	defer func() {
+		_ = s.conn.Close()
+		if r := recover(); r != nil {
+			log.Debugf("terminal recover: %s", r)
+		}
+	}()
 
 	size, err := s.getWindowSize()
 	if err != nil {
@@ -194,6 +199,7 @@ func (s *SshClient) bridgeWSAndSSH() {
 	go func() {
 		_ = s.wsRead()
 	}()
+
 	go func() {
 		_ = s.wsWrite()
 	}()
