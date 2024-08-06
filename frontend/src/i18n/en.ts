@@ -113,6 +113,23 @@ export const en = {
     virtualDevice: {
       network: 'Virtual Network',
       usb: 'Virtual USB'
+    },
+    tailscale: {
+      loading: 'Loading...',
+      notInstalled: 'Tailscale not found! Please install.',
+      install: 'Install',
+      installing: 'Installing...',
+      urlPeriod: 'This url is valid for 10 minutes',
+      installed: 'Tailscale already installed. Please login.',
+      login: 'Login',
+      failed: 'Install failed',
+      retry: 'Please refresh and try again. Or try to install manually',
+      download: 'Download the',
+      package: 'installation package',
+      unzip: 'and unzip it',
+      upTailscale: 'Upload tailscale to NanoKVM directory /usr/bin/',
+      upTailscaled: 'Upload tailscaled to NanoKVM directory /usr/sbin/',
+      refresh: 'Refresh current page'
     }
   }
 };

@@ -113,6 +113,23 @@ export const zh = {
     virtualDevice: {
       network: '虚拟网口',
       usb: '虚拟U盘'
+    },
+    tailscale: {
+      loading: '加载中...',
+      notInstalled: '未检测到 Tailscale，请先安装',
+      install: '安装',
+      installing: '安装中...',
+      urlPeriod: '该链接10分钟内有效',
+      installed: 'Tailscale 已安装，请执行登录操作',
+      login: '登录',
+      failed: '安装失败',
+      retry: '请刷新后重试，或尝试手动安装',
+      download: '下载',
+      package: '安装包',
+      unzip: '并解压',
+      upTailscale: '将 tailscale 文件上传到 /usr/bin/ 目录',
+      upTailscaled: '将 tailscaled 文件上传到 /usr/sbin/ 目录',
+      refresh: '刷新页面'
     }
   }
 };

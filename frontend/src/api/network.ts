@@ -18,3 +18,15 @@ export function deleteWolMac(mac: string) {
     data: { mac }
   });
 }
+
+export function getTailscale() {
+  return http.get('/api/network/tailscale');
+}
+
+export function installTailscale() {
+  return http.post('/api/network/tailscale/install');
+}
+
+export function runTailscale() {
+  return http.post('/api/network/tailscale/run');
+}

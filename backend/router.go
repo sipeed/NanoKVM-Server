@@ -17,10 +17,23 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
-	// 前端
 	initFrontend(r)
+	initBackend(r)
+}
 
-	// 后端
+func initFrontend(r *gin.Engine) {
+	execPath, err := os.Executable()
+	if err != nil {
+		panic("invalid executable path")
+	}
+
+	execDir := filepath.Dir(execPath)
+	webPath := fmt.Sprintf("%s/web", execDir)
+
+	r.Use(static.Serve("/", static.LocalFile(webPath, true)))
+}
+
+func initBackend(r *gin.Engine) {
 	api := r.Group("/api")
 	apiAuth := r.Group("/api").Use(middleware.CheckToken())
 
@@ -52,19 +65,10 @@ func InitRouter(r *gin.Engine) {
 	apiAuth.GET("/firmware/lib", firmware.GetLib)            // 检查 lib 是否存在
 	apiAuth.POST("/firmware/lib/update", firmware.UpdateLib) // 更新 lib 文件
 
-	apiAuth.POST("/network/wol", network.WakeOnLAN)       // 远程唤醒
-	apiAuth.GET("/network/wol/mac", network.GetMac)       // 获取保存的mac地址
-	apiAuth.DELETE("/network/wol/mac", network.DeleteMac) // 删除保存的mac地址
-}
-
-func initFrontend(r *gin.Engine) {
-	execPath, err := os.Executable()
-	if err != nil {
-		panic("invalid executable path")
-	}
-
-	execDir := filepath.Dir(execPath)
-	webPath := fmt.Sprintf("%s/web", execDir)
-
-	r.Use(static.Serve("/", static.LocalFile(webPath, true)))
+	apiAuth.POST("/network/wol", network.WakeOnLAN)                      // 远程唤醒
+	apiAuth.GET("/network/wol/mac", network.GetMac)                      // 获取保存的mac地址
+	apiAuth.DELETE("/network/wol/mac", network.DeleteMac)                // 删除保存的mac地址
+	apiAuth.GET("/network/tailscale", network.GetTailscale)              // 获取 tailscale 状态
+	apiAuth.POST("/network/tailscale/install", network.InstallTailscale) // 安装 tailscale
+	apiAuth.POST("/network/tailscale/run", network.RunTailscale)         // 运行 tailscale
 }

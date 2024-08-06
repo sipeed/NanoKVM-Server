@@ -39,7 +39,7 @@ func WakeOnLAN(c *gin.Context) {
 func GetMac(c *gin.Context) {
 	var rsp protocol.Response
 
-	content, err := os.ReadFile(WolFile)
+	content, err := os.ReadFile(WolHistory)
 	if err != nil {
 		rsp.ErrRsp(c, -2, "open file error")
 		return
@@ -62,9 +62,9 @@ func DeleteMac(c *gin.Context) {
 		return
 	}
 
-	content, err := os.ReadFile(WolFile)
+	content, err := os.ReadFile(WolHistory)
 	if err != nil {
-		log.Errorf("open %s failed: %s", WolFile, err)
+		log.Errorf("open %s failed: %s", WolHistory, err)
 		rsp.ErrRsp(c, -2, "read failed")
 		return
 	}
@@ -79,9 +79,9 @@ func DeleteMac(c *gin.Context) {
 	}
 
 	data := strings.Join(newMacs, "\n")
-	err = os.WriteFile(WolFile, []byte(data), 0644)
+	err = os.WriteFile(WolHistory, []byte(data), 0644)
 	if err != nil {
-		log.Errorf("write %s failed: %s", WolFile, err)
+		log.Errorf("write %s failed: %s", WolHistory, err)
 		rsp.ErrRsp(c, -3, "write failed")
 		return
 	}
@@ -95,15 +95,15 @@ func saveMac(mac string) {
 		return
 	}
 
-	err := os.MkdirAll(filepath.Dir(WolFile), 0644)
+	err := os.MkdirAll(filepath.Dir(WolHistory), 0644)
 	if err != nil {
 		log.Errorf("create dir failed: %s", err)
 		return
 	}
 
-	file, err := os.OpenFile(WolFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(WolHistory, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Errorf("open %s failed: %s", WolFile, err)
+		log.Errorf("open %s failed: %s", WolHistory, err)
 		return
 	}
 	defer file.Close()
@@ -111,13 +111,13 @@ func saveMac(mac string) {
 	content := fmt.Sprintf("%s\n", mac)
 	_, err = file.WriteString(content)
 	if err != nil {
-		log.Errorf("write %s failed: %s", WolFile, err)
+		log.Errorf("write %s failed: %s", WolHistory, err)
 		return
 	}
 }
 
 func isMacSaved(mac string) bool {
-	content, err := os.ReadFile(WolFile)
+	content, err := os.ReadFile(WolHistory)
 	if err != nil {
 		return false
 	}

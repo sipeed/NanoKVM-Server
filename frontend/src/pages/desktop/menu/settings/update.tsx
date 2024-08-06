@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Badge, Button, Modal, Spin } from 'antd';
+import { useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
 import * as api from '@/api/firmware.ts';
 import { getSkipUpdate, setSkipUpdate } from '@/lib/localstorage.ts';
+import { isSettingsOpenAtom } from '@/jotai/settings.ts';
 
 type UpdateProps = {
-  setIsPopoverOpen: (open: boolean) => void;
   setIsBadgeVisible: (isBadgeVisible: boolean) => void;
 };
 
-export const Update = ({ setIsPopoverOpen, setIsBadgeVisible }: UpdateProps) => {
+export const Update = ({ setIsBadgeVisible }: UpdateProps) => {
   const { t } = useTranslation();
+  const setIsSettingsOpen = useSetAtom(isSettingsOpenAtom);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,10 +34,10 @@ export const Update = ({ setIsPopoverOpen, setIsBadgeVisible }: UpdateProps) => 
   function showModal() {
     getVersion();
 
-    setIsPopoverOpen(false);
-
     setErrMsg('');
     setIsModalOpen(true);
+
+    setIsSettingsOpen(false);
   }
 
   function getVersion() {

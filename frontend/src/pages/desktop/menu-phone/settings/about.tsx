@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Modal } from 'antd';
+import { useSetAtom } from 'jotai';
 import { BookOpenIcon, GithubIcon, LoaderCircleIcon, MessageSquareIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { getVersion } from '@/api/firmware';
+import { isSettingsOpenAtom } from '@/jotai/settings.ts';
 
-type AboutPorps = {
-  setIsPopoverOpen: (open: boolean) => void;
-};
-
-export const About = ({ setIsPopoverOpen }: AboutPorps) => {
+export const About = () => {
   const { t } = useTranslation();
+  const setIsSettingsOpen = useSetAtom(isSettingsOpenAtom);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentVersion, setCurrentVersion] = useState('');
@@ -46,7 +46,7 @@ export const About = ({ setIsPopoverOpen }: AboutPorps) => {
 
   function showModal() {
     setIsModalOpen(true);
-    setIsPopoverOpen(false);
+    setIsSettingsOpen(false);
   }
 
   function openPage(url: string) {

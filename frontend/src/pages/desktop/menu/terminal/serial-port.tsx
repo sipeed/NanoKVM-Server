@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import { Button, Input, InputNumber, Modal, Radio, RadioChangeEvent } from 'antd';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { TerminalIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

@@ -10,14 +10,13 @@ importOrder:
   - ''
   - ^types$
   - ^@/assets(.*)$
-  - ^@/env(.*)$
-  - ^@/types$
-  - ^@/config/(.*)$
   - ^@/api/(.*)$
+  - ^@/types$
   - ^@/lib/(.*)$
   - ^@/jotai/(.*)$
   - ^@/hooks/(.*)$
   - ^@/components/(.*)$
+  - ^@/pages/(.*)$
   - ^@/styles/(.*)$
   - ''
   - '^[./]'

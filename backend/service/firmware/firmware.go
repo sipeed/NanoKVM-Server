@@ -3,7 +3,6 @@ package firmware
 import (
 	"NanoKVM-Server/backend/protocol"
 	"NanoKVM-Server/backend/utils"
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -86,6 +85,7 @@ func Update(c *gin.Context) {
 func updateFirmware() error {
 	_ = utils.RunCommand(fmt.Sprintf("rm -rf %s", Temporary))
 	_ = os.MkdirAll(Temporary, 0755)
+	defer utils.RunCommand(fmt.Sprintf("rm -rf %s", Temporary))
 
 	if err := downloadLib(); err != nil {
 		return err
@@ -128,7 +128,7 @@ func downloadLib() error {
 
 	target := fmt.Sprintf("%s/%s", Temporary, LibMaixcamName)
 
-	return download(req, target)
+	return utils.Download(req, target)
 }
 
 func downloadFirmware() error {
@@ -140,7 +140,7 @@ func downloadFirmware() error {
 
 	zipFile := fmt.Sprintf("%s/latest.zip", Temporary)
 
-	err = download(req, zipFile)
+	err = utils.Download(req, zipFile)
 	if err != nil {
 		return err
 	}
@@ -148,39 +148,6 @@ func downloadFirmware() error {
 	err = utils.RunCommand(fmt.Sprintf("unzip %s -d %s", zipFile, Temporary))
 	if err != nil {
 		log.Errorf("run command err: %s", err)
-		return err
-	}
-
-	return nil
-}
-
-func download(req *http.Request, target string) error {
-	out, err := os.OpenFile(target, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-	if err != nil {
-		log.Errorf("create file %s err: %s", target, err)
-		return err
-	}
-	defer out.Close()
-
-	resp, err := (&http.Client{}).Do(req)
-	if err != nil {
-		log.Errorf("download file err: %s", err)
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return errors.New("request error")
-	}
-
-	contentType := resp.Header.Get("Content-Type")
-	if contentType != "application/octet-stream" && contentType != "application/zip" {
-		return errors.New("download error")
-	}
-
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		log.Errorf("download file to %s err: %s", target, err)
 		return err
 	}
 
