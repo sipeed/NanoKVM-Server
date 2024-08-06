@@ -16,3 +16,8 @@ var kvmMap = map[string]string{
 	"quality":    KVM_QUALITY,
 	"resolution": KVM_RESOLUTION,
 }
+
+var imageVersionMap = map[string]string{
+	"2024-06-23-20-59-2d2bfb.img": "v1.0.0",
+	"2024-07-23-20-18-587710.img": "v1.1.0",
+}

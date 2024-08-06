@@ -42,7 +42,8 @@ func initBackend(r *gin.Engine) {
 	api.POST("/auth/login", auth.Login)                 // 登录
 	apiAuth.POST("/auth/password", auth.ChangePassword) // 修改密码
 
-	api.GET("/vm/led", vm.Led)                                 // 获取虚拟机 led 灯状态
+	api.GET("/vm/led", vm.Led) // 获取虚拟机 led 灯状态
+
 	apiAuth.POST("/vm/power", vm.Power)                        // 虚拟机开机/关机/重启
 	apiAuth.POST("/vm/screen", vm.Screen)                      // 更新虚拟机屏幕设置
 	apiAuth.GET("/vm/terminal", vm.Terminal)                   // 连接虚拟机终端
@@ -52,6 +53,7 @@ func initBackend(r *gin.Engine) {
 	apiAuth.DELETE("/vm/script", vm.DeleteScript)              // 删除脚本
 	apiAuth.GET("/vm/device/virtual", vm.GetVirtualDevice)     // 获取虚拟设备
 	apiAuth.POST("/vm/device/virtual", vm.UpdateVirtualDevice) // 更新虚拟设备
+	apiAuth.GET("/vm/info", vm.GetInfo)                        // 获取设备信息
 
 	apiAuth.GET("/storage/images", storage.GetImages)               // 获取镜像列表
 	apiAuth.GET("/storage/images/mounted", storage.GetMountedImage) // 获取已挂载的镜像

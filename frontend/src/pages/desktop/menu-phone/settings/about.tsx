@@ -4,8 +4,15 @@ import { useSetAtom } from 'jotai';
 import { BookOpenIcon, GithubIcon, LoaderCircleIcon, MessageSquareIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { getVersion } from '@/api/firmware';
+import { getInfo } from '@/api/vm';
 import { isSettingsOpenAtom } from '@/jotai/settings.ts';
+
+type Info = {
+  ip: string;
+  mdns: string;
+  image: string;
+  firmware: string;
+};
 
 export const About = () => {
   const { t } = useTranslation();
@@ -13,7 +20,7 @@ export const About = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentVersion, setCurrentVersion] = useState('');
+  const [info, setInfo] = useState<Info | undefined>();
 
   const communities = [
     { name: 'wiki', icon: <BookOpenIcon size={24} />, url: 'https://wiki.sipeed.com/nanokvm' },
@@ -28,16 +35,18 @@ export const About = () => {
   useEffect(() => {
     setLoading(true);
 
-    getVersion('current')
+    getInfo()
       .then((rsp: any) => {
-        if (rsp.code === 0) {
-          setCurrentVersion(rsp.data.current);
-        } else {
-          setCurrentVersion(t('about.queryFailed'));
+        if (rsp.code !== 0) {
+          console.log(rsp.msg);
+          setInfo(undefined);
+          return;
         }
+
+        setInfo(rsp.data);
       })
       .catch(() => {
-        setCurrentVersion(t('about.queryFailed'));
+        setInfo(undefined);
       })
       .finally(() => {
         setLoading(false);
@@ -66,20 +75,29 @@ export const About = () => {
         title={t('about.title')}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        width={450}
+        width={380}
         footer={null}
         centered
       >
         <div className="my-5 h-[1px] bg-neutral-700/50" />
-        <div className="flex items-start justify-between py-3">
-          <div className="flex flex-col space-y-2">
-            <span className="text-neutral-400">{t('about.version')}</span>
-            {loading ? (
-              <LoaderCircleIcon className="animate-spin" size={18} />
-            ) : (
-              <span>{currentVersion}</span>
-            )}
-          </div>
+
+        <div className="flex w-full flex-col space-y-2">
+          <span className="text-neutral-400">{t('about.information')}</span>
+
+          {loading ? (
+            <LoaderCircleIcon className="animate-spin" size={18} />
+          ) : info ? (
+            <div className="flex w-full flex-col space-y-1">
+              {Object.entries(info).map(([key, value]) => (
+                <div key={key} className="flex w-full items-center justify-between">
+                  <span>{t(`about.${key}`)}</span>
+                  <span>{value}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <span>{t('about.queryFailed')}</span>
+          )}
         </div>
 
         <div className="my-5 h-[1px] bg-neutral-700/50" />

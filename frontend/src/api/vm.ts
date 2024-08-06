@@ -1,5 +1,9 @@
 import { http } from '@/lib/http.ts';
 
+export function getInfo() {
+  return http.get('/api/vm/info');
+}
+
 export function power(type: string, duration: number) {
   const data = {
     type,

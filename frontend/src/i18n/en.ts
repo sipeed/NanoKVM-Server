@@ -96,7 +96,11 @@ export const en = {
     },
     about: {
       title: 'About NanoKVM',
-      version: 'Version',
+      information: 'Information',
+      ip: 'IP',
+      mdns: 'mDNS',
+      firmware: 'Firmware Version',
+      image: 'Image Version',
       queryFailed: 'Query failed',
       community: 'Community'
     },

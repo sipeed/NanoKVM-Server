@@ -96,7 +96,11 @@ export const zh = {
     },
     about: {
       title: '关于 NanoKVM',
-      version: '版本',
+      information: '信息',
+      ip: 'IP',
+      mdns: 'mDNS',
+      firmware: '固件版本',
+      image: '镜像版本',
       queryFailed: '查询失败',
       community: '社区'
     },
