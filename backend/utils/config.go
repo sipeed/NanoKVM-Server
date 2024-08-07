@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -19,10 +20,11 @@ type Cert struct {
 }
 
 type Config struct {
-	Protocol string `yaml:"protocol"`
-	Port     Port   `yaml:"port"`
-	Cert     Cert   `yaml:"cert"`
-	Log      string `yaml:"log"`
+	Protocol  string `yaml:"protocol"`
+	Port      Port   `yaml:"port"`
+	Cert      Cert   `yaml:"cert"`
+	Log       string `yaml:"log"`
+	DeviceKey string
 }
 
 var (
@@ -66,9 +68,19 @@ func loadConfig() {
 		}
 	}
 
+	viper.Set("DeviceKey", getDeviceKey())
+
 	if err := viper.Unmarshal(&config); err != nil {
 		panic(fmt.Sprintf("Can't read configuration file /etc/kvm/nanokvm.yaml.\n%s", err))
 	}
 
 	fmt.Printf("load config success\n")
+}
+
+func getDeviceKey() string {
+	content, err := os.ReadFile("/device_key")
+	if err != nil {
+		return ""
+	}
+	return strings.ReplaceAll(string(content), "\n", "")
 }

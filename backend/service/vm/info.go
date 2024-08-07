@@ -10,20 +10,22 @@ import (
 )
 
 type GetInfoRsp struct {
-	Ip       string `json:"ip"`
-	Mdns     string `json:"mdns"`
-	Image    string `json:"image"`
-	Firmware string `json:"firmware"`
+	Ip        string `json:"ip"`
+	Mdns      string `json:"mdns"`
+	Image     string `json:"image"`
+	Firmware  string `json:"firmware"`
+	DeviceKey string `json:"deviceKey"`
 }
 
 func GetInfo(c *gin.Context) {
 	var rsp protocol.Response
 
 	data := &GetInfoRsp{
-		Ip:       getIp(),
-		Mdns:     getMdns(),
-		Image:    getImageVersion(),
-		Firmware: getFirmwareVersion(),
+		Ip:        getIp(),
+		Mdns:      getMdns(),
+		Image:     getImageVersion(),
+		Firmware:  getFirmwareVersion(),
+		DeviceKey: getDeviceKey(),
 	}
 
 	rsp.OkRspWithData(c, data)
@@ -77,4 +79,13 @@ func getMdns() string {
 
 	mdns := strings.ReplaceAll(string(content), "\n", "")
 	return fmt.Sprintf("%s.local", mdns)
+}
+
+func getDeviceKey() string {
+	content, err := os.ReadFile("/device_key")
+	if err != nil {
+		return ""
+	}
+
+	return strings.ReplaceAll(string(content), "\n", "")
 }

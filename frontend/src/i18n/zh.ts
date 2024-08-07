@@ -101,6 +101,7 @@ export const zh = {
       mdns: 'mDNS',
       firmware: '固件版本',
       image: '镜像版本',
+      deviceKey: '设备码',
       queryFailed: '查询失败',
       community: '社区'
     },

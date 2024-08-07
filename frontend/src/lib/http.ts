@@ -39,6 +39,7 @@ class Http {
         const code = error.response?.status;
         if (code === 401) {
           removeToken();
+          window.location.reload();
         }
         return Promise.reject(error);
       }

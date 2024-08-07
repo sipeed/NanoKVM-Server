@@ -101,6 +101,7 @@ export const en = {
       mdns: 'mDNS',
       firmware: 'Firmware Version',
       image: 'Image Version',
+      deviceKey: 'Device Key',
       queryFailed: 'Query failed',
       community: 'Community'
     },

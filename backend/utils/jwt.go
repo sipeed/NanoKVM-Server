@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -24,13 +25,16 @@ func GenerateJWT(username string) (string, error) {
 		},
 	}
 
+	secretKey := fmt.Sprintf("%s-%s", JWTSecretKey, GetConfig().DeviceKey)
+
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return t.SignedString([]byte(JWTSecretKey))
+	return t.SignedString([]byte(secretKey))
 }
 
 func ParseJWT(jwtToken string) (*Token, error) {
 	t, err := jwt.ParseWithClaims(jwtToken, &Token{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(JWTSecretKey), nil
+		secretKey := fmt.Sprintf("%s-%s", JWTSecretKey, GetConfig().DeviceKey)
+		return []byte(secretKey), nil
 	})
 
 	if err != nil {

@@ -22,7 +22,7 @@ export const Xterm = ({ token, setToken }: TerminalProps) => {
     fitAddon.fit();
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const url = `${protocol}//${window.location.host}/api/vm/terminal${token}`;
+    const url = `${protocol}//${window.location.host}/api/vm/terminal?${token}`;
     const webSocket = new WebSocket(url);
 
     const sendSize = () => {

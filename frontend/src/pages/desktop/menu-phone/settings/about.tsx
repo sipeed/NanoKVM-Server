@@ -12,6 +12,7 @@ type Info = {
   mdns: string;
   image: string;
   firmware: string;
+  deviceKey: string;
 };
 
 export const About = () => {

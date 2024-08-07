@@ -9,7 +9,7 @@ import { Xterm } from './xterm.tsx';
 
 export const Terminal = () => {
   const { t } = useTranslation();
-  const [token, setToken] = useState(`?t=${encrypt('root')}`);
+  const [token, setToken] = useState(`t=${encrypt('root')}`);
 
   return (
     <>
