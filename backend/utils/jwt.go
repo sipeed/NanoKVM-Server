@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -13,7 +12,6 @@ type Token struct {
 }
 
 const (
-	JWTSecretKey   = "sipeed-nanokvm2024"
 	ExpireDuration = 31 * 24 * time.Hour
 )
 
@@ -25,15 +23,14 @@ func GenerateJWT(username string) (string, error) {
 		},
 	}
 
-	secretKey := fmt.Sprintf("%s-%s", JWTSecretKey, GetConfig().DeviceKey)
-
+	secretKey := GetConfig().SecretKey
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return t.SignedString([]byte(secretKey))
 }
 
 func ParseJWT(jwtToken string) (*Token, error) {
 	t, err := jwt.ParseWithClaims(jwtToken, &Token{}, func(token *jwt.Token) (interface{}, error) {
-		secretKey := fmt.Sprintf("%s-%s", JWTSecretKey, GetConfig().DeviceKey)
+		secretKey := GetConfig().SecretKey
 		return []byte(secretKey), nil
 	})
 

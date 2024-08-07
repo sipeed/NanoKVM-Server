@@ -2,11 +2,12 @@ package utils
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/spf13/viper"
 	"os"
-	"strings"
 	"sync"
 )
 
@@ -24,7 +25,7 @@ type Config struct {
 	Port      Port   `yaml:"port"`
 	Cert      Cert   `yaml:"cert"`
 	Log       string `yaml:"log"`
-	DeviceKey string
+	SecretKey string
 }
 
 var (
@@ -68,7 +69,7 @@ func loadConfig() {
 		}
 	}
 
-	viper.Set("DeviceKey", getDeviceKey())
+	viper.Set("SecretKey", generateRandomString())
 
 	if err := viper.Unmarshal(&config); err != nil {
 		panic(fmt.Sprintf("Can't read configuration file /etc/kvm/nanokvm.yaml.\n%s", err))
@@ -77,10 +78,10 @@ func loadConfig() {
 	fmt.Printf("load config success\n")
 }
 
-func getDeviceKey() string {
-	content, err := os.ReadFile("/device_key")
-	if err != nil {
-		return ""
+func generateRandomString() string {
+	b := make([]byte, 64)
+	if _, err := rand.Read(b); err != nil {
+		return "cH7xB0zO4rR0fK1gI1fD0qF6vH5yD6mU5uF9hK7lF4wR6kP5rU7lM0rH7dL4vC1g"
 	}
-	return strings.ReplaceAll(string(content), "\n", "")
+	return base64.URLEncoding.EncodeToString(b)
 }
