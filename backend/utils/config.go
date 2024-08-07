@@ -57,12 +57,12 @@ func loadConfig() {
 		if errors.As(err, &viper.ConfigFileNotFoundError{}) {
 			_ = os.MkdirAll("/etc/kvm", 0644)
 			_ = os.WriteFile("/etc/kvm/server.yaml", defaultConfig, 0755)
+			_ = RunCommand("sync")
 			fmt.Printf("File /etc/kvm/server.yaml not exists. Use default configuration.\n")
 		} else {
 			fmt.Printf("Read file /etc/kvm/server.yaml failed. Use default configuration.\n")
 		}
 
-		// 使用默认配置
 		err = viper.ReadConfig(bytes.NewBuffer(defaultConfig))
 		if err != nil {
 			panic(fmt.Sprintf("load default config failed.\n%s", err))
@@ -75,7 +75,27 @@ func loadConfig() {
 		panic(fmt.Sprintf("Can't read configuration file /etc/kvm/nanokvm.yaml.\n%s", err))
 	}
 
+	check()
+
 	fmt.Printf("load config success\n")
+}
+
+func check() {
+	if config.Port.Http > 0 && config.Port.Https > 0 {
+		return
+	}
+
+	_ = os.Remove("/etc/kvm/server.yaml")
+
+	if err := viper.ReadConfig(bytes.NewBuffer(defaultConfig)); err != nil {
+		panic(fmt.Sprintf("load default config failed.\n%s", err))
+	}
+
+	viper.Set("SecretKey", generateRandomString())
+
+	if err := viper.Unmarshal(&config); err != nil {
+		panic(fmt.Sprintf("Can't read configuration file /etc/kvm/nanokvm.yaml.\n%s", err))
+	}
 }
 
 func generateRandomString() string {
