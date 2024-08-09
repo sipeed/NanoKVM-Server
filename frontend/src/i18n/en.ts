@@ -103,7 +103,7 @@ export const en = {
       information: 'Information',
       ip: 'IP',
       mdns: 'mDNS',
-      firmware: 'Firmware Version',
+      firmware: 'Application Version',
       image: 'Image Version',
       deviceKey: 'Device Key',
       queryFailed: 'Query failed',
