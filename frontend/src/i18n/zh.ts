@@ -4,11 +4,6 @@ export const zh = {
     latestVersion: '最新版本：',
     changePassword: '修改密码',
     logout: '登出',
-    screen: '屏幕',
-    resolution: '分辨率',
-    fps: '帧率',
-    customize: '自定义',
-    quality: '图像质量',
     keyboard: '键盘',
     images: '镜像',
     loading: '加载中',
@@ -52,6 +47,14 @@ export const zh = {
       reset4: '3. 使用默认的账号登录： ',
       ok: '确定',
       cancel: '取消'
+    },
+    screen: {
+      resolution: '分辨率',
+      fps: '帧率',
+      customizeFps: '自定义',
+      quality: '图像质量',
+      frameDetect: '帧差检测',
+      frameDetectTip: '计算帧之间的差异，当检测到远程主机画面不变时，停止传输视频流'
     },
     cursor: {
       default: '默认指针',

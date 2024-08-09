@@ -3,11 +3,6 @@ export const en = {
     language: 'Language',
     changePassword: 'Change Password',
     logout: 'Logout',
-    screen: 'Screen',
-    resolution: 'Resolution',
-    fps: 'FPS',
-    customize: 'Customize',
-    quality: 'Quality',
     keyboard: 'Keyboard',
     images: 'Images',
     loading: 'Loading',
@@ -52,6 +47,15 @@ export const en = {
       reset4: '3. Use the default account to login: ',
       ok: 'Ok',
       cancel: 'Cancel'
+    },
+    screen: {
+      resolution: 'Resolution',
+      fps: 'FPS',
+      customizeFps: 'Customize',
+      quality: 'Quality',
+      frameDetect: 'Frame Detect',
+      frameDetectTip:
+        "Calculate the difference between frames. Stop transmitting video stream when no changes are detected on the remote host's screen."
     },
     cursor: {
       default: 'Default cursor',

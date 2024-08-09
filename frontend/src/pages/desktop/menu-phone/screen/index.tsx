@@ -8,6 +8,7 @@ import * as ls from '@/lib/localstorage';
 import { resolutionAtom } from '@/jotai/resolution';
 
 import { Fps } from './fps';
+import { FrameDetect } from './frame-detect';
 import { Quality } from './quality';
 import { Resolution } from './resolution';
 
@@ -45,6 +46,7 @@ export const Screen = () => {
           <Resolution />
           <Fps fps={fps} setFps={setFps} />
           <Quality quality={quality} setQuality={setQuality} />
+          <FrameDetect />
         </div>
       }
       placement="rightBottom"

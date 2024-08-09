@@ -55,9 +55,7 @@ func loadConfig() {
 
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.As(err, &viper.ConfigFileNotFoundError{}) {
-			_ = os.MkdirAll("/etc/kvm", 0644)
-			_ = os.WriteFile("/etc/kvm/server.yaml", defaultConfig, 0755)
-			_ = RunCommand("sync")
+			saveDefaultConfig()
 			fmt.Printf("File /etc/kvm/server.yaml not exists. Use default configuration.\n")
 		} else {
 			fmt.Printf("Read file /etc/kvm/server.yaml failed. Use default configuration.\n")
@@ -95,6 +93,29 @@ func check() {
 
 	if err := viper.Unmarshal(&config); err != nil {
 		panic(fmt.Sprintf("Can't read configuration file /etc/kvm/nanokvm.yaml.\n%s", err))
+	}
+}
+
+func saveDefaultConfig() {
+	_ = os.MkdirAll("/etc/kvm", 0644)
+
+	file, err := os.OpenFile("/etc/kvm/server.yaml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		fmt.Printf("open config failed: %s\n", err)
+		return
+	}
+	defer file.Close()
+
+	_, err = file.Write(defaultConfig)
+	if err != nil {
+		fmt.Printf("save config failed: %s\n", err)
+		return
+	}
+
+	err = file.Sync()
+	if err != nil {
+		fmt.Printf("sync config failed: %s\n", err)
+		return
 	}
 }
 

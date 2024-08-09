@@ -80,7 +80,7 @@ export const Fps = ({ fps, setFps }: FpsProps) => {
         {defaultFps.includes(fps) ? (
           <>
             <div className="flex h-[14px] w-[20px] items-end"></div>
-            <span>{t('customize')}</span>
+            <span>{t('screen.customizeFps')}</span>
           </>
         ) : (
           <>
@@ -111,7 +111,7 @@ export const Fps = ({ fps, setFps }: FpsProps) => {
     <Popover content={content} placement="rightTop">
       <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded px-3 text-neutral-300 hover:bg-neutral-700">
         <ScanBarcodeIcon size={18} />
-        <span className="select-none text-sm">{t('fps')}</span>
+        <span className="select-none text-sm">{t('screen.fps')}</span>
       </div>
     </Popover>
   );

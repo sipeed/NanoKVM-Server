@@ -3,8 +3,8 @@ import { useAtom } from 'jotai';
 import { CheckIcon, RatioIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Resolution as TypeResolution } from '@/types';
 import { updateScreen } from '@/api/vm';
+import { Resolution as TypeResolution } from '@/types';
 import { setResolution as setCookie } from '@/lib/localstorage';
 import { resolutionAtom } from '@/jotai/resolution.ts';
 
@@ -52,7 +52,7 @@ export const Resolution = () => {
     <Popover content={content} placement="rightTop">
       <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded px-3 text-neutral-300 hover:bg-neutral-700">
         <RatioIcon size={18} />
-        <span className="select-none text-sm">{t('resolution')}</span>
+        <span className="select-none text-sm">{t('screen.resolution')}</span>
       </div>
     </Popover>
   );

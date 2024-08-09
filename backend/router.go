@@ -4,9 +4,9 @@ import (
 	"NanoKVM-Server/backend/middleware"
 	"NanoKVM-Server/backend/service/auth"
 	"NanoKVM-Server/backend/service/firmware"
-	"NanoKVM-Server/backend/service/mjpeg"
 	"NanoKVM-Server/backend/service/network"
 	"NanoKVM-Server/backend/service/storage"
+	"NanoKVM-Server/backend/service/stream"
 	"NanoKVM-Server/backend/service/vm"
 	"NanoKVM-Server/backend/service/ws"
 	"fmt"
@@ -34,43 +34,45 @@ func initFrontend(r *gin.Engine) {
 }
 
 func initBackend(r *gin.Engine) {
-	api := r.Group("/api")
-	apiAuth := r.Group("/api").Use(middleware.CheckToken())
+	r.POST("/api/auth/login", auth.Login) // 登录
 
-	apiAuth.GET("/ws", ws.HandleWebSocket)
+	api := r.Group("/api").Use(middleware.CheckToken())
 
-	api.POST("/auth/login", auth.Login)                 // 登录
-	apiAuth.POST("/auth/password", auth.ChangePassword) // 修改密码
+	api.GET("/ws", ws.HandleWebSocket)
 
-	api.GET("/vm/led", vm.Led) // 获取虚拟机 led 灯状态
+	api.POST("/auth/password", auth.ChangePassword) // 修改密码
 
-	apiAuth.POST("/vm/power", vm.Power)                        // 虚拟机开机/关机/重启
-	apiAuth.POST("/vm/screen", vm.Screen)                      // 更新虚拟机屏幕设置
-	apiAuth.GET("/vm/terminal", vm.Terminal)                   // 连接虚拟机终端
-	apiAuth.POST("/vm/script/upload", vm.UploadScript)         //上传脚本
-	apiAuth.POST("/vm/script/run", vm.RunScript)               // 运行脚本
-	apiAuth.GET("/vm/script", vm.GetScripts)                   // 获取脚本
-	apiAuth.DELETE("/vm/script", vm.DeleteScript)              // 删除脚本
-	apiAuth.GET("/vm/device/virtual", vm.GetVirtualDevice)     // 获取虚拟设备
-	apiAuth.POST("/vm/device/virtual", vm.UpdateVirtualDevice) // 更新虚拟设备
-	apiAuth.GET("/vm/info", vm.GetInfo)                        // 获取设备信息
+	api.POST("/vm/gpio", vm.SetGpio)                       // 更新 gpio
+	api.GET("/vm/gpio/led", vm.GetLedGpio)                 // 获取 gpio 指示灯状态
+	api.POST("/vm/screen", vm.Screen)                      // 更新虚拟机屏幕设置
+	api.GET("/vm/terminal", vm.Terminal)                   // 连接虚拟机终端
+	api.POST("/vm/script/upload", vm.UploadScript)         //上传脚本
+	api.POST("/vm/script/run", vm.RunScript)               // 运行脚本
+	api.GET("/vm/script", vm.GetScripts)                   // 获取脚本
+	api.DELETE("/vm/script", vm.DeleteScript)              // 删除脚本
+	api.GET("/vm/device/virtual", vm.GetVirtualDevice)     // 获取虚拟设备
+	api.POST("/vm/device/virtual", vm.UpdateVirtualDevice) // 更新虚拟设备
+	api.GET("/vm/info", vm.GetInfo)                        // 获取设备信息
 
-	apiAuth.GET("/storage/images", storage.GetImages)               // 获取镜像列表
-	apiAuth.GET("/storage/images/mounted", storage.GetMountedImage) // 获取已挂载的镜像
-	apiAuth.POST("/storage/image/mount", storage.MountImage)        // 挂载镜像
-	apiAuth.POST("/storage/hid/reset", storage.ResetHid)            // 重置 hid
+	api.GET("/storage/images", storage.GetImages)               // 获取镜像列表
+	api.GET("/storage/images/mounted", storage.GetMountedImage) // 获取已挂载的镜像
+	api.POST("/storage/image/mount", storage.MountImage)        // 挂载镜像
+	api.POST("/storage/hid/reset", storage.ResetHid)            // 重置 hid
 
-	apiAuth.GET("/mjpeg", mjpeg.Proxy) // mjpeg 代理
+	api.GET("/stream/mjpeg", stream.Mjpeg)                        // mjpeg stream
+	api.GET("/stream/mjpeg/detect", stream.GetFrameDetect)        // 获取 frame detect 状态
+	api.POST("/stream/mjpeg/detect", stream.UpdateFrameDetect)    // 更新 frame detect 状态
+	api.POST("/stream/mjpeg/detect/stop", stream.StopFrameDetect) // 临时停止 frame detect
 
-	apiAuth.GET("/firmware/version", firmware.GetVersion)    // 获取当前固件版本
-	apiAuth.POST("/firmware/update", firmware.Update)        // 更新固件
-	apiAuth.GET("/firmware/lib", firmware.GetLib)            // 检查 lib 是否存在
-	apiAuth.POST("/firmware/lib/update", firmware.UpdateLib) // 更新 lib 文件
+	api.GET("/firmware/version", firmware.GetVersion)    // 获取当前固件版本
+	api.POST("/firmware/update", firmware.Update)        // 更新固件
+	api.GET("/firmware/lib", firmware.GetLib)            // 检查 lib 是否存在
+	api.POST("/firmware/lib/update", firmware.UpdateLib) // 更新 lib 文件
 
-	apiAuth.POST("/network/wol", network.WakeOnLAN)                      // 远程唤醒
-	apiAuth.GET("/network/wol/mac", network.GetMac)                      // 获取保存的mac地址
-	apiAuth.DELETE("/network/wol/mac", network.DeleteMac)                // 删除保存的mac地址
-	apiAuth.GET("/network/tailscale", network.GetTailscale)              // 获取 tailscale 状态
-	apiAuth.POST("/network/tailscale/install", network.InstallTailscale) // 安装 tailscale
-	apiAuth.POST("/network/tailscale/run", network.RunTailscale)         // 运行 tailscale
+	api.POST("/network/wol", network.WakeOnLAN)                      // 远程唤醒
+	api.GET("/network/wol/mac", network.GetMac)                      // 获取保存的mac地址
+	api.DELETE("/network/wol/mac", network.DeleteMac)                // 删除保存的mac地址
+	api.GET("/network/tailscale", network.GetTailscale)              // 获取 tailscale 状态
+	api.POST("/network/tailscale/install", network.InstallTailscale) // 安装 tailscale
+	api.POST("/network/tailscale/run", network.RunTailscale)         // 运行 tailscale
 }

@@ -1,14 +1,20 @@
+import { useEffect } from 'react';
 import { Image } from 'antd';
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 
 import MonitorXIcon from '@/assets/images/monitor-x.svg';
+import { stopFrameDetect } from '@/api/stream.ts';
 import { mouseStyleAtom } from '@/jotai/mouse.ts';
 import { resolutionAtom } from '@/jotai/resolution.ts';
 
 export const Screen = () => {
   const resolution = useAtomValue(resolutionAtom);
   const mouseStyle = useAtomValue(mouseStyleAtom);
+
+  useEffect(() => {
+    stopFrameDetect();
+  }, []);
 
   return (
     <div
@@ -24,7 +30,7 @@ export const Screen = () => {
         )}
         width={resolution!.width}
         height={resolution!.height}
-        src={`${window.location.protocol}//${window.location.host}/api/mjpeg`}
+        src={`${window.location.protocol}//${window.location.host}/api/stream/mjpeg`}
         fallback={MonitorXIcon}
         preview={false}
       />

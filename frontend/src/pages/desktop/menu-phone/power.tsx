@@ -30,7 +30,7 @@ export const Power = () => {
   }, []);
 
   function getLed() {
-    api.getLed().then((rsp: any) => {
+    api.getLedGpio().then((rsp: any) => {
       if (rsp.code !== 0) {
         console.log(rsp.msg);
         return;
@@ -49,7 +49,7 @@ export const Power = () => {
 
     const millisecond = Math.floor((duration ? duration : powerDuration) * 1000);
 
-    api.power(button, millisecond).finally(() => {
+    api.setGpio(button, millisecond).finally(() => {
       setIsLoading(false);
     });
   }

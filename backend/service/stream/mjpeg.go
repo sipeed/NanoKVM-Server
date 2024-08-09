@@ -1,4 +1,4 @@
-package mjpeg
+package stream
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Proxy(c *gin.Context) {
+func Mjpeg(c *gin.Context) {
 	mjpegURL := "http://127.0.0.1:8000/stream"
 
 	resp, err := http.Get(mjpegURL)

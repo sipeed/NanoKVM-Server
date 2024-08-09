@@ -4,12 +4,16 @@ export function getInfo() {
   return http.get('/api/vm/info');
 }
 
-export function power(type: string, duration: number) {
+export function setGpio(type: string, duration: number) {
   const data = {
     type,
     duration
   };
-  return http.post('/api/vm/power', data);
+  return http.post('/api/vm/gpio', data);
+}
+
+export function getLedGpio() {
+  return http.get('/api/vm/gpio/led');
 }
 
 export function updateScreen(type: string, value: number) {
@@ -18,8 +22,4 @@ export function updateScreen(type: string, value: number) {
     value
   };
   return http.post('/api/vm/screen', data);
-}
-
-export function getLed() {
-  return http.get('/api/vm/led');
 }
