@@ -25,4 +25,5 @@ var kvmMap = map[string]string{
 var imageVersionMap = map[string]string{
 	"2024-06-23-20-59-2d2bfb.img": "v1.0.0",
 	"2024-07-23-20-18-587710.img": "v1.1.0",
+	"2024-08-08-19-44-bef2ca.img": "v1.2.0",
 }
