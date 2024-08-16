@@ -86,7 +86,7 @@ func (s *SshClient) wsWrite() error {
 		if n > 0 {
 			_ = s.conn.SetWriteDeadline(time.Now().Add(messageWait))
 
-			err = s.conn.WriteMessage(websocket.TextMessage, data[:n])
+			err = s.conn.WriteMessage(websocket.BinaryMessage, data[:n])
 			if err != nil {
 				log.Errorf("write ws message failed: %s", err)
 				return err
