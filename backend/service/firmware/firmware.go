@@ -12,10 +12,6 @@ import (
 	"strings"
 )
 
-type GetVersionReq struct {
-	Type string `form:"type" validate:"omitempty"`
-}
-
 type GetVersionRsp struct {
 	Current string `json:"current"`
 	Latest  string `json:"latest"`
@@ -23,26 +19,13 @@ type GetVersionRsp struct {
 
 // GetVersion 获取最新版本号
 func GetVersion(c *gin.Context) {
-	var req GetVersionReq
 	var rsp protocol.Response
-
-	if err := protocol.ParseQueryRequest(c, &req); err != nil {
-		rsp.ErrRsp(c, -1, "invalid parameters")
-		return
-	}
 
 	// 获取当前版本号
 	currentVersion := "1.0.0"
 	content, err := os.ReadFile(VersionFile)
 	if err == nil {
 		currentVersion = strings.ReplaceAll(string(content), "\n", "")
-	}
-
-	if req.Type == "current" {
-		rsp.OkRspWithData(c, &GetVersionRsp{
-			Current: currentVersion,
-		})
-		return
 	}
 
 	// 获取最新版本号
