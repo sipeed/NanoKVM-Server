@@ -20,6 +20,14 @@ func Login(c *gin.Context) {
 	var req LoginReq
 	var rsp protocol.Response
 
+	conf := utils.GetConfig()
+	if conf.Authentication == "disable" {
+		rsp.OkRspWithData(c, &LoginRsp{
+			Token: "Disabled",
+		})
+		return
+	}
+
 	if err := protocol.ParseFormRequest(c, &req); err != nil {
 		rsp.ErrRsp(c, -1, "invalid parameters")
 		return

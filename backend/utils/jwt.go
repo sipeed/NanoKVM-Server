@@ -35,7 +35,7 @@ func ParseJWT(jwtToken string) (*Token, error) {
 	})
 
 	if err != nil {
-		log.Errorf("parse jwt error: %s", err)
+		log.Debugf("parse jwt error: %s", err)
 		return nil, err
 	}
 

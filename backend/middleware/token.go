@@ -6,11 +6,16 @@ import (
 	"net/http"
 )
 
-// CheckToken 检验 token
 func CheckToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("nano-kvm-token")
+		conf := utils.GetConfig()
 
+		if conf.Authentication == "disable" {
+			c.Next()
+			return
+		}
+
+		cookie, err := c.Cookie("nano-kvm-token")
 		if err == nil {
 			_, err = utils.ParseJWT(cookie)
 			if err == nil {

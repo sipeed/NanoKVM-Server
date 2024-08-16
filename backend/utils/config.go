@@ -21,11 +21,12 @@ type Cert struct {
 }
 
 type Config struct {
-	Protocol  string `yaml:"protocol"`
-	Port      Port   `yaml:"port"`
-	Cert      Cert   `yaml:"cert"`
-	Log       string `yaml:"log"`
-	SecretKey string
+	Protocol       string `yaml:"protocol"`
+	Port           Port   `yaml:"port"`
+	Cert           Cert   `yaml:"cert"`
+	Log            string `yaml:"log"`
+	Authentication string `yaml:"authentication"`
+	SecretKey      string
 }
 
 var (
@@ -67,18 +68,22 @@ func loadConfig() {
 		}
 	}
 
-	viper.Set("SecretKey", generateRandomString())
-
 	if err := viper.Unmarshal(&config); err != nil {
 		panic(fmt.Sprintf("Can't read configuration file /etc/kvm/nanokvm.yaml.\n%s", err))
 	}
 
-	check()
+	verifyConfig()
+
+	config.SecretKey = generateRandomString()
+
+	if config.Authentication == "disable" {
+		fmt.Println("NOTICE: Authentication is disabled! Please ensure your service is secure!")
+	}
 
 	fmt.Printf("load config success\n")
 }
 
-func check() {
+func verifyConfig() {
 	if config.Port.Http > 0 && config.Port.Https > 0 {
 		return
 	}
@@ -88,8 +93,6 @@ func check() {
 	if err := viper.ReadConfig(bytes.NewBuffer(defaultConfig)); err != nil {
 		panic(fmt.Sprintf("load default config failed.\n%s", err))
 	}
-
-	viper.Set("SecretKey", generateRandomString())
 
 	if err := viper.Unmarshal(&config); err != nil {
 		panic(fmt.Sprintf("Can't read configuration file /etc/kvm/nanokvm.yaml.\n%s", err))
