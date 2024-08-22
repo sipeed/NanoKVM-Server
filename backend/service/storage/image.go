@@ -63,14 +63,14 @@ func MountImage(c *gin.Context) {
 		return
 	}
 
-	mountFile := req.File
-	if mountFile == "" {
-		mountFile = "/dev/mmcblk0p3"
+	image := req.File
+	if image == "" {
+		image = ImageNone
 	}
 
 	// 挂载文件
-	if err := os.WriteFile(MountDevice, []byte(mountFile), 0666); err != nil {
-		log.Errorf("mount file %s failed: %s", mountFile, err)
+	if err := os.WriteFile(MountDevice, []byte(image), 0666); err != nil {
+		log.Errorf("mount file %s failed: %s", image, err)
 		rsp.ErrRsp(c, -2, "mount file failed")
 		return
 	}
@@ -104,6 +104,9 @@ func GetMountedImage(c *gin.Context) {
 	}
 
 	image := strings.ReplaceAll(string(content), "\n", "")
+	if image == ImageNone {
+		image = ""
+	}
 
 	data := &GetMountedImageRsp{
 		File: image,
