@@ -23,27 +23,37 @@ func main() {
 	backend.InitRouter(r)
 
 	if conf.Protocol == "https" {
-		r.Use(middleware.Tls())
-
-		httpAddress := fmt.Sprintf(":%d", conf.Port.Http)
-		httpsAddress := fmt.Sprintf(":%d", conf.Port.Https)
-		log.Debugf("server started at %d, %d", conf.Port.Http, conf.Port.Https)
-
-		go func() {
-			if err := r.Run(httpAddress); err != nil {
-				log.Errorf("%s", err)
-			}
-		}()
-
-		if err := r.RunTLS(httpsAddress, conf.Cert.Crt, conf.Cert.Key); err != nil {
-			panic("start server failed")
-		}
+		runTls(r)
 	} else {
-		address := fmt.Sprintf(":%d", conf.Port.Http)
-		log.Debugf("server started at %d", conf.Port.Http)
+		run(r)
+	}
+}
 
-		if err := r.Run(address); err != nil {
-			panic("start server failed")
-		}
+func run(r *gin.Engine) {
+	conf := utils.GetConfig()
+
+	address := fmt.Sprintf(":%d", conf.Port.Http)
+	log.Debugf("server started at %s", address)
+
+	err := r.Run(address)
+	if err != nil {
+		panic("start server failed")
+	}
+}
+
+func runTls(r *gin.Engine) {
+	conf := utils.GetConfig()
+
+	httpAddr := fmt.Sprintf(":%d", conf.Port.Http)
+	httpsAddr := fmt.Sprintf(":%d", conf.Port.Https)
+	log.Debugf("server started at %s, %s", httpsAddr, httpAddr)
+
+	r.Use(middleware.Tls())
+
+	go run(r)
+
+	err := r.RunTLS(httpsAddr, conf.Cert.Crt, conf.Cert.Key)
+	if err != nil {
+		panic("start server failed")
 	}
 }

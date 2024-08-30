@@ -5,6 +5,7 @@ import (
 	"NanoKVM-Server/backend/service/auth"
 	"NanoKVM-Server/backend/service/firmware"
 	"NanoKVM-Server/backend/service/network"
+	"NanoKVM-Server/backend/service/network/tailscale"
 	"NanoKVM-Server/backend/service/storage"
 	"NanoKVM-Server/backend/service/stream"
 	"NanoKVM-Server/backend/service/vm"
@@ -69,10 +70,13 @@ func initBackend(r *gin.Engine) {
 	api.GET("/firmware/lib", firmware.GetLib)            // 检查 lib 是否存在
 	api.POST("/firmware/lib/update", firmware.UpdateLib) // 更新 lib 文件
 
-	api.POST("/network/wol", network.WakeOnLAN)                      // 远程唤醒
-	api.GET("/network/wol/mac", network.GetMac)                      // 获取保存的mac地址
-	api.DELETE("/network/wol/mac", network.DeleteMac)                // 删除保存的mac地址
-	api.GET("/network/tailscale", network.GetTailscale)              // 获取 tailscale 状态
-	api.POST("/network/tailscale/install", network.InstallTailscale) // 安装 tailscale
-	api.POST("/network/tailscale/run", network.RunTailscale)         // 运行 tailscale
+	api.POST("/network/wol", network.WakeOnLAN)       // 远程唤醒
+	api.GET("/network/wol/mac", network.GetMac)       // 获取保存的mac地址
+	api.DELETE("/network/wol/mac", network.DeleteMac) // 删除保存的mac地址
+
+	api.POST("/network/tailscale/install", tailscale.Install)     // 安装 tailscale
+	api.GET("/network/tailscale/status", tailscale.GetStatus)     // 获取 tailscale 状态
+	api.POST("/network/tailscale/status", tailscale.UpdateStatus) // 更新 tailscale 状态
+	api.POST("/network/tailscale/login", tailscale.Login)         // 登录 tailscale
+	api.POST("/network/tailscale/logout", tailscale.Logout)       // 登出 tailscale
 }
