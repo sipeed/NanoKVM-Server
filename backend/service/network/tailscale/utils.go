@@ -29,6 +29,14 @@ func getStatus() (Status, error) {
 		return status, err
 	}
 
+	// delete warning message
+	if str := string(output); !strings.HasPrefix(str, "{") {
+		index := strings.Index(str, "{")
+		if index != -1 {
+			output = []byte(str[index:])
+		}
+	}
+
 	err = json.Unmarshal(output, &status)
 	if err != nil {
 		log.Debugf("unmarshal tailscale status failed: %s", err)
