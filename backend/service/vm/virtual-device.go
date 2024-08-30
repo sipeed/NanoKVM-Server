@@ -18,11 +18,12 @@ const (
 var (
 	mountNetworkCommands = []string{
 		"touch /boot/usb.rndis0",
-		"/etc/init.d/S03usbdev start",
 		"/etc/init.d/S03usbdev stop",
+		"/etc/init.d/S03usbdev start",
 	}
 
 	unmountNetworkCommands = []string{
+		"/etc/init.d/S03usbdev stop",
 		"rm -rf /sys/kernel/config/usb_gadget/g0/configs/c.1/rndis.usb0",
 		"rm /boot/usb.rndis0",
 		"/etc/init.d/S03usbdev start",
@@ -35,6 +36,7 @@ var (
 	}
 
 	unmountUSBCommands = []string{
+		"/etc/init.d/S03usbdev stop",
 		"rm -rf /sys/kernel/config/usb_gadget/g0/configs/c.1/mass_storage.disk0",
 		"rm /boot/usb.disk0",
 		"/etc/init.d/S03usbdev start",
