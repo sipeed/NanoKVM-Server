@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 type GetVersionRsp struct {
@@ -29,7 +30,8 @@ func GetVersion(c *gin.Context) {
 	}
 
 	// 获取最新版本号
-	resp, err := http.Get(VersionURL)
+	url := fmt.Sprintf("%s?now=%d", VersionURL, time.Now().Unix())
+	resp, err := http.Get(url)
 	if err != nil {
 		rsp.ErrRsp(c, -2, "Unable to access sipeed.com. Please check your network.")
 		return
@@ -115,7 +117,8 @@ func downloadLib() error {
 }
 
 func downloadFirmware() error {
-	req, err := http.NewRequest("GET", FirmwareURL, nil)
+	url := fmt.Sprintf("%snow=?%d", FirmwareURL, time.Now().Unix())
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Errorf("new request err: %s", err)
 		return err
