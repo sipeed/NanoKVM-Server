@@ -4,6 +4,7 @@ import (
 	"NanoKVM-Server/backend/middleware"
 	"NanoKVM-Server/backend/service/auth"
 	"NanoKVM-Server/backend/service/firmware"
+	"NanoKVM-Server/backend/service/hid"
 	"NanoKVM-Server/backend/service/network"
 	"NanoKVM-Server/backend/service/network/tailscale"
 	"NanoKVM-Server/backend/service/storage"
@@ -58,7 +59,6 @@ func initBackend(r *gin.Engine) {
 	api.GET("/storage/images", storage.GetImages)               // 获取镜像列表
 	api.GET("/storage/images/mounted", storage.GetMountedImage) // 获取已挂载的镜像
 	api.POST("/storage/image/mount", storage.MountImage)        // 挂载镜像
-	api.POST("/storage/hid/reset", storage.ResetHid)            // 重置 hid
 
 	api.GET("/stream/mjpeg", stream.Mjpeg)                        // mjpeg stream
 	api.GET("/stream/mjpeg/detect", stream.GetFrameDetect)        // 获取 frame detect 状态
@@ -79,4 +79,7 @@ func initBackend(r *gin.Engine) {
 	api.POST("/network/tailscale/status", tailscale.UpdateStatus) // 更新 tailscale 状态
 	api.POST("/network/tailscale/login", tailscale.Login)         // 登录 tailscale
 	api.POST("/network/tailscale/logout", tailscale.Logout)       // 登出 tailscale
+
+	api.POST("/hid/reset", hid.Reset) // 重置 hid
+	api.POST("/hid/paste", hid.Paste) // 粘贴
 }

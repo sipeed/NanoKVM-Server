@@ -1,4 +1,4 @@
-package storage
+package hid
 
 import (
 	"NanoKVM-Server/backend/protocol"
@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ResetHid(c *gin.Context) {
+func Reset(c *gin.Context) {
 	var rsp protocol.Response
 
 	// 重新拔插 USB
