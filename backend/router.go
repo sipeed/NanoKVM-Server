@@ -40,7 +40,7 @@ func initBackend(r *gin.Engine) {
 
 	api := r.Group("/api").Use(middleware.CheckToken())
 
-	api.GET("/ws", ws.HandleWebSocket)
+	api.GET("/ws", ws.Connect)
 
 	api.POST("/auth/password", auth.ChangePassword) // 修改密码
 

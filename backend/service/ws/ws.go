@@ -15,6 +15,13 @@ const (
 	MouseEvent    int = 2
 )
 
+type WsClient struct {
+	conn     *websocket.Conn
+	keyboard chan []int
+	mouse    chan []int
+	watcher  chan struct{}
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -23,35 +30,55 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func HandleWebSocket(c *gin.Context) {
-	ws, er := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if er != nil {
-		log.Errorf("create websocket failed: %s", er)
+func Connect(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Errorf("create websocket failed: %s", err)
 		return
 	}
-	log.Debugf("websocket connected")
+	log.Debug("websocket connected")
 
-	hid.Open()
+	client := &WsClient{
+		conn:     conn,
+		keyboard: make(chan []int, 200),
+		mouse:    make(chan []int, 200),
+		watcher:  make(chan struct{}, 1),
+	}
+
+	go client.Start()
+}
+
+func (c *WsClient) Start() {
 	defer func() {
-		_ = ws.Close()
+		_ = c.conn.Close()
+		close(c.keyboard)
+		close(c.mouse)
+		close(c.watcher)
 		hid.Close()
-		log.Debugf("websocket closed")
+		log.Debug("websocket disconnected")
 	}()
 
+	hid.Open()
+
+	go hid.Keyboard(c.keyboard)
+	go hid.Mouse(c.mouse)
+
+	go c.Watch()
+
+	_ = c.Read()
+}
+
+func (c *WsClient) Read() error {
 	var zeroTime time.Time
-	_ = ws.SetReadDeadline(zeroTime)
-
-	keyboardQueue := make(chan []int, 200)
-	mouseQueue := make(chan []int, 300)
-
-	go hid.Keyboard(keyboardQueue)
-	go hid.Mouse(mouseQueue)
+	_ = c.conn.SetReadDeadline(zeroTime)
 
 	for {
-		_, message, err := ws.ReadMessage()
+		_, message, err := c.conn.ReadMessage()
 		if err != nil {
-			break
+			return err
 		}
+
+		log.Debugf("receive message: %s", message)
 
 		var event []int
 		err = json.Unmarshal(message, &event)
@@ -60,26 +87,54 @@ func HandleWebSocket(c *gin.Context) {
 			continue
 		}
 
-		log.Debugf("receive message: %s", message)
-
 		if event[0] == KeyboardEvent {
-			if len(keyboardQueue) == cap(keyboardQueue) {
-				clearQueue(keyboardQueue)
-			}
-
-			keyboardQueue <- event[1:]
+			clearIfQueueFull(c.keyboard)
+			c.keyboard <- event[1:]
 		} else if event[0] == MouseEvent {
-			if len(mouseQueue) == cap(mouseQueue) {
-				clearQueue(mouseQueue)
-			}
-
-			mouseQueue <- event[1:]
+			clearIfQueueFull(c.mouse)
+			c.mouse <- event[1:]
 		}
 	}
 }
 
-func clearQueue(queue chan []int) {
-	for len(queue) > 0 {
-		<-queue
+func (c *WsClient) Write(message []byte) error {
+	_ = c.conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+	return c.conn.WriteMessage(websocket.TextMessage, message)
+}
+
+func (c *WsClient) Watch() {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	var fileModMap = map[string]time.Time{
+		StreamState: time.Unix(0, 0),
+	}
+
+	for {
+		select {
+		case <-ticker.C:
+			{
+				message, err := watchStreamState(fileModMap)
+				if err != nil || message == nil {
+					continue
+				}
+
+				err = c.Write(message)
+				if err != nil {
+					return
+				}
+			}
+
+		case <-c.watcher:
+			return
+		}
+	}
+}
+
+func clearIfQueueFull(queue chan []int) {
+	if len(queue) == cap(queue) {
+		for len(queue) > 0 {
+			<-queue
+		}
 	}
 }
