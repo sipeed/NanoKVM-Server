@@ -10,7 +10,7 @@ import (
 
 type ScreenReq struct {
 	Type  string `validate:"required"` // 参数类型：resolution, fps, quality
-	Value int    `validate:"required"` // 设置值
+	Value int    `validate:"number"`   // 设置值
 }
 
 func Screen(c *gin.Context) {
@@ -36,6 +36,6 @@ func Screen(c *gin.Context) {
 		return
 	}
 
-	log.Debug("update screen: %+v", req)
+	log.Debugf("update screen: %+v", req)
 	rsp.OkRsp(c)
 }
