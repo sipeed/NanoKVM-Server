@@ -4,7 +4,6 @@ import (
 	"errors"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"time"
 )
 
 var (
@@ -35,27 +34,20 @@ func Open() {
 }
 
 func Close() {
-	if Hidg0 != nil {
-		_ = Hidg0.Close()
-	}
-	if Hidg1 != nil {
-		_ = Hidg1.Close()
-	}
-	if Hidg2 != nil {
-		_ = Hidg2.Close()
+	for _, file := range []*os.File{Hidg0, Hidg1, Hidg2} {
+		if file != nil {
+			_ = file.Sync()
+			_ = file.Close()
+		}
 	}
 }
 
 func Write(file *os.File, data []byte) {
-	_ = file.SetDeadline(time.Now().Add(200 * time.Millisecond))
-
 	_, err := file.Write(data)
 	if err != nil {
 		if errors.Is(err, os.ErrClosed) {
 			Open()
 			log.Debugf("hid already closed, reopen it...")
-		} else if errors.Is(err, os.ErrDeadlineExceeded) {
-			log.Debugf("write to hid timeout")
 		} else {
 			log.Errorf("write to hid failed: %s", err)
 		}
