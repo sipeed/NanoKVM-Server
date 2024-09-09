@@ -117,7 +117,7 @@ func downloadLib() error {
 }
 
 func downloadFirmware() error {
-	url := fmt.Sprintf("%snow=?%d", FirmwareURL, time.Now().Unix())
+	url := fmt.Sprintf("%s?now=%d", FirmwareURL, time.Now().Unix())
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Errorf("new request err: %s", err)
