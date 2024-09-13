@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"sync"
+	"time"
 )
 
 type Port struct {
@@ -124,8 +125,13 @@ func saveDefaultConfig() {
 
 func generateRandomString() string {
 	b := make([]byte, 64)
-	if _, err := rand.Read(b); err != nil {
-		return "cH7xB0zO4rR0fK1gI1fD0qF6vH5yD6mU5uF9hK7lF4wR6kP5rU7lM0rH7dL4vC1g"
+	_, err := rand.Read(b)
+
+	if err != nil {
+		currentTime := time.Now().UnixNano()
+		timeString := fmt.Sprintf("%d", currentTime)
+		return fmt.Sprintf("%064s", timeString)
 	}
+
 	return base64.URLEncoding.EncodeToString(b)
 }
