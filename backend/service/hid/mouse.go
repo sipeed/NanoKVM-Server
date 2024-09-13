@@ -2,20 +2,23 @@ package hid
 
 import (
 	"encoding/binary"
+	"errors"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"time"
 )
 
 func Mouse(queue <-chan []int) {
 	for event := range queue {
 		switch event[0] {
 		case MouseDown:
-			mousedown(event)
+			mouseDown(event)
 		case MouseUp:
-			mouseup()
+			mouseUp()
 		case MouseMoveAbsolute:
-			mousemoveAbsolute(event)
+			mouseMoveAbsolute(event)
 		case MouseMoveRelative:
-			mousemoveRelative(event)
+			mouseMoveRelative(event)
 		case MouseScroll:
 			scroll(event)
 		default:
@@ -24,7 +27,7 @@ func Mouse(queue <-chan []int) {
 	}
 }
 
-func mousedown(event []int) {
+func mouseDown(event []int) {
 	var button byte
 
 	switch event[1] {
@@ -40,12 +43,12 @@ func mousedown(event []int) {
 	}
 
 	data := []byte{button, 0, 0, 0}
-	Write(Hidg1, data)
+	writeWithTimeout(Hidg1, data)
 }
 
-func mouseup() {
+func mouseUp() {
 	data := []byte{0, 0, 0, 0}
-	Write(Hidg1, data)
+	writeWithTimeout(Hidg1, data)
 }
 
 func scroll(event []int) {
@@ -55,21 +58,41 @@ func scroll(event []int) {
 	}
 
 	data := []byte{0, 0, 0, byte(direction)}
-	Write(Hidg1, data)
+	writeWithTimeout(Hidg1, data)
 }
 
-func mousemoveAbsolute(event []int) {
+func mouseMoveAbsolute(event []int) {
 	x := make([]byte, 2)
 	y := make([]byte, 2)
 	binary.LittleEndian.PutUint16(x, uint16(event[2]))
 	binary.LittleEndian.PutUint16(y, uint16(event[3]))
 
 	data := []byte{0, x[0], x[1], y[0], y[1], 0}
-	Write(Hidg2, data)
+	writeWithTimeout(Hidg2, data)
 
 }
 
-func mousemoveRelative(event []int) {
+func mouseMoveRelative(event []int) {
 	data := []byte{byte(event[1]), byte(event[2]), byte(event[3]), 0}
-	Write(Hidg1, data)
+	writeWithTimeout(Hidg1, data)
+}
+
+func writeWithTimeout(file *os.File, data []byte) {
+	_ = file.SetDeadline(time.Now().Add(200 * time.Millisecond))
+
+	_, err := file.Write(data)
+	if err != nil {
+		if errors.Is(err, os.ErrClosed) {
+			Open()
+			log.Debugf("hid already closed, reopen it...")
+		} else if errors.Is(err, os.ErrDeadlineExceeded) {
+			log.Debugf("write to hid timeout")
+		} else {
+			log.Errorf("write to hid failed: %s", err)
+		}
+
+		return
+	}
+
+	log.Debugf("write to hid: %+v", data)
 }

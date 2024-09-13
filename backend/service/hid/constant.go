@@ -25,4 +25,5 @@ const (
 	ModifierLShift byte = 0x02
 	ModifierLAlt   byte = 0x04
 	ModifierLGUI   byte = 0x08
+	ModifierRAlt   byte = 0x40
 )
