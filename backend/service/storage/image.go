@@ -71,7 +71,7 @@ func MountImage(c *gin.Context) {
 	// 挂载文件
 	if err := os.WriteFile(MountDevice, []byte(image), 0666); err != nil {
 		log.Errorf("mount file %s failed: %s", image, err)
-		rsp.ErrRsp(c, -2, "mount file failed")
+		rsp.ErrRsp(c, -2, "mount image failed")
 		return
 	}
 

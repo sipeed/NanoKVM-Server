@@ -49,14 +49,7 @@ func Connect(c *gin.Context) {
 }
 
 func (c *WsClient) Start() {
-	defer func() {
-		_ = c.conn.Close()
-		close(c.keyboard)
-		close(c.mouse)
-		close(c.watcher)
-		hid.Close()
-		log.Debug("websocket disconnected")
-	}()
+	defer c.Clean()
 
 	hid.Open()
 
@@ -88,10 +81,8 @@ func (c *WsClient) Read() error {
 		}
 
 		if event[0] == KeyboardEvent {
-			clearIfQueueFull(c.keyboard)
 			c.keyboard <- event[1:]
 		} else if event[0] == MouseEvent {
-			clearIfQueueFull(c.mouse)
 			c.mouse <- event[1:]
 		}
 	}
@@ -131,10 +122,23 @@ func (c *WsClient) Watch() {
 	}
 }
 
-func clearIfQueueFull(queue chan []int) {
-	if len(queue) == cap(queue) {
-		for len(queue) > 0 {
-			<-queue
-		}
+func (c *WsClient) Clean() {
+	_ = c.conn.Close()
+
+	go clearQueue(c.keyboard)
+	close(c.keyboard)
+
+	go clearQueue(c.mouse)
+	close(c.mouse)
+
+	close(c.watcher)
+
+	hid.Close()
+
+	log.Debug("websocket disconnected")
+}
+
+func clearQueue(queue chan []int) {
+	for range queue {
 	}
 }

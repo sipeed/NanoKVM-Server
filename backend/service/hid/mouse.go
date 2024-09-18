@@ -78,7 +78,8 @@ func mouseMoveRelative(event []int) {
 }
 
 func writeWithTimeout(file *os.File, data []byte) {
-	_ = file.SetDeadline(time.Now().Add(200 * time.Millisecond))
+	deadline := time.Now().Add(9 * time.Millisecond)
+	_ = file.SetWriteDeadline(deadline)
 
 	_, err := file.Write(data)
 	if err != nil {

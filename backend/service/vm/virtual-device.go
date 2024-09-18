@@ -12,7 +12,7 @@ import (
 
 const (
 	VirtualNetwork = "/boot/usb.rndis0"
-	VirtualUSB     = "/boot/usb.disk0"
+	VirtualDisk    = "/boot/usb.disk0"
 )
 
 var (
@@ -29,13 +29,13 @@ var (
 		"/etc/init.d/S03usbdev start",
 	}
 
-	mountUSBCommands = []string{
+	mountDiskCommands = []string{
 		"touch /boot/usb.disk0",
 		"/etc/init.d/S03usbdev stop",
 		"/etc/init.d/S03usbdev start",
 	}
 
-	unmountUSBCommands = []string{
+	unmountDiskCommands = []string{
 		"/etc/init.d/S03usbdev stop",
 		"rm -rf /sys/kernel/config/usb_gadget/g0/configs/c.1/mass_storage.disk0",
 		"rm /boot/usb.disk0",
@@ -45,7 +45,7 @@ var (
 
 type GetVirtualDeviceRsp struct {
 	Network bool `json:"network"`
-	USB     bool `json:"usb"`
+	Disk    bool `json:"disk"`
 }
 
 type UpdateVirtualDeviceReq struct {
@@ -60,11 +60,11 @@ func GetVirtualDevice(c *gin.Context) {
 	var rsp protocol.Response
 
 	network, _ := isDeviceExist(VirtualNetwork)
-	usb, _ := isDeviceExist(VirtualUSB)
+	disk, _ := isDeviceExist(VirtualDisk)
 
 	rsp.OkRspWithData(c, &GetVirtualDeviceRsp{
 		Network: network,
-		USB:     usb,
+		Disk:    disk,
 	})
 	log.Debugf("get virtual device success")
 }
@@ -90,14 +90,14 @@ func UpdateVirtualDevice(c *gin.Context) {
 		} else {
 			commands = unmountNetworkCommands
 		}
-	} else if req.Device == "usb" {
-		device = VirtualUSB
+	} else if req.Device == "disk" {
+		device = VirtualDisk
 
 		exist, _ := isDeviceExist(device)
 		if !exist {
-			commands = mountUSBCommands
+			commands = mountDiskCommands
 		} else {
-			commands = unmountUSBCommands
+			commands = unmountDiskCommands
 		}
 	} else {
 		rsp.ErrRsp(c, -2, "invalid arguments")
